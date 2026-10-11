@@ -9,6 +9,7 @@
   wortel.PQKastKoop = {
     open: (fid, item, kleur) => V.open('kleding', d => d.fid === fid && d.item === item && d.kleur === kleur),
     koop(fid, it, kleur) { V.nieuw('kleding', { fid, item: it.id, kleur }); },
+    saldo: () => R.pot(S.staat(), Date.now()).saldo,
   };
   function kopTeken() {
     if (!potEl) return;

@@ -263,8 +263,9 @@
     if (aan && it.herkomst !== 'uitgesneden') knoppen.append(knop('Uittrekken', () => { trekUit(fid, it.slot); alles(); }));
     if (S && window.PQKastKoop && it.soort !== 'pixels' && kleur && kan && !heeftKleur(fid, it.id, kleur)) {
       const open = window.PQKastKoop.open(fid, it.id, kleur);
-      const k = knop(open ? 'Voorstel staat open' : `Kopen: ${it.prijs} munten`, () => window.PQKastKoop.koop(fid, it, kleur));
-      k.classList.add('goud'); k.disabled = !!open;
+      const tekort = window.PQKastKoop.saldo ? it.prijs - window.PQKastKoop.saldo() : 0;   // zoals bij Verbouwen: vooraf zeggen
+      const k = knop(open ? 'Voorstel staat open' : tekort > 0 ? `Nog ${tekort} sparen (${it.prijs})` : `Kopen: ${it.prijs} munten`, () => window.PQKastKoop.koop(fid, it, kleur));
+      k.classList.add('goud'); k.disabled = !!open || tekort > 0;
       knoppen.append(k);
     } else if (!S && it.soort !== 'pixels' && kleur && !heeftKleur(fid, it.id, kleur)) {
       knoppen.append(knop(`Test: ${kleur} in bezit zetten`, () => {

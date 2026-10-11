@@ -237,3 +237,7 @@ body:has(.sheet-achter) .melding { bottom: auto; top: calc(var(--veilig-boven) +
 .feestlaag .ster { position: absolute; font: 700 20px var(--pixelfont); color: var(--goud); text-shadow: 2px 2px 0 var(--nacht); animation: spat-app 1s steps(6) forwards; }
 .feestlaag .ster:nth-child(3n) { color: var(--koraal); }
 @keyframes spat-app { to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+
+/* iOS: lang drukken op een knop of icoon selecteert geen tekst en toont geen "Bewaar afbeelding"-menu. */
+body.app :is(button, .tabbalk, .chip, .label, img) { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+body.app img { -webkit-user-drag: none; }
