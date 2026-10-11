@@ -54,6 +54,8 @@
       box.append(el('button.knop.mini', { type: 'button', onclick: () => { box.hidden = true; opties.ongedaan(); } }, 'Ongedaan maken'));
     }
     box.className = 'melding' + (opties.soort ? ' ' + opties.soort : '');
+    // Tik op de melding (niet op de knop) = weg; met een sheet open staat hij bovenin over de kop van de sheet.
+    box.onclick = e => { if (!e.target.closest('button')) { box.hidden = true; clearTimeout(meldTimer); } };
     box.hidden = false;
     clearTimeout(meldTimer);
     meldTimer = setTimeout(() => { box.hidden = true; }, opties.duur || (opties.ongedaan ? 10000 : 3500));

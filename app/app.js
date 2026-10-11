@@ -101,6 +101,8 @@
   document.addEventListener('DOMContentLoaded', () => {
     // Paginazoom van de browser zelf uit (alleen het huis zoomt), ook in Safari.
     document.addEventListener('gesturestart', e => e.preventDefault());
+    // Vraag de browser de opslag niet op te ruimen bij ruimtegebrek (best effort; iOS mag het negeren).
+    try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {}); } catch (e) { /* */ }
     wortel.PQHuis.laad().catch(e => { if (wortel.PQ_TEST) wortel.PQ_TEST.fouten.push('laden: ' + e); }).then(() => {
       if (S.ik()) start(); else wieBenJij(start);
     });

@@ -100,7 +100,10 @@
   }
   function terugblik() {
     const st = S.staat(), nu = Date.now(), wk = R.weken(st, nu), nuW = R.weekVan(nu);
-    const w = tbWeek || nuW, rec = wk.lijst.find(x => x.week === w) || wk.nu, tb = st.terugblik[w] || {}, mij = S.ik(), ander = S.ander();
+    // Zondagavond begonnen en maandag verder? Dan opent de terugblik op vorige week, tot die onthuld is.
+    const vorige = st.terugblik[R.weekPlus(nuW, -1)], dezeTb = st.terugblik[nuW];
+    const standaard = vorige && (vorige.hidde || vorige.tessie) && !vorige.onthuld && !(dezeTb && (dezeTb.hidde || dezeTb.tessie)) ? R.weekPlus(nuW, -1) : nuW;
+    const w = tbWeek || standaard, rec = wk.lijst.find(x => x.week === w) || wk.nu, tb = st.terugblik[w] || {}, mij = S.ik(), ander = S.ander();
     const dank = st.bedankjes.filter(b => R.weekVan(b.op) === w);
     const status = [];
     if (tb.onthuld) {
@@ -157,16 +160,29 @@
       } }, `Verwijder ${vb} voorbeeldtaken`)) : null);
   }
   // ---------- over, sync, debug en reset ----------
+  // In de iPhone-app (WKWebView) werkt <a download> met een blob niet: dan de tekst tonen om te kopiëren.
+  function exporteer() {
+    const json = S.exporteer(), C = wortel.Capacitor;
+    if (!(C && C.isNativePlatform && C.isNativePlatform())) {
+      const a = el('a', { href: URL.createObjectURL(new Blob([json], { type: 'application/json' })), download: 'pixelquest-' + R.dagSleutel(Date.now()) + '.json' });
+      document.body.append(a); a.click(); a.remove();
+      return;
+    }
+    const vak = el('textarea.invoer', { rows: 8, readonly: true, 'aria-label': 'Export' });
+    vak.value = json;
+    const s = U.sheet({ titel: 'Exporteer', inhoud: [el('p.noot', { tekst: 'Kopieer dit en bewaar het in bijvoorbeeld Notities of een mail aan jezelf.' }), vak],
+      knoppen: [el('button.knop.goud', { type: 'button', onclick: async () => {
+        try { await navigator.clipboard.writeText(json); U.meld('Gekopieerd.'); s.sluit(); }
+        catch (e) { vak.focus(); vak.select(); U.fout('Kopiëren lukte niet; houd de tekst ingedrukt om te kopiëren.'); }
+      } }, 'Kopieer')] });
+  }
   function over() {
     const log = S.log();
     return kaart('over', 'Over en sync',
       el('p.sync', null, el('b', { tekst: 'Nog niet gesynchroniseerd met ' + U.naam(S.ander()) + '; dat komt met de server.' })),
       el('p.noot', { tekst: `Alles staat op dit apparaat: ${log.length} ${log.length === 1 ? 'opdracht' : 'opdrachten'} in het logboek. Elke wijziging is al een opdracht met een eigen id, zodat de server ze later precies één keer kan verwerken.` }),
       S.opslagOk() ? null : el('p.noot', { stijl: { color: 'var(--koraal)', opacity: 1 } }, 'Opslaan lukt niet in deze browser. Wat je doet, gaat bij herladen verloren.'),
-      el('div.knoprij', null, el('button.knop.mini', { type: 'button', onclick: () => {
-        const a = el('a', { href: URL.createObjectURL(new Blob([S.exporteer()], { type: 'application/json' })), download: 'pixelquest-' + R.dagSleutel(Date.now()) + '.json' });
-        document.body.append(a); a.click(); a.remove();
-      } }, 'Exporteer (JSON)')),
+      el('div.knoprij', null, el('button.knop.mini', { type: 'button', onclick: exporteer }, 'Exporteer (JSON)')),
       el('details.debug', null, el('summary', { tekst: 'Voor de bouwer (debug)' }),
         el('div.knoprij', null, el('a.knop.mini', { href: 'assets.html' }, 'Assetcontrole'), el('a.knop.mini', { href: 'huis.html?test' }, 'Huis los'),
           el('a.knop.mini', { href: 'kledingkast.html?test' }, 'Kledingkast los'), el('a.knop.mini', { href: 'huis-filmstrip.html?test' }, 'Filmstrip')),
