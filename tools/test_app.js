@@ -141,6 +141,44 @@ function check(naam, waar, extra) {
   const zbewaard = await R(() => window.PQStore.apparaat().huisZoom);
   check('zoom wordt bewaard', zbewaard && zbewaard.eff > 0, zbewaard);
 
+  console.log('6b. Bewerken: meubel slepen, lege plek pant');
+  await tikTekst('#view-huis .knop', 'Bewerken');
+  await wacht(600);
+  await R(() => window.PQHuis.actief().zoom.naar(330, 160, 2));
+  await wacht(200);
+  const kandidaten = await R(() => {
+    const inr = window.PQStore.staat().huis.inrichting, H = window.PQ_HUIS, vw = innerWidth, vh = innerHeight - 80;
+    return [...document.querySelectorAll('#view-huis .meubel.sleepbaar')].map(e => ({ id: e.dataset.id, r: e.getBoundingClientRect() }))
+      .filter(x => { const i = inr.find(y => y.id === x.id); return i && H.meubels[i.soort].op === 'vloer' && x.r.left > 0 && x.r.right < vw - 60 && x.r.top > 240 && x.r.bottom < vh; })
+      .map(x => ({ id: x.id, x: x.r.left + x.r.width / 2, y: x.r.top + x.r.height / 2 }));
+  });
+  check('een sleepbaar meubel in beeld', kandidaten.length > 0, kandidaten.length);
+  let verschoven = false, panVast = true;
+  for (const doel of kandidaten) {
+    for (const dx of [-80, 80]) {
+      const voorM = (await st()).huis.inrichting.find(i => i.id === doel.id), voorZ = await zs();
+      await touch('touchStart', [{ x: doel.x, y: doel.y, id: 0 }]);
+      for (let i = 1; i <= 8; i++) { await touch('touchMove', [{ x: doel.x + dx * i / 8, y: doel.y, id: 0 }]); await wacht(16); }
+      await touch('touchEnd', []);
+      await wacht(500);
+      const naM = (await st()).huis.inrichting.find(i => i.id === doel.id), naZ = await zs();
+      if (Math.abs(naZ.tx - voorZ.tx) >= 1) panVast = false;
+      if (naM && (naM.x !== voorM.x || naM.kamer !== voorM.kamer)) { verschoven = true; break; }
+    }
+    if (verschoven) break;
+  }
+  check('meubel verschoven (opdracht huis.inrichting)', verschoven);
+  check('slepen van een meubel pant niet', panVast);
+  const lv = await zs();
+  await touch('touchStart', [{ x: 200, y: 300, id: 0 }]);
+  for (let i = 1; i <= 8; i++) { await touch('touchMove', [{ x: 200 + i * 12, y: 300, id: 0 }]); await wacht(16); }
+  await touch('touchEnd', []);
+  await wacht(1200);
+  check('bewerkmodus: een lege plek pant wel', Math.abs((await zs()).tx - lv.tx) > 20);
+  await foto('07b-huis-bewerken');
+  await tikTekst('#view-huis .knop', 'Klaar');
+  await wacht(400);
+
   console.log('7. Verbouwen met akkoord');
   await tab('meer');
   await R(() => { document.querySelector('details.debug').open = true; });

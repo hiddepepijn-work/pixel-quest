@@ -1,10 +1,14 @@
 # Hidde & Tessie – Pixel Quest-assets
 
-Taken-app voor ons tweeën. Deze map bevat nu stap 1: de statische assetset en een preview.
+Taken-app voor ons tweeën: Pixel Quest.
 
-## Openen
+## De app
 
-Dubbelklik `app/index.html`. Er is geen server nodig.
+Dubbelklik `app/index.html`: dat is de app, één pagina met onderin **Vandaag · Quests · Huis · Kast · Meer**. Er is geen server nodig; alles blijft (nog) op het apparaat. Bouwen voor de VPS en de iPhone: `bash tools/bouw_web.sh` (naar `dist/`). Schermen, store, zoom en het testscript: [docs/app-ui.md](docs/app-ui.md).
+
+## Assetcontrole
+
+De oude assetcontrole staat in `app/assets.html` (in de app onder Meer → debug). Er is geen server nodig.
 
 - **Controle**: elke asset staat naast de ongewijzigde uitsnede uit het blad, op dezelfde schaal. Je kunt wisselen tussen bron en native, de achtergrond kiezen en het canvas met het anker tonen.
 - **In de app**: een voorbeeldscherm met quests, de twee characters, een huisdier en de collectie.
@@ -61,7 +65,7 @@ In `GATEN` (in `tools/uitsnijden.py`) staan de ingesloten achtergrondvlakken die
 
 ## Ons huis
 
-`app/huis.html` toont jullie huis als poppenhuis-doorsnede, met bewoners, pets, taaksignalen en een bewerkmodus. Onder *Verbouwen* staan de 10 verbouwingen van jullie ene huis, van starthuisje tot torentje (kopen kan pas in fase 3). Data staat in `assets/huis.js`, uitleg in `docs/huis.md`. De meubels zijn placeholders; de figuren en items zijn exact uitgesneden. Met `?test` achter een paginanaam zie je rechtsboven het aantal JS-fouten.
+In de app staat het huis onder *Huis* (los: `app/huis.html`). Het toont jullie huis als poppenhuis-doorsnede, met bewoners, pets, taaksignalen en een bewerkmodus. Onder *Verbouwen* staan de 10 verbouwingen van jullie ene huis, van starthuisje tot torentje (kopen kan pas in fase 3). Data staat in `assets/huis.js`, uitleg in `docs/huis.md`. De meubels zijn placeholders; de figuren en items zijn exact uitgesneden. Met `?test` achter een paginanaam zie je rechtsboven het aantal JS-fouten.
 
 ## Nog niet gedaan
 
