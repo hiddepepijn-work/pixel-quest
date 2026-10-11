@@ -199,11 +199,12 @@ details.meer-opties > summary { cursor: pointer; min-height: 44px; display: flex
 /* ---------- sheet ---------- */
 .sheet-achter {
   position: fixed; inset: 0; z-index: 50; background: rgba(11, 18, 56, 0); display: grid; align-items: end; justify-items: center;
-  transition: background .2s;
+  grid-template-rows: minmax(0, 1fr); transition: background .2s;
 }
 .sheet-achter.open { background: rgba(11, 18, 56, .45); }
+/* De rij is 1fr van het vaste scherm, dus max-height: 100% werkt en de voet (opslaan) blijft altijd in beeld. */
 .sheet {
-  width: min(100%, 560px); max-height: calc(100% - var(--veilig-boven) - 24px); display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto;
+  width: min(100%, 560px); max-height: calc(100% - var(--veilig-boven) - 24px); min-height: 0; display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto;
   background: var(--creme); border: 3px solid var(--nacht); border-bottom: 0; transform: translateY(100%); transition: transform .22s cubic-bezier(.2, .8, .2, 1);
   padding-bottom: var(--veilig-onder);
 }
