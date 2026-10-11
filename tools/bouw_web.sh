@@ -11,15 +11,15 @@ mkdir -p dist/assets
 cp app/*.js app/*.css app/*.html dist/
 rm -f dist/*-test.js
 cp assets/*.js dist/assets/
-for d in bron native native-4x referentie items outfits; do cp -r "assets/$d" dist/assets/; done
+for d in bron native native-4x referentie items outfits fonts; do cp -r "assets/$d" dist/assets/; done
 
 cd dist
 # Paden: alles staat naast elkaar, assets/ eronder.
-sed -i 's#\.\./assets/#assets/#g' *.html *.js
+sed -i 's#\.\./assets/#assets/#g' *.html *.js *.css
 
 # Controle: geen kapotte scripts, geen paden naar buiten de map, elk script en stijlblad bestaat.
 for f in *.js; do node --check "$f" >/dev/null || { echo "FOUT: syntax in $f" >&2; exit 1; }; done
-if grep -l '\.\./' *.html *.js; then echo "FOUT: nog ../-paden" >&2; exit 1; fi
+if grep -l '\.\./' *.html *.js *.css; then echo "FOUT: nog ../-paden" >&2; exit 1; fi
 [ -f index.html ] && grep -q 'class="tabbalk"' index.html || { echo "FOUT: index.html is niet de app" >&2; exit 1; }
 for f in *.html; do
   for s in $(grep -o '\(src\|href\)="[^"#?]*\.\(js\|css\|png\)"' "$f" | sed 's/^[a-z]*="//;s/"$//' | grep -v '^https\?:'); do

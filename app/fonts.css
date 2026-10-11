@@ -1,0 +1,4 @@
+/* Lettertypen lokaal (SIL Open Font License, zie assets/fonts/OFL-*.txt): de app werkt zo ook zonder internet en
+   vraagt bij het opstarten niets aan Google. Beide zijn variabele fonts; één bestand dekt alle gewichten. */
+@font-face { font-family: 'Pixelify Sans'; font-style: normal; font-weight: 400 700; font-display: swap; src: url(../assets/fonts/pixelify-sans-latin.woff2) format('woff2'); }
+@font-face { font-family: 'Nunito'; font-style: normal; font-weight: 200 1000; font-display: swap; src: url(../assets/fonts/nunito-latin.woff2) format('woff2'); }
