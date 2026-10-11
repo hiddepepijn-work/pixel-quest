@@ -1,0 +1,26 @@
+{
+  "id": "kroontje",
+  "naam": "Kroontje",
+  "anker": "kruin",
+  "laag": "voor",
+  "ankerpunt": [
+    4,
+    5
+  ],
+  "kijkrichting": "rechts",
+  "herkomst": "nieuw getekend",
+  "kleuren": {
+    "o": "koffie",
+    "g": "goud",
+    "l": "#fed78a",
+    "r": "koraal"
+  },
+  "pixels": [
+    "o...o...o",
+    "og.oro.go",
+    "oggglgggo",
+    "oglgggglo",
+    "ogggggggo",
+    ".ooooooo."
+  ]
+}

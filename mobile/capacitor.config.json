@@ -1,0 +1,9 @@
+{
+  "appId": "nl.hiddepepijn.pixelquest",
+  "appName": "Pixel Quest",
+  "webDir": "www",
+  "ios": {
+    "contentInset": "automatic",
+    "backgroundColor": "#fcf8ec"
+  }
+}

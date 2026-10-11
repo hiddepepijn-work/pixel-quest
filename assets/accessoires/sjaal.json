@@ -1,0 +1,30 @@
+{
+  "id": "sjaal",
+  "naam": "Sjaal",
+  "anker": "nek",
+  "laag": "voor",
+  "ankerpunt": [
+    7,
+    1
+  ],
+  "kijkrichting": "rechts",
+  "herkomst": "nieuw getekend",
+  "kleuren": {
+    "o": "koffie",
+    "r": "bordeaux",
+    "k": "koraal",
+    "l": "abrikoos"
+  },
+  "pixels": [
+    ".ooooooooooooo.",
+    "orrkkrrkkrrkkro",
+    "orkkrrkkrrkkrro",
+    ".orrkkrrkkrrko.",
+    "..oooorkkroooo.",
+    ".....orkkro....",
+    ".....okkrro....",
+    ".....orrkko....",
+    ".....ollllo....",
+    ".....l.l.l....."
+  ]
+}

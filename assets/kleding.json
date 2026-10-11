@@ -1,0 +1,1174 @@
+{
+  "versie": 1,
+  "uitleg": "Kledingzones, kleurrampen, catalogus en accessoires. Gegenereerd door tools/kleding.py; niet met de hand bewerken.",
+  "zones": [
+    "leeg",
+    "lijn",
+    "haar",
+    "huid",
+    "shirt",
+    "broek",
+    "schoenen",
+    "accessoire",
+    "detail"
+  ],
+  "kleurbaar": [
+    "shirt",
+    "broek",
+    "schoenen",
+    "accessoire"
+  ],
+  "vergrendeld": [
+    "haar",
+    "huid"
+  ],
+  "zone_codering": "zonekaart-PNG: grijswaarde = zone-index x 30",
+  "palet": {
+    "nacht": "#2b364f",
+    "creme": "#fcf8ec",
+    "papier": "#fef2dc",
+    "eik": "#915b43",
+    "hazelnoot": "#a16242",
+    "koffie": "#543228",
+    "bordeaux": "#8b2e38",
+    "koraal": "#f16446",
+    "abrikoos": "#fea463",
+    "goud": "#febb42",
+    "lavendel": "#b27fc8",
+    "petrol": "#3f808c",
+    "blad": "#557f5a",
+    "mos": "#6d8348",
+    "titel": "#0b1238"
+  },
+  "rampen": {
+    "nacht": {
+      "basis": "#2b364f",
+      "stops": [
+        "#171d2f",
+        "#222a40",
+        "#2b364f",
+        "#595f6e",
+        "#8a8b8e"
+      ]
+    },
+    "creme": {
+      "basis": "#fcf8ec",
+      "stops": [
+        "#947d72",
+        "#cfb6a5",
+        "#eaddcf",
+        "#fcf8ec",
+        "#fefcf7"
+      ]
+    },
+    "papier": {
+      "basis": "#fef2dc",
+      "stops": [
+        "#957b6c",
+        "#d0b39c",
+        "#ebd8c2",
+        "#fef2dc",
+        "#fffaf1"
+      ]
+    },
+    "eik": {
+      "basis": "#915b43",
+      "stops": [
+        "#3a2c3c",
+        "#6a4d48",
+        "#915b43",
+        "#ba947d",
+        "#deccbd"
+      ]
+    },
+    "hazelnoot": {
+      "basis": "#a16242",
+      "stops": [
+        "#3f2e3c",
+        "#745147",
+        "#a16242",
+        "#c4997d",
+        "#e3cebc"
+      ]
+    },
+    "koffie": {
+      "basis": "#543228",
+      "stops": [
+        "#291b1d",
+        "#402823",
+        "#543228",
+        "#795c50",
+        "#a08879"
+      ]
+    },
+    "bordeaux": {
+      "basis": "#8b2e38",
+      "stops": [
+        "#381c38",
+        "#673141",
+        "#8b2e38",
+        "#b77876",
+        "#dcbfba"
+      ]
+    },
+    "koraal": {
+      "basis": "#f16446",
+      "stops": [
+        "#5c2f3d",
+        "#a65349",
+        "#f16446",
+        "#f69a7f",
+        "#f9cfbe"
+      ]
+    },
+    "abrikoos": {
+      "basis": "#fea463",
+      "stops": [
+        "#604547",
+        "#ae7a5b",
+        "#fea463",
+        "#fec291",
+        "#fde0c6"
+      ]
+    },
+    "goud": {
+      "basis": "#febb42",
+      "stops": [
+        "#604d3c",
+        "#ae8847",
+        "#febb42",
+        "#fed07d",
+        "#fde7bc"
+      ]
+    },
+    "lavendel": {
+      "basis": "#b27fc8",
+      "stops": [
+        "#45386a",
+        "#7f639a",
+        "#b27fc8",
+        "#cfabd0",
+        "#e7d6e2"
+      ]
+    },
+    "petrol": {
+      "basis": "#3f808c",
+      "stops": [
+        "#1d3855",
+        "#376475",
+        "#3f808c",
+        "#88abaa",
+        "#c7d6d1"
+      ]
+    },
+    "blad": {
+      "basis": "#557f5a",
+      "stops": [
+        "#253844",
+        "#456356",
+        "#557f5a",
+        "#95ab8b",
+        "#cdd6c3"
+      ]
+    },
+    "mos": {
+      "basis": "#6d8348",
+      "stops": [
+        "#2d3a3e",
+        "#54664b",
+        "#6d8348",
+        "#a4ad80",
+        "#d4d7be"
+      ]
+    },
+    "titel": {
+      "basis": "#0b1238",
+      "stops": [
+        "#080c24",
+        "#0a102f",
+        "#0b1238",
+        "#40435c",
+        "#787782"
+      ]
+    }
+  },
+  "recolor": {
+    "doel_spreiding": 60.0,
+    "k_min": 0.5,
+    "k_max": 2.2
+  },
+  "characters": {
+    "hidde": {
+      "naam": "Hidde",
+      "kijkrichting": "rechts",
+      "ankers": {
+        "kruin": [
+          33,
+          27
+        ],
+        "voorhoofd": [
+          34,
+          35
+        ],
+        "ogen": [
+          35,
+          40
+        ],
+        "nek": [
+          31,
+          50
+        ],
+        "hand_links": [
+          18,
+          68
+        ],
+        "hand_rechts": [
+          41,
+          70
+        ]
+      },
+      "native_naar_bron": {
+        "sx": 4.5431,
+        "ox": 0.98,
+        "sy": 4.5394,
+        "oy": 2.59
+      },
+      "bron": {
+        "canvas": [
+          291,
+          508
+        ],
+        "sprite": "bron/hidde.png",
+        "zones": "zones/bron/hidde.png",
+        "stats": {
+          "shirt": {
+            "mediaan": 50.23,
+            "spreiding": 19.25
+          },
+          "broek": {
+            "mediaan": 221.82,
+            "spreiding": 127.96
+          },
+          "schoenen": {
+            "mediaan": 204.9,
+            "spreiding": 178.05
+          }
+        },
+        "pixels": {
+          "lijn": 4173,
+          "haar": 7359,
+          "huid": 5008,
+          "shirt": 8526,
+          "broek": 13591,
+          "schoenen": 2548,
+          "accessoire": 0,
+          "detail": 220
+        }
+      },
+      "native": {
+        "canvas": [
+          64,
+          112
+        ],
+        "sprite": "native/hidde.png",
+        "zones": "zones/native/hidde.png",
+        "stats": {
+          "shirt": {
+            "mediaan": 50.02,
+            "spreiding": 15.83
+          },
+          "broek": {
+            "mediaan": 220.41,
+            "spreiding": 136.29
+          },
+          "schoenen": {
+            "mediaan": 207.03,
+            "spreiding": 163.73
+          }
+        },
+        "pixels": {
+          "lijn": 224,
+          "haar": 354,
+          "huid": 248,
+          "shirt": 412,
+          "broek": 662,
+          "schoenen": 116,
+          "accessoire": 0,
+          "detail": 10
+        }
+      }
+    },
+    "tessie": {
+      "naam": "Tessie",
+      "kijkrichting": "links",
+      "ankers": {
+        "kruin": [
+          28,
+          33
+        ],
+        "voorhoofd": [
+          27,
+          39
+        ],
+        "ogen": [
+          26,
+          47
+        ],
+        "nek": [
+          26,
+          57
+        ],
+        "hand_links": [
+          17,
+          70
+        ],
+        "hand_rechts": [
+          37,
+          70
+        ]
+      },
+      "native_naar_bron": {
+        "sx": 4.5373,
+        "ox": 0.12,
+        "sy": 4.5389,
+        "oy": 2.77
+      },
+      "bron": {
+        "canvas": [
+          291,
+          508
+        ],
+        "sprite": "bron/tessie.png",
+        "zones": "zones/bron/tessie.png",
+        "stats": {
+          "shirt": {
+            "mediaan": 64.34,
+            "spreiding": 30.45
+          },
+          "broek": {
+            "mediaan": 67.46,
+            "spreiding": 34.18
+          },
+          "schoenen": {
+            "mediaan": 211.81,
+            "spreiding": 214.47
+          },
+          "accessoire": {
+            "mediaan": 199.79,
+            "spreiding": 69.95
+          }
+        },
+        "pixels": {
+          "lijn": 3838,
+          "haar": 13261,
+          "huid": 5069,
+          "shirt": 3884,
+          "broek": 14008,
+          "schoenen": 1453,
+          "accessoire": 140,
+          "detail": 107
+        }
+      },
+      "native": {
+        "canvas": [
+          64,
+          112
+        ],
+        "sprite": "native/tessie.png",
+        "zones": "zones/native/tessie.png",
+        "stats": {
+          "shirt": {
+            "mediaan": 63.46,
+            "spreiding": 34.79
+          },
+          "broek": {
+            "mediaan": 67.31,
+            "spreiding": 34.98
+          },
+          "schoenen": {
+            "mediaan": 213.97,
+            "spreiding": 209.47
+          },
+          "accessoire": {
+            "mediaan": 195.24,
+            "spreiding": 41.8
+          }
+        },
+        "pixels": {
+          "lijn": 211,
+          "haar": 652,
+          "huid": 249,
+          "shirt": 188,
+          "broek": 671,
+          "schoenen": 63,
+          "accessoire": 6,
+          "detail": 3
+        }
+      }
+    }
+  },
+  "catalogus": [
+    {
+      "id": "bosrijk",
+      "naam": "Bosrijk",
+      "stel": true,
+      "omschrijving": "Bosgroen en mos boven, warme bruintinten eronder.",
+      "hidde": {
+        "shirt": "blad",
+        "broek": "hazelnoot"
+      },
+      "tessie": {
+        "shirt": "mos",
+        "broek": "koffie"
+      }
+    },
+    {
+      "id": "zonsondergang",
+      "naam": "Zonsondergang",
+      "stel": true,
+      "omschrijving": "Koraal en abrikoos boven, avondblauw en bordeaux eronder.",
+      "hidde": {
+        "shirt": "koraal",
+        "broek": "nacht"
+      },
+      "tessie": {
+        "shirt": "abrikoos",
+        "broek": "origineel"
+      }
+    },
+    {
+      "id": "nachtwacht",
+      "naam": "Nachtwacht",
+      "stel": true,
+      "omschrijving": "Alles in nachtblauw, met zilver in plaats van goud.",
+      "hidde": {
+        "shirt": "titel",
+        "broek": "nacht",
+        "schoenen": "nacht"
+      },
+      "tessie": {
+        "shirt": "nacht",
+        "broek": "titel",
+        "schoenen": "nacht",
+        "accessoire": "creme"
+      }
+    },
+    {
+      "id": "zeebries",
+      "naam": "Zeebries",
+      "stel": true,
+      "omschrijving": "Petrol en crème, bij elkaar in spiegelbeeld.",
+      "hidde": {
+        "shirt": "petrol",
+        "broek": "creme"
+      },
+      "tessie": {
+        "shirt": "creme",
+        "broek": "petrol"
+      }
+    },
+    {
+      "id": "lavendelveld",
+      "naam": "Lavendelveld",
+      "stel": true,
+      "omschrijving": "Allebei lavendel boven.",
+      "hidde": {
+        "shirt": "lavendel",
+        "broek": "papier"
+      },
+      "tessie": {
+        "shirt": "lavendel",
+        "broek": "nacht"
+      }
+    },
+    {
+      "id": "goudhaantje",
+      "naam": "Goudhaantje",
+      "stel": true,
+      "omschrijving": "Matching: goud shirt en koffiebruine broek voor allebei.",
+      "hidde": {
+        "shirt": "goud",
+        "broek": "koffie"
+      },
+      "tessie": {
+        "shirt": "goud",
+        "broek": "koffie"
+      }
+    },
+    {
+      "id": "rollenruil",
+      "naam": "Rollenruil",
+      "stel": true,
+      "omschrijving": "Ze ruilen kleuren: hij in bruin en bordeaux, zij in donker en crème.",
+      "hidde": {
+        "shirt": "koffie",
+        "broek": "bordeaux"
+      },
+      "tessie": {
+        "shirt": "titel",
+        "broek": "creme"
+      }
+    },
+    {
+      "id": "hoodiedag",
+      "naam": "Hoodiedag",
+      "stel": true,
+      "omschrijving": "De kleuren van de hoodie-outfit van het blad: crème boven.",
+      "hidde": {
+        "shirt": "creme",
+        "broek": "nacht"
+      },
+      "tessie": {
+        "shirt": "creme",
+        "broek": "origineel"
+      }
+    },
+    {
+      "id": "koffietijd",
+      "naam": "Koffietijd",
+      "stel": true,
+      "omschrijving": "Hazelnoot en papier, rustig en warm.",
+      "hidde": {
+        "shirt": "hazelnoot",
+        "broek": "papier"
+      },
+      "tessie": {
+        "shirt": "papier",
+        "broek": "eik"
+      }
+    }
+  ],
+  "figuurvarianten": [
+    {
+      "id": "hidde_hoodie",
+      "naam": "Hidde in hoodie",
+      "character": "hidde",
+      "herkomst": "uitgesneden",
+      "beperking": "Gesplitst van Tessie (watershed langs de outline). Tessies haar ligt over zijn rechtermouw: daar ontbreekt de outline en een strookje mouw. Niet bijgetekend. Eigen tekening op het blad: gezicht en haar wijken iets af van de basisfiguur; fijner raster.",
+      "bestanden": {
+        "bron": "outfits/bron/hidde_hoodie.png",
+        "native": "outfits/native/hidde_hoodie.png",
+        "referentie": "outfits/referentie/hidde_hoodie.png"
+      },
+      "afmetingen": {
+        "bron": [
+          257,
+          450
+        ],
+        "native": [
+          64,
+          112
+        ]
+      },
+      "anker": {
+        "bron": [
+          128,
+          434
+        ],
+        "native": [
+          32,
+          108
+        ]
+      },
+      "figuur": {
+        "bron": [
+          135,
+          364
+        ],
+        "native": [
+          34,
+          92
+        ]
+      },
+      "figuur_basis_native": [
+        39,
+        85
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1007,
+          169,
+          135,
+          364
+        ]
+      },
+      "bronpx_per_artpixel": 4.02
+    },
+    {
+      "id": "tessie_hoodie",
+      "naam": "Tessie in hoodie",
+      "character": "tessie",
+      "herkomst": "uitgesneden",
+      "beperking": "Gesplitst van Hidde. Waar de mouwen elkaar raken mist een stukje outline links onderaan haar mouw. Niet bijgetekend. Eigen tekening op het blad: gezicht en haar wijken iets af van de basisfiguur; fijner raster.",
+      "bestanden": {
+        "bron": "outfits/bron/tessie_hoodie.png",
+        "native": "outfits/native/tessie_hoodie.png",
+        "referentie": "outfits/referentie/tessie_hoodie.png"
+      },
+      "afmetingen": {
+        "bron": [
+          257,
+          450
+        ],
+        "native": [
+          64,
+          112
+        ]
+      },
+      "anker": {
+        "bron": [
+          128,
+          434
+        ],
+        "native": [
+          32,
+          108
+        ]
+      },
+      "figuur": {
+        "bron": [
+          132,
+          326
+        ],
+        "native": [
+          33,
+          82
+        ]
+      },
+      "figuur_basis_native": [
+        38,
+        79
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1116,
+          206,
+          132,
+          326
+        ]
+      },
+      "bronpx_per_artpixel": 4.02
+    },
+    {
+      "id": "hidde_avontuur",
+      "naam": "Hidde als avonturier",
+      "character": "hidde",
+      "herkomst": "uitgesneden",
+      "beperking": "Los van Tessie, schoon uitgesneden. Eigen tekening op het blad: gezicht en haar wijken iets af van de basisfiguur; fijner raster.",
+      "bestanden": {
+        "bron": "outfits/bron/hidde_avontuur.png",
+        "native": "outfits/native/hidde_avontuur.png",
+        "referentie": "outfits/referentie/hidde_avontuur.png"
+      },
+      "afmetingen": {
+        "bron": [
+          257,
+          450
+        ],
+        "native": [
+          64,
+          112
+        ]
+      },
+      "anker": {
+        "bron": [
+          128,
+          434
+        ],
+        "native": [
+          32,
+          108
+        ]
+      },
+      "figuur": {
+        "bron": [
+          147,
+          366
+        ],
+        "native": [
+          37,
+          92
+        ]
+      },
+      "figuur_basis_native": [
+        39,
+        85
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1259,
+          167,
+          147,
+          366
+        ]
+      },
+      "bronpx_per_artpixel": 4.02
+    },
+    {
+      "id": "tessie_avontuur",
+      "naam": "Tessie als avonturier",
+      "character": "tessie",
+      "herkomst": "uitgesneden",
+      "beperking": "Los van Hidde, schoon uitgesneden. Eigen tekening op het blad: gezicht en haar wijken iets af van de basisfiguur; fijner raster.",
+      "bestanden": {
+        "bron": "outfits/bron/tessie_avontuur.png",
+        "native": "outfits/native/tessie_avontuur.png",
+        "referentie": "outfits/referentie/tessie_avontuur.png"
+      },
+      "afmetingen": {
+        "bron": [
+          257,
+          450
+        ],
+        "native": [
+          64,
+          112
+        ]
+      },
+      "anker": {
+        "bron": [
+          128,
+          434
+        ],
+        "native": [
+          32,
+          108
+        ]
+      },
+      "figuur": {
+        "bron": [
+          134,
+          326
+        ],
+        "native": [
+          34,
+          82
+        ]
+      },
+      "figuur_basis_native": [
+        38,
+        79
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1385,
+          207,
+          134,
+          326
+        ]
+      },
+      "bronpx_per_artpixel": 4.02
+    }
+  ],
+  "items": [
+    {
+      "id": "gieter",
+      "naam": "Gieter",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/gieter.png",
+        "native": "items/native/gieter.png"
+      },
+      "figuur": {
+        "bron": [
+          124,
+          83
+        ],
+        "native": [
+          31,
+          21
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1022,
+          578,
+          124,
+          83
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "bezem",
+      "naam": "Bezem",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/bezem.png",
+        "native": "items/native/bezem.png"
+      },
+      "figuur": {
+        "bron": [
+          82,
+          102
+        ],
+        "native": [
+          21,
+          26
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1161,
+          566,
+          82,
+          102
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "klembord",
+      "naam": "Klembord",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/klembord.png",
+        "native": "items/native/klembord.png"
+      },
+      "figuur": {
+        "bron": [
+          67,
+          85
+        ],
+        "native": [
+          17,
+          21
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1290,
+          570,
+          67,
+          85
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "ster",
+      "naam": "Ster",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/ster.png",
+        "native": "items/native/ster.png"
+      },
+      "figuur": {
+        "bron": [
+          83,
+          83
+        ],
+        "native": [
+          21,
+          21
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1409,
+          574,
+          83,
+          83
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "plant",
+      "naam": "Plant",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/plant.png",
+        "native": "items/native/plant.png"
+      },
+      "figuur": {
+        "bron": [
+          89,
+          98
+        ],
+        "native": [
+          22,
+          25
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1035,
+          685,
+          89,
+          98
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "hart",
+      "naam": "Hart",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/hart.png",
+        "native": "items/native/hart.png"
+      },
+      "figuur": {
+        "bron": [
+          72,
+          67
+        ],
+        "native": [
+          19,
+          17
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1162,
+          705,
+          72,
+          67
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "rugzak",
+      "naam": "Rugzak",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/rugzak.png",
+        "native": "items/native/rugzak.png"
+      },
+      "figuur": {
+        "bron": [
+          100,
+          102
+        ],
+        "native": [
+          26,
+          26
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1269,
+          683,
+          100,
+          102
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    },
+    {
+      "id": "munt",
+      "naam": "Munt",
+      "herkomst": "uitgesneden",
+      "bestanden": {
+        "bron": "items/bron/munt.png",
+        "native": "items/native/munt.png"
+      },
+      "figuur": {
+        "bron": [
+          79,
+          83
+        ],
+        "native": [
+          20,
+          21
+        ]
+      },
+      "native_canvas": [
+        36,
+        36
+      ],
+      "anker_native": [
+        18,
+        34
+      ],
+      "referentie": {
+        "blad": "pixel-quest-uitwerking.png",
+        "vak": [
+          1412,
+          694,
+          79,
+          83
+        ]
+      },
+      "bronpx_per_artpixel": 4.1
+    }
+  ],
+  "accessoires": [
+    {
+      "id": "petje",
+      "naam": "Petje",
+      "anker": "kruin",
+      "laag": "voor",
+      "ankerpunt": [
+        7,
+        6
+      ],
+      "kijkrichting": "rechts",
+      "herkomst": "nieuw getekend",
+      "kleuren": {
+        "o": "titel",
+        "a": "petrol",
+        "b": "#2f6670",
+        "c": "#6fa3ac",
+        "w": "creme"
+      },
+      "pixels": [
+        "....oooooo.......",
+        "...oaaccaao......",
+        "..oaaaccaaao.....",
+        "..oaaaaaaaao.....",
+        ".oaaaawaaaaao....",
+        ".obbbbbbbbbbooooo",
+        ".oooooooobbbbbbbo",
+        ".........oooooooo"
+      ]
+    },
+    {
+      "id": "bril",
+      "naam": "Ronde bril",
+      "anker": "ogen",
+      "laag": "voor",
+      "ankerpunt": [
+        5,
+        1
+      ],
+      "kijkrichting": "rechts",
+      "herkomst": "nieuw getekend",
+      "kleuren": {
+        "o": "titel",
+        "g": "#cfe3e6"
+      },
+      "pixels": [
+        ".ooo...ooo.",
+        "o.g.ooo.g.o",
+        "o...o.o...o",
+        ".ooo...ooo."
+      ]
+    },
+    {
+      "id": "kroontje",
+      "naam": "Kroontje",
+      "anker": "kruin",
+      "laag": "voor",
+      "ankerpunt": [
+        4,
+        5
+      ],
+      "kijkrichting": "rechts",
+      "herkomst": "nieuw getekend",
+      "kleuren": {
+        "o": "koffie",
+        "g": "goud",
+        "l": "#fed78a",
+        "r": "koraal"
+      },
+      "pixels": [
+        "o...o...o",
+        "og.oro.go",
+        "oggglgggo",
+        "oglgggglo",
+        "ogggggggo",
+        ".ooooooo."
+      ]
+    },
+    {
+      "id": "sjaal",
+      "naam": "Sjaal",
+      "anker": "nek",
+      "laag": "voor",
+      "ankerpunt": [
+        7,
+        1
+      ],
+      "kijkrichting": "rechts",
+      "herkomst": "nieuw getekend",
+      "kleuren": {
+        "o": "koffie",
+        "r": "bordeaux",
+        "k": "koraal",
+        "l": "abrikoos"
+      },
+      "pixels": [
+        ".ooooooooooooo.",
+        "orrkkrrkkrrkkro",
+        "orkkrrkkrrkkrro",
+        ".orrkkrrkkrrko.",
+        "..oooorkkroooo.",
+        ".....orkkro....",
+        ".....okkrro....",
+        ".....orrkko....",
+        ".....ollllo....",
+        ".....l.l.l....."
+      ]
+    }
+  ]
+}

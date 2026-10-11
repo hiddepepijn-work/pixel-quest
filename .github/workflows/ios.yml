@@ -1,0 +1,156 @@
+# Bouwt Pixel Quest: de webversie (voor de VPS) en de iPhone-app (ongetekende .ipa voor SideStore).
+#
+# iOS-apps kunnen alleen op macOS gecompileerd worden; dit project wordt op Windows ontwikkeld, dus de Mac
+# wordt hier geleend. De .ipa is bewust ongetekend: SideStore op de telefoon ondertekent hem bij installeren
+# met je eigen Apple ID en elke zeven dagen opnieuw. Geen Apple Developer-account, geen certificaten in de repo.
+#
+# Resultaat:
+#   release "web-latest": pixelquest-web.tgz  (de VPS haalt die op, zie tools/vps/installeer.sh)
+#   release "ios-latest": PixelQuest.ipa + source.json  (de SideStore-bron)
+
+name: Pixel Quest
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'app/**'
+      - 'assets/**'
+      - 'mobile/**'
+      - 'resources/**'
+      - 'tools/bouw_web.sh'
+      - '.github/workflows/ios.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: pixelquest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Webversie bouwen
+        run: bash tools/bouw_web.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist
+          retention-days: 7
+      - name: Publiceren naar web-latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tar -C dist -czf pixelquest-web.tgz .
+          gh release view web-latest >/dev/null 2>&1 || \
+            gh release create web-latest --prerelease --title "Pixel Quest web (laatste build)" \
+              --notes "Webversie voor de VPS (tools/vps/installeer.sh)." --target "${{ github.sha }}"
+          gh release upload web-latest pixelquest-web.tgz --clobber
+
+  ipa:
+    needs: web
+    runs-on: macos-15
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: mobile/www
+      - name: Capacitor installeren
+        working-directory: mobile
+        run: npm ci --no-audit --no-fund
+
+      - name: iOS-project maken
+        working-directory: mobile
+        run: |
+          rm -rf ios
+          npx cap add ios
+          npx cap sync ios
+
+      - name: App-icoon
+        run: |
+          set -e
+          ICONSET=mobile/ios/App/App/Assets.xcassets/AppIcon.appiconset
+          # Via JPEG en terug: iOS weigert een icoon met alfakanaal.
+          sips -s format jpeg -z 1024 1024 resources/icon-ios.png --out /tmp/icon.jpg >/dev/null
+          sips -s format png /tmp/icon.jpg --out "$ICONSET/AppIcon-512@2x.png" >/dev/null
+          cat > "$ICONSET/Contents.json" <<'JSON'
+          {
+            "images": [
+              { "filename": "AppIcon-512@2x.png", "idiom": "universal", "platform": "ios", "size": "1024x1024" }
+            ],
+            "info": { "author": "xcode", "version": 1 }
+          }
+          JSON
+
+      - name: Naam en versie
+        run: |
+          PLIST=mobile/ios/App/App/Info.plist
+          /usr/libexec/PlistBuddy -c "Set :CFBundleDisplayName Pixel Quest" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 0.1.${{ github.run_number }}" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleShortVersionString string 0.1.${{ github.run_number }}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "$PLIST" || \
+            /usr/libexec/PlistBuddy -c "Add :CFBundleVersion string ${{ github.run_number }}" "$PLIST"
+          # Licht, crème scherm: donkere statusbalk.
+          /usr/libexec/PlistBuddy -c "Add :UIUserInterfaceStyle string Light" "$PLIST" || true
+
+      - name: Compileren (ongetekend)
+        working-directory: mobile/ios/App
+        run: |
+          if [ -d App.xcworkspace ]; then TARGET="-workspace App.xcworkspace"; else TARGET="-project App.xcodeproj"; fi
+          xcodebuild $TARGET -scheme App -configuration Release \
+            -sdk iphoneos -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build > /tmp/xcodebuild.log 2>&1 || {
+              grep -E "error:" -A3 /tmp/xcodebuild.log | head -80
+              exit 1
+            }
+          tail -20 /tmp/xcodebuild.log
+
+      - name: .ipa maken
+        working-directory: mobile/ios/App
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/App.app Payload/
+          zip -qry ../../PixelQuest.ipa Payload
+          ls -la ../../PixelQuest.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PixelQuest-ipa
+          path: mobile/PixelQuest.ipa
+          retention-days: 30
+
+      - name: Publiceren naar ios-latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view ios-latest >/dev/null 2>&1 || \
+            gh release create ios-latest --prerelease --title "Pixel Quest voor iPhone (laatste build)" \
+              --notes "Ongetekende .ipa. Installeer met SideStore; die ondertekent hem met je eigen Apple ID." \
+              --target "${{ github.sha }}"
+          gh release upload ios-latest mobile/PixelQuest.ipa --clobber
+
+      # SideStore-bron: één keer toevoegen in SideStore (Sources → +), daarna verschijnt elke build als Update.
+      - name: SideStore-bron publiceren
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN: ${{ github.run_number }}
+          MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          node mobile/sidestore-source.mjs mobile/PixelQuest.ipa
+          gh release upload ios-latest source.json --clobber

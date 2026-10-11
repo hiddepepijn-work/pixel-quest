@@ -1,0 +1,22 @@
+{
+  "id": "bril",
+  "naam": "Ronde bril",
+  "anker": "ogen",
+  "laag": "voor",
+  "ankerpunt": [
+    5,
+    1
+  ],
+  "kijkrichting": "rechts",
+  "herkomst": "nieuw getekend",
+  "kleuren": {
+    "o": "titel",
+    "g": "#cfe3e6"
+  },
+  "pixels": [
+    ".ooo...ooo.",
+    "o.g.ooo.g.o",
+    "o...o.o...o",
+    ".ooo...ooo."
+  ]
+}

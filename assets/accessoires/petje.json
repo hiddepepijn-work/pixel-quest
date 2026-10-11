@@ -1,0 +1,29 @@
+{
+  "id": "petje",
+  "naam": "Petje",
+  "anker": "kruin",
+  "laag": "voor",
+  "ankerpunt": [
+    7,
+    6
+  ],
+  "kijkrichting": "rechts",
+  "herkomst": "nieuw getekend",
+  "kleuren": {
+    "o": "titel",
+    "a": "petrol",
+    "b": "#2f6670",
+    "c": "#6fa3ac",
+    "w": "creme"
+  },
+  "pixels": [
+    "....oooooo.......",
+    "...oaaccaao......",
+    "..oaaaccaaao.....",
+    "..oaaaaaaaao.....",
+    ".oaaaawaaaaao....",
+    ".obbbbbbbbbbooooo",
+    ".oooooooobbbbbbbo",
+    ".........oooooooo"
+  ]
+}

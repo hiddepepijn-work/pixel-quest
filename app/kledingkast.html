@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Quest kledingkast</title>
+<script src="testindicator.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pixelquest.css">
+<link rel="stylesheet" href="kledingkast.css">
+<script src="../assets/manifest.js"></script>
+<script src="../assets/kleding.js"></script>
+<script src="../assets/kast.js"></script>
+</head>
+<body>
+<header class="kop">
+  <div class="logo"><span class="hart">♥</span> KLEDINGKAST <span class="hart">♥</span></div>
+  <nav class="tabs">
+    <a class="tablink" href="index.html">Assets</a>
+    <a class="tablink" href="kledingkast.html" aria-current="page">Kledingkast</a>
+    <a class="tablink" href="huis.html">Ons huis</a>
+  </nav>
+</header>
+
+<main class="kast">
+  <!-- Linkerkolom: preview -->
+  <section class="podium kaart" aria-label="Preview">
+    <div class="wissel" role="radiogroup" aria-label="Character" id="charKeuze">
+      <button data-char="hidde" aria-pressed="true">Hidde</button>
+      <button data-char="tessie" aria-pressed="false">Tessie</button>
+    </div>
+    <div class="spiegel" id="spiegel">
+      <canvas id="preview" width="64" height="112" aria-label="Character met look"></canvas>
+    </div>
+    <p class="pasbalk" id="pasBalk" hidden></p>
+    <div class="balk klein">
+      <label>Versie
+        <select id="variant">
+          <option value="bron">Bron (exact)</option>
+          <option value="native">Native raster</option>
+        </select>
+      </label>
+      <label>Achtergrond
+        <select id="achtergrond">
+          <option value="creme">Crème</option>
+          <option value="groen">Groen</option>
+          <option value="donker">Donker</option>
+          <option value="ruit">Ruit</option>
+        </select>
+      </label>
+      <label class="vink"><input type="checkbox" id="toonAnkers"> Ankers</label>
+    </div>
+    <div class="knoppen">
+      <button class="knop" id="naarOrigineel">Startkast</button>
+      <button class="knop" id="exportPreview">PNG van preview</button>
+    </div>
+    <p class="noot" id="outfitNaam">Startkast</p>
+    <ul class="looklijst" id="lookLijst" aria-label="Huidige look"></ul>
+  </section>
+
+  <!-- Rechterkolom: panelen -->
+  <div class="panelen">
+    <section class="kaart" id="kastKaart">
+      <h3>Kast</h3>
+      <div class="wissel slottabs" role="tablist" aria-label="Slot" id="slotTabs"></div>
+      <div class="itemrooster" id="itemRooster"></div>
+      <div class="itemdetail" id="itemDetail"></div>
+      <p class="noot">Tik op een item om het aan te trekken. Wat je nog niet hebt, kun je passen. Kopen komt in fase 3;
+        tot die tijd zet de testknop een kleur in bezit. Herkomst: <span class="label blad">uitgesneden</span> uit de
+        goedgekeurde figuur, <span class="label nieuw">nieuw getekend</span> op het native raster,
+        <span class="label wacht">wacht op art</span> vraagt een nieuw basislichaam.</p>
+    </section>
+
+    <section class="kaart">
+      <h3>Catalogus</h3>
+      <p class="noot">Stel-outfits voor jullie allebei: de startkast in bijpassende kleuren (shirt, broek, schoenen, kettinkje). Hoofddeksels, jassen en accessoires gaan uit.</p>
+      <div class="catalogus" id="catalogus"></div>
+    </section>
+
+    <section class="kaart">
+      <h3>Mijn outfits</h3>
+      <div class="rij">
+        <input type="text" id="outfitInvoer" placeholder="Naam van je outfit" maxlength="40">
+        <button class="knop" id="outfitOpslaan">Opslaan</button>
+      </div>
+      <ul class="lijst" id="eigenOutfits"></ul>
+      <p class="noot" id="opslagMelding" hidden>Opslaan lukt niet in deze browser (privévenster?). Gebruik export.</p>
+    </section>
+
+    <section class="kaart" id="editorKaart">
+      <h3>Zelf tekenen</h3>
+      <div class="editor">
+        <div class="ed-links">
+          <div class="rij">
+            <input type="text" id="edNaam" placeholder="Naam" maxlength="30" value="Mijn item">
+            <label>B <input type="number" id="edB" min="1" max="40" value="16"></label>
+            <label>H <input type="number" id="edH" min="1" max="48" value="10"></label>
+          </div>
+          <div class="ed-raster-houder"><canvas id="edRaster" width="16" height="10" aria-label="Tekenraster"></canvas></div>
+          <div class="gereedschap" role="radiogroup" aria-label="Gereedschap" id="gereedschap">
+            <button data-tool="potlood" aria-pressed="true">Potlood</button>
+            <button data-tool="gum" aria-pressed="false">Gum</button>
+            <button data-tool="vullen" aria-pressed="false">Vullen</button>
+            <button data-tool="ankerpunt" aria-pressed="false">Ankerpunt</button>
+          </div>
+          <div class="rij">
+            <button class="knop" id="edSpiegel">Spiegelen</button>
+            <label class="vink"><input type="checkbox" id="edSymmetrie"> Symmetrisch</label>
+            <button class="knop" id="edWissen">Wissen</button>
+          </div>
+        </div>
+        <div class="ed-rechts">
+          <div class="swatches" id="edPalet" aria-label="Palet"></div>
+          <div class="swatches tinten" id="edTinten" aria-label="Tinten"></div>
+          <div class="rij">
+            <label>Slot
+              <select id="edSlot">
+                <option value="hoofd">Hoofd</option>
+                <option value="accessoire">Accessoire</option>
+                <option value="jas">Jas (overlay)</option>
+              </select>
+            </label>
+            <label>Anker
+              <select id="edAnker">
+                <option value="kruin">Bovenkant hoofd</option>
+                <option value="voorhoofd">Voorhoofd</option>
+                <option value="ogen">Ogen</option>
+                <option value="nek">Nek</option>
+                <option value="hand_links">Hand links</option>
+                <option value="hand_rechts">Hand rechts</option>
+              </select>
+            </label>
+            <label>Laag
+              <select id="edLaag">
+                <option value="voor">Voor</option>
+                <option value="achter">Achter</option>
+              </select>
+            </label>
+          </div>
+          <div class="rij">
+            <span>Verschuif (<span id="edVerschuivingTekst">0, 0</span>)</span>
+            <button class="knop mini" data-schuif="-1,0" aria-label="links">←</button>
+            <button class="knop mini" data-schuif="1,0" aria-label="rechts">→</button>
+            <button class="knop mini" data-schuif="0,-1" aria-label="omhoog">↑</button>
+            <button class="knop mini" data-schuif="0,1" aria-label="omlaag">↓</button>
+          </div>
+          <label class="vink"><input type="checkbox" id="edToon" checked> Toon ontwerp op character</label>
+          <div class="knoppen">
+            <button class="knop goud" id="edOpslaan">Bewaar item</button>
+            <button class="knop" id="edPng">PNG</button>
+            <button class="knop" id="edJson">JSON</button>
+            <label class="knop">Importeer JSON<input type="file" id="edImport" accept=".json,application/json" hidden></label>
+          </div>
+          <p class="noot">Teken op het native raster (1 vakje = 1 artpixel). Het item komt in het gekozen slot en vervangt
+            daar wat je draagt. Getekend voor iemand die naar rechts kijkt; voor Tessie wordt het automatisch gespiegeld.
+            Bewaarde items staan in de kast met het label <span class="label eigen">eigen</span>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="kaart">
+      <h3>Van het blad</h3>
+      <p class="noot">Exact uitgesneden uit het characterblad. Dit zijn aparte tekeningen, geen kleurvariant.</p>
+      <div class="galerij" id="figuren"></div>
+      <h4>Items</h4>
+      <div class="galerij items" id="items"></div>
+    </section>
+  </div>
+</main>
+<footer class="voet"><span id="pariteit"></span><br><span id="pariteitLook"></span></footer>
+<script src="figuur.js"></script>
+<script src="kast-auto.js"></script>
+<script src="kledingkast.js"></script>
+</body>
+</html>

@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Quest assets</title>
+<script src="testindicator.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pixelquest.css">
+<script src="../assets/manifest.js"></script>
+</head>
+<body>
+<header class="kop">
+  <div class="logo"><span class="hart">♥</span> PIXEL QUEST <span class="hart">♥</span></div>
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="controle" aria-selected="true">Controle</button>
+    <button role="tab" data-tab="app" aria-selected="false">In de app</button>
+    <a class="tablink" href="kledingkast.html">Kledingkast</a>
+    <a class="tablink" href="huis.html">Ons huis</a>
+  </nav>
+</header>
+
+<main>
+  <section id="controle" class="paneel">
+    <div class="balk">
+      <label>Versie
+        <select id="versie">
+          <option value="bron">Bronuitsnede (exact)</option>
+          <option value="native">Native raster (reconstructie)</option>
+        </select>
+      </label>
+      <label>Achtergrond
+        <select id="achtergrond">
+          <option value="creme">Crème</option>
+          <option value="ruit">Transparantieruit</option>
+          <option value="donker">Donker</option>
+          <option value="groen">Groen</option>
+        </select>
+      </label>
+      <label>Zoom
+        <select id="zoom">
+          <option value="2">2×</option>
+          <option value="3" selected>3×</option>
+          <option value="4">4×</option>
+        </select>
+      </label>
+      <label class="vink"><input type="checkbox" id="toonCanvas" checked> Canvas + anker</label>
+    </div>
+    <p class="toelichting" id="toelichting"></p>
+    <h2 class="sectie">Characters</h2>
+    <div class="raster" id="rasterCharacters"></div>
+    <h2 class="sectie">Pets</h2>
+    <div class="raster" id="rasterPets"></div>
+  </section>
+
+  <section id="app" class="paneel" hidden>
+    <div class="telefoon">
+      <div class="scherm">
+        <div class="duo">
+          <figure class="speler"><div class="sprite" data-id="hidde" data-px="2"></div><figcaption>Hidde</figcaption></figure>
+          <div class="score">
+            <div class="pixeltitel">Vandaag</div>
+            <div class="sterren">★ 3 / 5</div>
+          </div>
+          <figure class="speler"><div class="sprite" data-id="tessie" data-px="2"></div><figcaption>Tessie</figcaption></figure>
+        </div>
+
+        <h3 class="pixeltitel">Quests</h3>
+        <ul class="taken">
+          <li class="taak klaar"><span class="vinkje">✓</span><span class="tekst">Planten water geven</span><span class="wie hidde">Hidde</span></li>
+          <li class="taak"><span class="vinkje"></span><span class="tekst">Boodschappen voor het weekend</span><span class="wie tessie">Tessie</span></li>
+          <li class="taak"><span class="vinkje"></span><span class="tekst">Badkamer schoonmaken</span><span class="wie samen">Samen</span></li>
+          <li class="taak klaar"><span class="vinkje">✓</span><span class="tekst">Was ophangen</span><span class="wie tessie">Tessie</span></li>
+        </ul>
+
+        <h3 class="pixeltitel">Huisdier</h3>
+        <div class="huisdier">
+          <div class="sprite" data-id="draakje" data-px="2"></div>
+          <div class="beloning"><span class="pixeltitel">+20 XP</span><span>Nog 2 quests tot de volgende beloning</span></div>
+        </div>
+
+        <h3 class="pixeltitel">Collectie</h3>
+        <div class="collectie" id="collectie"></div>
+        <label class="vink schakel"><input type="checkbox" id="eigenPixel">
+          Ottertje, egeltje en varkentje op eigen pixelgrootte (1,5× groter)</label>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script src="preview.js"></script>
+</body>
+</html>

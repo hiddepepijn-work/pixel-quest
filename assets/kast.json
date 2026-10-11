@@ -1,0 +1,1452 @@
+{
+ "versie": 1,
+ "uitleg": "Modulaire kleding per slot. Gegenereerd door tools/kast.py; niet met de hand bewerken.",
+ "canvas": {
+  "native": [
+   64,
+   112
+  ],
+  "anker": [
+   32,
+   108
+  ]
+ },
+ "slots": [
+  "hoofd",
+  "boven",
+  "jas",
+  "onder",
+  "heel_lichaam",
+  "schoenen",
+  "accessoire"
+ ],
+ "laagvolgorde": [
+  "lichaam",
+  "schoenen",
+  "onder",
+  "heel_lichaam",
+  "boven",
+  "jas",
+  "haar",
+  "accessoire",
+  "hoofd"
+ ],
+ "prijzen": {
+  "hoofd": [
+   20,
+   40
+  ],
+  "schoenen": [
+   20,
+   40
+  ],
+  "accessoire": [
+   20,
+   40
+  ],
+  "boven": [
+   30,
+   60
+  ],
+  "onder": [
+   30,
+   60
+  ],
+  "jas": [
+   50,
+   90
+  ],
+  "heel_lichaam": [
+   50,
+   90
+  ]
+ },
+ "sets": [
+  {
+   "id": "basis",
+   "naam": "Basis",
+   "items": [
+    "tshirt_basis",
+    "broek_basis",
+    "sneakers_basis"
+   ]
+  },
+  {
+   "id": "winterwandeling",
+   "naam": "Winterwandeling",
+   "items": [
+    "puffer",
+    "beanie",
+    "sjaal",
+    "handschoenen"
+   ]
+  },
+  {
+   "id": "regendag",
+   "naam": "Regendag",
+   "items": [
+    "regenjas",
+    "bucket_hat",
+    "laarzen"
+   ]
+  },
+  {
+   "id": "chill_zondag",
+   "naam": "Chill zondag",
+   "items": [
+    "hoodie_basic",
+    "joggingbroek",
+    "sloffen"
+   ]
+  },
+  {
+   "id": "parijs",
+   "naam": "Parijs",
+   "items": [
+    "baret",
+    "blouse",
+    "rok",
+    "ballerinas"
+   ]
+  },
+  {
+   "id": "studie",
+   "naam": "Studiedag",
+   "items": [
+    "bril",
+    "koptelefoon",
+    "tas"
+   ]
+  },
+  {
+   "id": "zomerdag",
+   "naam": "Zomerdag",
+   "items": [
+    "petje",
+    "korte_broek"
+   ]
+  },
+  {
+   "id": "slaap",
+   "naam": "Slaapkamer",
+   "items": [
+    "pyjama",
+    "onesie"
+   ]
+  }
+ ],
+ "masker_codering": "0 = vaste kleur; 50/100/150/200/250 = toon o/a/b/c/h op de ramp (modus toon); 255 = luminantie-recolor (modus luminantie)",
+ "items": [
+  {
+   "id": "petje",
+   "naam": "Petje",
+   "slot": "hoofd",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/petje_h.png",
+    "tessie": "kast/native/petje_t.png"
+   },
+   "kleuren": [
+    "petrol",
+    "bordeaux",
+    "nacht",
+    "goud"
+   ],
+   "prijs": 30,
+   "set_id": "zomerdag",
+   "tags": [
+    "zomer"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/petje_h_m.png",
+    "tessie": "kast/native/petje_t_m.png"
+   },
+   "knip": {
+    "hidde": "kast/native/petje_h_k.png",
+    "tessie": "kast/native/petje_t_k.png"
+   }
+  },
+  {
+   "id": "beanie",
+   "naam": "Beanie",
+   "slot": "hoofd",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/beanie_h.png",
+    "tessie": "kast/native/beanie_t.png"
+   },
+   "kleuren": [
+    "koraal",
+    "mos",
+    "nacht",
+    "abrikoos",
+    "lavendel"
+   ],
+   "prijs": 30,
+   "set_id": "winterwandeling",
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/beanie_h_m.png",
+    "tessie": "kast/native/beanie_t_m.png"
+   },
+   "knip": {
+    "hidde": "kast/native/beanie_h_k.png",
+    "tessie": "kast/native/beanie_t_k.png"
+   }
+  },
+  {
+   "id": "bucket_hat",
+   "naam": "Bucket hat",
+   "slot": "hoofd",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/bucket_hat_h.png",
+    "tessie": "kast/native/bucket_hat_t.png"
+   },
+   "kleuren": [
+    "hazelnoot",
+    "mos",
+    "creme",
+    "lavendel"
+   ],
+   "prijs": 35,
+   "set_id": "regendag",
+   "tags": [
+    "regen"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/bucket_hat_h_m.png",
+    "tessie": "kast/native/bucket_hat_t_m.png"
+   },
+   "knip": {
+    "hidde": "kast/native/bucket_hat_h_k.png",
+    "tessie": "kast/native/bucket_hat_t_k.png"
+   }
+  },
+  {
+   "id": "koptelefoon",
+   "naam": "Koptelefoon",
+   "slot": "hoofd",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/koptelefoon_h.png",
+    "tessie": "kast/native/koptelefoon_t.png"
+   },
+   "kleuren": [
+    "nacht",
+    "creme",
+    "koraal",
+    "lavendel"
+   ],
+   "prijs": 40,
+   "set_id": "studie",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/koptelefoon_h_m.png",
+    "tessie": "kast/native/koptelefoon_t_m.png"
+   },
+   "knip": {
+    "hidde": "kast/native/koptelefoon_h_k.png",
+    "tessie": "kast/native/koptelefoon_t_k.png"
+   }
+  },
+  {
+   "id": "haarband",
+   "naam": "Haarband",
+   "slot": "hoofd",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/haarband_t.png"
+   },
+   "kleuren": [
+    "koraal",
+    "goud",
+    "lavendel",
+    "petrol"
+   ],
+   "prijs": 20,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "tessie": "kast/native/haarband_t_m.png"
+   }
+  },
+  {
+   "id": "strik",
+   "naam": "Strik",
+   "slot": "hoofd",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/strik_t.png"
+   },
+   "kleuren": [
+    "koraal",
+    "bordeaux",
+    "creme",
+    "lavendel"
+   ],
+   "prijs": 20,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "tessie": "kast/native/strik_t_m.png"
+   }
+  },
+  {
+   "id": "baret",
+   "naam": "Baret",
+   "slot": "hoofd",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/baret_t.png"
+   },
+   "kleuren": [
+    "bordeaux",
+    "nacht",
+    "creme",
+    "mos"
+   ],
+   "prijs": 35,
+   "set_id": "parijs",
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "tessie": "kast/native/baret_t_m.png"
+   },
+   "knip": {
+    "tessie": "kast/native/baret_t_k.png"
+   }
+  },
+  {
+   "id": "haarclip",
+   "naam": "Haarclip",
+   "slot": "hoofd",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/haarclip_t.png"
+   },
+   "kleuren": [
+    "goud",
+    "koraal",
+    "lavendel",
+    "creme"
+   ],
+   "prijs": 20,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "tessie": "kast/native/haarclip_t_m.png"
+   }
+  },
+  {
+   "id": "kroontje",
+   "naam": "Kroontje",
+   "slot": "hoofd",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/kroontje_h.png",
+    "tessie": "kast/native/kroontje_t.png"
+   },
+   "kleuren": [
+    "goud",
+    "creme",
+    "koraal"
+   ],
+   "prijs": 40,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "zeldzaam",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/kroontje_h_m.png",
+    "tessie": "kast/native/kroontje_t_m.png"
+   }
+  },
+  {
+   "id": "tshirt_basis",
+   "naam": "T-shirt",
+   "slot": "boven",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/tshirt_basis_h.png",
+    "tessie": "kast/native/tshirt_basis_t.png"
+   },
+   "kleuren": [
+    "origineel",
+    "petrol",
+    "bordeaux",
+    "mos",
+    "creme"
+   ],
+   "prijs": 30,
+   "set_id": "basis",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "uitgesneden",
+   "status": "klaar",
+   "startkast": true,
+   "zone": "shirt",
+   "modus": "luminantie",
+   "maskers": {
+    "hidde": "kast/native/tshirt_basis_h_m.png",
+    "tessie": "kast/native/tshirt_basis_t_m.png"
+   },
+   "bron": {
+    "hidde": {
+     "sprite": "kast/bron/tshirt_basis_h.png",
+     "masker": "kast/bron/tshirt_basis_h_m.png"
+    },
+    "tessie": {
+     "sprite": "kast/bron/tshirt_basis_t.png",
+     "masker": "kast/bron/tshirt_basis_t_m.png"
+    }
+   },
+   "stats": {
+    "hidde": {
+     "native": {
+      "mediaan": 50.02,
+      "spreiding": 15.83
+     },
+     "bron": {
+      "mediaan": 50.23,
+      "spreiding": 19.25
+     }
+    },
+    "tessie": {
+     "native": {
+      "mediaan": 63.46,
+      "spreiding": 34.79
+     },
+     "bron": {
+      "mediaan": 64.34,
+      "spreiding": 30.45
+     }
+    }
+   }
+  },
+  {
+   "id": "longsleeve",
+   "naam": "Longsleeve",
+   "slot": "boven",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "nacht",
+    "mos",
+    "lavendel"
+   ],
+   "prijs": 40,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "trui",
+   "naam": "Trui",
+   "slot": "boven",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "koffie",
+    "mos",
+    "bordeaux",
+    "creme"
+   ],
+   "prijs": 50,
+   "set_id": null,
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "hoodie_basic",
+   "naam": "Hoodie",
+   "slot": "boven",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "nacht",
+    "petrol",
+    "bordeaux",
+    "creme"
+   ],
+   "prijs": 45,
+   "set_id": "chill_zondag",
+   "tags": [
+    "warm",
+    "huis"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "overhemd",
+   "naam": "Overhemd",
+   "slot": "boven",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "petrol",
+    "lavendel",
+    "blad"
+   ],
+   "prijs": 50,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "crop_top",
+   "naam": "Crop top",
+   "slot": "boven",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "koraal",
+    "lavendel",
+    "nacht"
+   ],
+   "prijs": 35,
+   "set_id": null,
+   "tags": [
+    "zomer"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "blouse",
+   "naam": "Blouse",
+   "slot": "boven",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "lavendel",
+    "abrikoos",
+    "petrol"
+   ],
+   "prijs": 45,
+   "set_id": "parijs",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "cardigan",
+   "naam": "Cardigan",
+   "slot": "boven",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "mos",
+    "bordeaux",
+    "lavendel"
+   ],
+   "prijs": 50,
+   "set_id": null,
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "spijkerjas",
+   "naam": "Spijkerjas",
+   "slot": "jas",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/spijkerjas_h.png",
+    "tessie": "kast/native/spijkerjas_t.png"
+   },
+   "kleuren": [
+    "petrol",
+    "nacht",
+    "creme",
+    "koffie"
+   ],
+   "prijs": 70,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/spijkerjas_h_m.png",
+    "tessie": "kast/native/spijkerjas_t_m.png"
+   }
+  },
+  {
+   "id": "puffer",
+   "naam": "Puffer",
+   "slot": "jas",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/puffer_h.png",
+    "tessie": "kast/native/puffer_t.png"
+   },
+   "kleuren": [
+    "petrol",
+    "nacht",
+    "koraal",
+    "lavendel",
+    "creme"
+   ],
+   "prijs": 90,
+   "set_id": "winterwandeling",
+   "tags": [
+    "warm",
+    "sneeuw"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/puffer_h_m.png",
+    "tessie": "kast/native/puffer_t_m.png"
+   }
+  },
+  {
+   "id": "regenjas",
+   "naam": "Regenjas",
+   "slot": "jas",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/regenjas_h.png",
+    "tessie": "kast/native/regenjas_t.png"
+   },
+   "kleuren": [
+    "goud",
+    "koraal",
+    "petrol",
+    "mos"
+   ],
+   "prijs": 75,
+   "set_id": "regendag",
+   "tags": [
+    "regen"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/regenjas_h_m.png",
+    "tessie": "kast/native/regenjas_t_m.png"
+   }
+  },
+  {
+   "id": "teddyjas",
+   "naam": "Teddyjas",
+   "slot": "jas",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/teddyjas_t.png"
+   },
+   "kleuren": [
+    "creme",
+    "hazelnoot",
+    "abrikoos",
+    "lavendel"
+   ],
+   "prijs": 85,
+   "set_id": null,
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "tessie": "kast/native/teddyjas_t_m.png"
+   }
+  },
+  {
+   "id": "broek_basis",
+   "naam": "Broek",
+   "slot": "onder",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/broek_basis_h.png",
+    "tessie": "kast/native/broek_basis_t.png"
+   },
+   "kleuren": [
+    "origineel",
+    "nacht",
+    "koffie",
+    "petrol",
+    "mos"
+   ],
+   "prijs": 30,
+   "set_id": "basis",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "uitgesneden",
+   "status": "klaar",
+   "startkast": true,
+   "zone": "broek",
+   "modus": "luminantie",
+   "maskers": {
+    "hidde": "kast/native/broek_basis_h_m.png",
+    "tessie": "kast/native/broek_basis_t_m.png"
+   },
+   "bron": {
+    "hidde": {
+     "sprite": "kast/bron/broek_basis_h.png",
+     "masker": "kast/bron/broek_basis_h_m.png"
+    },
+    "tessie": {
+     "sprite": "kast/bron/broek_basis_t.png",
+     "masker": "kast/bron/broek_basis_t_m.png"
+    }
+   },
+   "stats": {
+    "hidde": {
+     "native": {
+      "mediaan": 220.41,
+      "spreiding": 136.29
+     },
+     "bron": {
+      "mediaan": 221.82,
+      "spreiding": 127.96
+     }
+    },
+    "tessie": {
+     "native": {
+      "mediaan": 67.31,
+      "spreiding": 34.98
+     },
+     "bron": {
+      "mediaan": 67.46,
+      "spreiding": 34.18
+     }
+    }
+   }
+  },
+  {
+   "id": "jeans",
+   "naam": "Jeans",
+   "slot": "onder",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "petrol",
+    "nacht",
+    "creme",
+    "titel"
+   ],
+   "prijs": 45,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "joggingbroek",
+   "naam": "Joggingbroek",
+   "slot": "onder",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "nacht",
+    "creme",
+    "mos",
+    "lavendel"
+   ],
+   "prijs": 40,
+   "set_id": "chill_zondag",
+   "tags": [
+    "huis"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "korte_broek",
+   "naam": "Korte broek",
+   "slot": "onder",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "petrol",
+    "mos",
+    "koraal"
+   ],
+   "prijs": 35,
+   "set_id": "zomerdag",
+   "tags": [
+    "zomer"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "rok",
+   "naam": "Rok",
+   "slot": "onder",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "bordeaux",
+    "nacht",
+    "mos",
+    "lavendel"
+   ],
+   "prijs": 40,
+   "set_id": "parijs",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "legging",
+   "naam": "Legging",
+   "slot": "onder",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "titel",
+    "bordeaux",
+    "mos",
+    "lavendel"
+   ],
+   "prijs": 30,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "wijde_broek",
+   "naam": "Wijde broek",
+   "slot": "onder",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "bordeaux",
+    "petrol",
+    "koffie"
+   ],
+   "prijs": 50,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "pyjama",
+   "naam": "Pyjama",
+   "slot": "heel_lichaam",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "lavendel",
+    "petrol",
+    "koraal",
+    "creme"
+   ],
+   "prijs": 60,
+   "set_id": "slaap",
+   "tags": [
+    "nacht",
+    "huis"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art",
+   "startkast": true
+  },
+  {
+   "id": "onesie",
+   "naam": "Onesie",
+   "slot": "heel_lichaam",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "hazelnoot",
+    "mos",
+    "lavendel",
+    "creme"
+   ],
+   "prijs": 80,
+   "set_id": "slaap",
+   "tags": [
+    "nacht",
+    "huis",
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "schort",
+   "naam": "Schort",
+   "slot": "heel_lichaam",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "koraal",
+    "petrol",
+    "mos"
+   ],
+   "prijs": 50,
+   "set_id": null,
+   "tags": [
+    "keuken"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "jurk",
+   "naam": "Jurk",
+   "slot": "heel_lichaam",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "bordeaux",
+    "lavendel",
+    "creme",
+    "blad"
+   ],
+   "prijs": 75,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "overall",
+   "naam": "Overall",
+   "slot": "heel_lichaam",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "petrol",
+    "creme",
+    "mos",
+    "koffie"
+   ],
+   "prijs": 80,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "sneakers_basis",
+   "naam": "Sneakers",
+   "slot": "schoenen",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/sneakers_basis_h.png",
+    "tessie": "kast/native/sneakers_basis_t.png"
+   },
+   "kleuren": [
+    "origineel",
+    "nacht",
+    "koraal",
+    "lavendel"
+   ],
+   "prijs": 30,
+   "set_id": "basis",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "uitgesneden",
+   "status": "klaar",
+   "startkast": true,
+   "zone": "schoenen",
+   "modus": "luminantie",
+   "maskers": {
+    "hidde": "kast/native/sneakers_basis_h_m.png",
+    "tessie": "kast/native/sneakers_basis_t_m.png"
+   },
+   "bron": {
+    "hidde": {
+     "sprite": "kast/bron/sneakers_basis_h.png",
+     "masker": "kast/bron/sneakers_basis_h_m.png"
+    },
+    "tessie": {
+     "sprite": "kast/bron/sneakers_basis_t.png",
+     "masker": "kast/bron/sneakers_basis_t_m.png"
+    }
+   },
+   "stats": {
+    "hidde": {
+     "native": {
+      "mediaan": 207.03,
+      "spreiding": 163.73
+     },
+     "bron": {
+      "mediaan": 204.9,
+      "spreiding": 178.05
+     }
+    },
+    "tessie": {
+     "native": {
+      "mediaan": 213.97,
+      "spreiding": 209.47
+     },
+     "bron": {
+      "mediaan": 211.81,
+      "spreiding": 214.47
+     }
+    }
+   }
+  },
+  {
+   "id": "laarzen",
+   "naam": "Laarzen",
+   "slot": "schoenen",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "koffie",
+    "nacht",
+    "mos",
+    "goud"
+   ],
+   "prijs": 40,
+   "set_id": "regendag",
+   "tags": [
+    "regen",
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "sloffen",
+   "naam": "Sloffen",
+   "slot": "schoenen",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "creme",
+    "lavendel",
+    "koraal",
+    "nacht"
+   ],
+   "prijs": 20,
+   "set_id": "chill_zondag",
+   "tags": [
+    "huis",
+    "nacht"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "ballerinas",
+   "naam": "Ballerina's",
+   "slot": "schoenen",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "bordeaux",
+    "nacht",
+    "creme",
+    "koraal"
+   ],
+   "prijs": 30,
+   "set_id": "parijs",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "enkellaarsjes",
+   "naam": "Enkellaarsjes",
+   "slot": "schoenen",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {},
+   "kleuren": [
+    "koffie",
+    "nacht",
+    "eik",
+    "bordeaux"
+   ],
+   "prijs": 40,
+   "set_id": null,
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "wacht_op_art",
+   "status": "wacht_op_art"
+  },
+  {
+   "id": "bril",
+   "naam": "Ronde bril",
+   "slot": "accessoire",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/bril_h.png",
+    "tessie": "kast/native/bril_t.png"
+   },
+   "kleuren": [
+    "koffie",
+    "titel",
+    "goud",
+    "koraal"
+   ],
+   "prijs": 30,
+   "set_id": "studie",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/bril_h_m.png",
+    "tessie": "kast/native/bril_t_m.png"
+   }
+  },
+  {
+   "id": "tas",
+   "naam": "Schoudertas",
+   "slot": "accessoire",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/tas_h.png",
+    "tessie": "kast/native/tas_t.png"
+   },
+   "kleuren": [
+    "eik",
+    "koffie",
+    "mos",
+    "bordeaux"
+   ],
+   "prijs": 35,
+   "set_id": "studie",
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/tas_h_m.png",
+    "tessie": "kast/native/tas_t_m.png"
+   },
+   "onder_haar": true
+  },
+  {
+   "id": "sjaal",
+   "naam": "Sjaal",
+   "slot": "accessoire",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/sjaal_h.png",
+    "tessie": "kast/native/sjaal_t.png"
+   },
+   "kleuren": [
+    "bordeaux",
+    "mos",
+    "goud",
+    "nacht",
+    "creme"
+   ],
+   "prijs": 25,
+   "set_id": "winterwandeling",
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/sjaal_h_m.png",
+    "tessie": "kast/native/sjaal_t_m.png"
+   },
+   "onder_haar": true
+  },
+  {
+   "id": "handschoenen",
+   "naam": "Handschoenen",
+   "slot": "accessoire",
+   "lichaam": [
+    "hidde",
+    "tessie"
+   ],
+   "sprites": {
+    "hidde": "kast/native/handschoenen_h.png",
+    "tessie": "kast/native/handschoenen_t.png"
+   },
+   "kleuren": [
+    "petrol",
+    "koraal",
+    "mos",
+    "creme"
+   ],
+   "prijs": 20,
+   "set_id": "winterwandeling",
+   "tags": [
+    "warm"
+   ],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "hidde": "kast/native/handschoenen_h_m.png",
+    "tessie": "kast/native/handschoenen_t_m.png"
+   }
+  },
+  {
+   "id": "ketting_basis",
+   "naam": "Kettinkje",
+   "slot": "accessoire",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/ketting_basis_t.png"
+   },
+   "kleuren": [
+    "origineel",
+    "creme",
+    "koraal",
+    "lavendel"
+   ],
+   "prijs": 30,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "uitgesneden",
+   "status": "klaar",
+   "startkast": true,
+   "zone": "accessoire",
+   "zone_tot_y": 66,
+   "onder_jas": true,
+   "modus": "luminantie",
+   "maskers": {
+    "tessie": "kast/native/ketting_basis_t_m.png"
+   },
+   "bron": {
+    "tessie": {
+     "sprite": "kast/bron/ketting_basis_t.png",
+     "masker": "kast/bron/ketting_basis_t_m.png"
+    }
+   },
+   "stats": {
+    "tessie": {
+     "native": {
+      "mediaan": 192.47,
+      "spreiding": 32.71
+     },
+     "bron": {
+      "mediaan": 199.32,
+      "spreiding": 62.26
+     }
+    }
+   }
+  },
+  {
+   "id": "oorbellen",
+   "naam": "Oorbellen",
+   "slot": "accessoire",
+   "lichaam": [
+    "tessie"
+   ],
+   "sprites": {
+    "tessie": "kast/native/oorbellen_t.png"
+   },
+   "kleuren": [
+    "goud",
+    "creme",
+    "koraal"
+   ],
+   "prijs": 25,
+   "set_id": null,
+   "tags": [],
+   "zeldzaamheid": "gewoon",
+   "herkomst": "nieuw getekend",
+   "status": "klaar",
+   "modus": "toon",
+   "maskers": {
+    "tessie": "kast/native/oorbellen_t_m.png"
+   }
+  }
+ ]
+}

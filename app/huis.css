@@ -1,0 +1,206 @@
+/* Ons huis - bouwt voort op pixelquest.css. Harde pixelranden: geen afgeronde hoeken, geen vervaging. */
+[hidden] { display: none !important; }
+canvas, .huisvenster img { image-rendering: pixelated; image-rendering: crisp-edges; }
+.huispagina { display: grid; gap: 12px; min-width: 0; }
+.huispagina > * { min-width: 0; }
+
+/* knoppen (zelfde stijl als de kledingkast) */
+.knop, .weergaven button {
+  font: 600 14px var(--pixelfont); color: var(--nacht); cursor: pointer;
+  background: var(--papier); border: 3px solid var(--nacht); padding: 4px 10px;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.knop:hover, .weergaven button:hover { background: #ffe3a3; }
+.knop.goud, .knop[aria-pressed="true"], .weergaven button[aria-selected="true"] { background: var(--goud); }
+.knop.mini { padding: 2px 8px; font-size: 13px; }
+.knop.groot { padding: 8px 14px; font-size: 16px; }
+.knop:disabled { opacity: .45; cursor: default; }
+.knop:focus-visible, .weergaven button:focus-visible { outline: 3px solid var(--koraal); outline-offset: 2px; }
+.knopicoon { width: 24px; height: auto; }
+.knoppen { display: flex; flex-wrap: wrap; gap: 6px; }
+.noot { font-size: 13px; opacity: .8; margin: 4px 0 8px; }
+.label {
+  display: inline-block; font: 700 11px var(--pixelfont); text-transform: uppercase; letter-spacing: .5px;
+  padding: 1px 6px; border: 2px solid var(--nacht); background: var(--papier); color: var(--nacht);
+}
+.label.nieuw { background: var(--lavendel); color: #fff; }
+.label.bewoond { background: var(--goud); }
+.label.bezit { background: var(--blad); color: #fff; }
+.label.slot { background: var(--nacht); color: var(--creme); }
+
+.weergaven { display: flex; gap: 8px; flex-wrap: wrap; }
+.weergaven button { font-size: 16px; padding: 6px 14px; }
+.huisbalk { font-size: 14px; }
+.huisbalk .vink { gap: 6px; }
+.bewerkuitleg { margin: 0; }
+.bewerkbalk { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 14px; }
+
+.voorbeeldbalk {
+  display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between;
+  background: #fff4d6; border: 3px solid var(--goud); padding: 8px 12px; margin-bottom: 8px;
+}
+.voorbeeldbalk strong { font: 700 17px var(--pixelfont); color: var(--titel); }
+
+/* ---------- het huis ---------- */
+.huisvenster {
+  position: relative; max-width: 100%; overflow: auto; overscroll-behavior-x: contain;
+  border: 3px solid var(--nacht); background: var(--titel);
+  -webkit-overflow-scrolling: touch;
+}
+.diorama { position: relative; margin: 0 auto; }
+.decor { position: absolute; left: 0; top: 0; }
+.laag, .tint, .signalen { position: absolute; inset: 0; }
+.tint { pointer-events: none; mix-blend-mode: multiply; z-index: 5; }
+/* Weerdeeltjes (regen, sneeuw, blaadjes) boven de lichtlaag; buiten de kamers. */
+.weer { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 5; }
+/* Lichtlaag boven de tint: lampen en ramen blijven warm als het huis 's avonds donkerder wordt. */
+.licht { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 5; }
+/* Alleen in test-modus (?test&poster): de hele scene zonder maximale paginabreedte, voor schermafbeeldingen. */
+.poster main { max-width: none; }
+.signalen { pointer-events: none; z-index: 6; }
+.signalen > * { pointer-events: auto; }
+
+.meubel { position: absolute; }
+.meubel > canvas, .meubel > img { position: absolute; display: block; pointer-events: none; }
+.meubel .glas { position: absolute; overflow: hidden; }
+.meubel.voorbeeld { opacity: .5; }
+.meubel.voorbeeld::after {
+  content: 'voorbeeld'; position: absolute; left: 0; top: -14px; white-space: nowrap;
+  font: 700 10px var(--pixelfont); color: var(--nacht); background: var(--creme); padding: 0 3px;
+}
+.bewerken .meubel.placeholder, .markeer .meubel.placeholder { outline: 2px dashed var(--koraal); outline-offset: 1px; }
+.bewerken .meubel.placeholder::before, .markeer .meubel.placeholder::before {
+  content: 'placeholder'; position: absolute; left: 0; bottom: 100%; white-space: nowrap; z-index: 3;
+  font: 700 10px var(--pixelfont); color: #fff; background: var(--koraal); padding: 0 3px;
+}
+.markeer .meubel:not(.placeholder), .markeer .figuur, .markeer .pet .romp { outline: 1px solid rgba(85, 127, 90, .6); }
+
+.figuur { position: absolute; pointer-events: none; }
+.figuur canvas { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.figuur .greep { position: absolute; pointer-events: auto; }
+
+.pet { position: absolute; left: 0; top: 0; z-index: 2; transition: transform 2.4s ease-in-out; }
+.pet .romp { position: absolute; pointer-events: none; transition: transform .2s steps(2); }
+.pet .romp img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.pet .romp.gespiegeld { transform: scaleX(-1); }
+/* Sterk verkleinde pets (echte maat): zacht verkleinen, anders vallen outline-pixels weg. */
+.huisvenster .pet .romp.zacht img { image-rendering: auto; }
+.pet .tik { position: absolute; cursor: pointer; background: none; border: 0; padding: 0; }
+.pet .tik:focus-visible { outline: 3px solid var(--koraal); }
+.pet.huppel .romp { animation: huppel .5s steps(3) 1; }
+@keyframes huppel { 50% { translate: 0 -6px; } }
+
+/* bewerkmodus */
+.bewerken .sleepbaar { cursor: grab; touch-action: none; }
+.bewerken .sleepbaar:focus-visible, .bewerken .sleepbaar.gekozen { outline: 3px solid var(--goud); outline-offset: 2px; }
+.bewerken .sleepbaar.sleept { cursor: grabbing; z-index: 8; opacity: .85; }
+.bewerken .pet { pointer-events: none; }
+.kamerlabel {
+  position: absolute; z-index: 1; font: 700 11px var(--pixelfont); color: var(--nacht);
+  background: var(--creme); border: 2px solid var(--nacht); padding: 0 4px; pointer-events: none; white-space: nowrap;
+}
+
+/* signalen en feestjes */
+.signaal {
+  position: absolute; transform: translate(-50%, -100%); cursor: pointer;
+  background: var(--creme); border: 3px solid var(--nacht); color: var(--titel);
+  font: 700 16px/1 var(--pixelfont); min-width: 30px; height: 30px; padding: 0 6px;
+  display: grid; place-items: center; animation: dobber 1.6s steps(2) infinite;
+}
+.signaal::after {
+  content: ''; position: absolute; left: 50%; bottom: -9px; margin-left: -4px;
+  border: 0; width: 8px; height: 6px; background: var(--nacht);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+}
+.signaal.glinster { color: var(--goud); text-shadow: 1px 1px 0 var(--nacht); }
+.signaal.vraag { background: var(--goud); }
+.signaal:focus-visible { outline: 3px solid var(--koraal); outline-offset: 2px; }
+@keyframes dobber { 50% { translate: 0 -3px; } }
+
+.hartje, .naamkaartje, .deeltje { position: absolute; pointer-events: none; z-index: 7; }
+.hartje { font: 700 22px var(--pixelfont); color: var(--koraal); text-shadow: 2px 2px 0 var(--nacht); transform: translate(-50%, -100%); animation: stijg 1.2s steps(6) forwards; }
+.naamkaartje {
+  transform: translate(-50%, -100%); font: 700 13px var(--pixelfont); white-space: nowrap;
+  background: var(--creme); border: 2px solid var(--nacht); padding: 1px 6px; animation: vervaag 2.2s steps(4) forwards;
+}
+.deeltje { font: 700 18px var(--pixelfont); color: var(--goud); text-shadow: 1px 1px 0 var(--nacht); animation: spat 1s steps(5) forwards; }
+@keyframes stijg { to { translate: 0 -28px; opacity: 0; } }
+@keyframes vervaag { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes spat { to { translate: var(--dx) var(--dy); opacity: 0; } }
+
+/* ---------- onder het huis ---------- */
+.onder { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr)); }
+.takenlijst, .doos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.takenlijst li, .doos li {
+  display: flex; align-items: center; gap: 8px; background: #fffdf6; border: 2px solid var(--nacht); padding: 5px 8px;
+}
+.takenlijst .titel, .doos .titel { flex: 1; min-width: 0; }
+.takenlijst .stand { font-size: 12px; opacity: .75; display: block; }
+.standicoon { font: 700 16px var(--pixelfont); width: 22px; text-align: center; }
+.uitleglijst { margin: 0; padding-left: 18px; display: grid; gap: 6px; font-size: 14px; }
+
+/* ---------- huizen ---------- */
+.huizenuitleg { max-width: 900px; }
+.huizenraster { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); }
+.huiskaart { display: grid; gap: 6px; align-content: start; }
+.huiskaart h3 { margin: 0; }
+.huiskaart .kopregel { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.huiskaart .minivak { background: var(--titel); border: 2px solid var(--nacht); display: grid; place-items: center; padding: 4px; overflow: hidden; }
+.huiskaart .minivak canvas { max-width: 100%; height: auto; }
+.huiskaart .prijs { font: 700 16px var(--pixelfont); color: var(--titel); display: flex; align-items: center; gap: 4px; }
+.huiskaart .prijs img { width: 20px; height: auto; }
+.huiskaart .kamers { font-size: 13px; }
+
+/* ---------- taakblad en melding ---------- */
+.taakblad { position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; display: grid; justify-items: center; padding: 0 12px 12px; }
+.taakblad-binnen { width: min(100%, 420px); border-color: var(--nacht); box-shadow: 0 -4px 0 rgba(11, 18, 56, .15); }
+.taakblad-kop { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.taakstand { font: 700 15px var(--pixelfont); margin: 4px 0; }
+.melding {
+  position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 21; max-width: calc(100% - 24px);
+  display: flex; gap: 10px; align-items: center; background: var(--titel); color: var(--creme); padding: 8px 12px; border: 3px solid var(--goud);
+}
+.voet { padding: 8px 24px 24px; font-size: 12px; opacity: .7; }
+
+@media (prefers-reduced-motion: reduce) {
+  .pet, .pet .romp { transition: none !important; }
+  .signaal, .pet.huppel .romp { animation: none !important; }
+  .hartje, .deeltje { animation: vervaag 1.2s steps(2) forwards !important; }
+}
+/* verbouwen */
+.label.gedaan { background: var(--blad); color: #fff; }
+.label.volgende { background: var(--goud); }
+.label.later { background: var(--creme); color: var(--titel); box-shadow: inset 0 0 0 1px var(--titel); }
+.huiskaart.huidig { outline: 3px solid var(--goud); }
+.nuniveau { display: grid; gap: 6px; max-width: 900px; margin-bottom: 12px; }
+.nuniveau h3 { margin: 0; }
+
+/* omgeving: licht, weer, seizoen en feestdagen */
+.omgevingsbalk { font-size: 14px; align-items: center; }
+.omgevingsbalk .vink { gap: 6px; }
+.omgevingsbalk .getal { width: 70px; font: inherit; margin-left: 4px; }
+.omgevingsbalk .eigenplek { display: inline-flex; gap: 4px; align-items: center; }
+.omgevingsbalk .feestkeuze { display: inline-block; }
+.omgevingsbalk .feestkeuze summary { cursor: pointer; font-weight: 600; }
+.omgevingsbalk .feestkeuze[open] { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+.omgevingstatus { margin: 0; flex-basis: 100%; }
+.omgevingitem { position: absolute; pointer-events: none; }
+.omgevingitem canvas { position: absolute; inset: 0; display: block; }
+.pet.slaapt::after {
+  content: 'z'; position: absolute; left: 8px; top: -44px; font: 700 13px var(--pixelfont); color: var(--creme);
+  text-shadow: 1px 1px 0 var(--nacht); animation: dobber 2s steps(2) infinite; pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) { .pet.slaapt::after { animation: none; } }
+
+/* beweging (huis-anim*.js): lopers staan op hun voetanker en schuiven met transform; het canvas spiegelt om het anker */
+.figuur.loper { left: 0; top: 0; width: 0; height: 0; z-index: 4; will-change: transform; }
+.figuur.loper canvas { width: auto; height: auto; }
+.pet.anim, .pet.anim .romp { transition: none; }
+.pet.anim { will-change: transform; }
+.praatje {
+  position: absolute; transform: translate(-50%, -100%); pointer-events: none; z-index: 7; white-space: nowrap;
+  font: 700 13px/1 var(--pixelfont); color: var(--nacht); background: var(--creme); border: 2px solid var(--nacht);
+  padding: 2px 5px 4px; animation: vervaag 1.3s steps(4) forwards;
+}
+.praatje.hart { color: var(--koraal); }
+.praatje::after { content: ''; position: absolute; left: 50%; bottom: -6px; margin-left: -3px; width: 6px; height: 4px; background: var(--nacht); clip-path: polygon(0 0, 100% 0, 50% 100%); }

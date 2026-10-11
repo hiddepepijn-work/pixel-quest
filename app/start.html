@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixel Quest</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: één kolom als een quest-log; hero met de characters op hun grondschaduw, daarna kaarten per onderwerp. */
+/* Bewust één look (Pixel Quest crème) in licht én donker: alle kleuren expliciet. */
+:root {
+  --creme: #fcf8ec;
+  --papier: #fffdf6;
+  --rand: #efe2cb;
+  --nacht: #2b364f;
+  --titel: #0b1238;
+  --koraal: #f16446;
+  --goud: #febb42;
+  --petrol: #3f808c;
+  --bordeaux: #8b2e38;
+  --blad: #557f5a;
+  --pixel: 'Pixelify Sans', 'Courier New', monospace;
+  --tekst: 'Nunito', system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--creme); color: var(--nacht);
+  font: 16px/1.5 var(--tekst);
+}
+.pagina { max-width: 760px; margin: 0 auto; padding-inline: 16px; padding-block: 20px 56px; display: grid; gap: 22px; }
+img { image-rendering: pixelated; max-width: 100%; }
+
+.kop { text-align: center; display: grid; gap: 4px; }
+.logo { font: 700 clamp(30px, 8vw, 46px)/1 var(--pixel); color: var(--titel); letter-spacing: 2px; margin: 0; text-wrap: balance; }
+.hart { color: var(--koraal); font-size: .6em; vertical-align: .25em; }
+.sub { font: 600 15px var(--pixel); letter-spacing: 3px; text-transform: uppercase; margin: 0; }
+
+.podium {
+  display: flex; align-items: flex-end; justify-content: center; gap: clamp(4px, 2vw, 18px);
+  padding: 8px 0 14px; border-bottom: 3px dashed var(--rand);
+}
+.podium figure { margin: 0; display: grid; justify-items: center; gap: 6px; }
+.podium figcaption { font: 700 15px var(--pixel); }
+.podium .mens img { height: clamp(150px, 42vw, 230px); width: auto; }
+.podium .dier img { height: clamp(62px, 16vw, 96px); width: auto; }
+.voet { position: relative; isolation: isolate; }
+.voet::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: -3px; height: 7px; border-radius: 50%; background: rgba(145, 91, 67, .22); z-index: -1; }
+
+.knoppen { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr)); gap: 10px; }
+.knop {
+  display: grid; gap: 2px; text-decoration: none; color: var(--nacht);
+  background: var(--papier); border: 3px solid var(--nacht); padding: 12px 14px;
+  box-shadow: 4px 4px 0 var(--nacht); transition: transform .08s, box-shadow .08s;
+}
+.knop:hover, .knop:focus-visible { transform: translate(2px, 2px); box-shadow: 2px 2px 0 var(--nacht); outline: none; }
+.knop b { font: 700 18px var(--pixel); color: var(--titel); }
+.knop span { font-size: 14px; }
+.knop.hoofd { background: var(--goud); }
+
+.status {
+  font-size: 14px; background: var(--papier); border: 2px solid var(--rand); padding: 10px 12px;
+}
+.status strong { color: var(--bordeaux); }
+
+section { display: grid; gap: 10px; }
+h2 { font: 700 22px var(--pixel); color: var(--titel); margin: 0; letter-spacing: 1px; text-wrap: balance; }
+h2 .tel { color: var(--koraal); }
+p { margin: 0; max-width: 65ch; }
+ul { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; }
+li::marker { color: var(--koraal); }
+
+.kaart { background: var(--papier); border: 3px solid var(--rand); padding: 14px 16px; display: grid; gap: 10px; min-width: 0; }
+
+.feiten { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 8px; }
+.feit { background: var(--papier); border: 2px solid var(--rand); padding: 10px 12px; display: grid; gap: 2px; }
+.feit b { font: 700 26px/1 var(--pixel); color: var(--petrol); font-variant-numeric: tabular-nums; }
+.feit span { font-size: 13px; }
+
+.pets { display: grid; grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 6px; }
+.pets img { width: 100%; height: auto; aspect-ratio: 80 / 72; object-fit: contain; background: var(--papier); border: 2px solid var(--rand); }
+
+.regel { display: grid; grid-template-columns: 34px 1fr; gap: 10px; align-items: start; }
+.regel img { width: 34px; height: 34px; }
+
+.keuzes { list-style: none; padding: 0; counter-reset: k; }
+.keuzes li { counter-increment: k; display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 8px 0; border-bottom: 2px dotted var(--rand); }
+.keuzes li::before { content: counter(k); font: 700 15px var(--pixel); color: #fff; background: var(--nacht); width: 26px; height: 26px; display: grid; place-items: center; }
+.keuzes li:last-child { border-bottom: 0; }
+.wie { font: 600 12px var(--pixel); letter-spacing: 1px; text-transform: uppercase; color: var(--blad); }
+
+.voetnoot { font-size: 13px; opacity: .8; text-align: center; }
+@media (prefers-reduced-motion: reduce) { .knop { transition: none; } }
+</style>
+</head>
+<body>
+
+<div class="pagina">
+  <header class="kop">
+    <h1 class="logo"><span class="hart">♥</span> PIXEL QUEST <span class="hart">♥</span></h1>
+    <p class="sub">Hidde &amp; Tessie · stand 10 okt</p>
+  </header>
+
+  <div class="podium" aria-label="De characters met twee pets">
+    <figure class="dier"><div class="voet"><img src="../assets/bron/ottertje.png" alt="Ottertje" style="height:auto;width:clamp(70px,18vw,110px)"></div></figure>
+    <figure class="mens"><div class="voet"><img src="../assets/bron/hidde.png" alt="Hidde"></div><figcaption>Hidde</figcaption></figure>
+    <figure class="mens"><div class="voet"><img src="../assets/bron/tessie.png" alt="Tessie"></div><figcaption>Tessie</figcaption></figure>
+    <figure class="dier"><div class="voet"><img src="../assets/bron/draakje.png" alt="Draakje" style="height:auto;width:clamp(70px,18vw,110px)"></div></figure>
+  </div>
+
+  <nav class="knoppen" aria-label="Pagina's">
+    <a class="knop hoofd" href="index.html#app"><b>App-voorbeeld</b><span>Quests, jullie samen, huisdier en collectie</span></a>
+    <a class="knop" href="huis.html"><b>Ons huis</b><span>Jullie huis met pets, taakwolkjes en verbouwingen</span></a>
+    <a class="knop" href="kledingkast.html"><b>Kledingkast</b><span>Outfits kiezen, kleuren en zelf accessoires tekenen</span></a>
+    <a class="knop" href="index.html#controle"><b>Assetcontrole</b><span>Elke figuur naast het origineel van het blad</span></a>
+  </nav>
+
+  <p class="status"><strong>Werk in uitvoering.</strong> De figuren en de kledingkast staan. Het app-ontwerp is gecontroleerd en vereenvoudigd (versie 2). Volgende stap: jullie keuzes, daarna de eerste echte versie.</p>
+
+  <section>
+    <h2>Wat er staat</h2>
+    <div class="feiten">
+      <div class="feit"><b>2</b><span>characters, exact uit het goedgekeurde blad</span></div>
+      <div class="feit"><b>14</b><span>pets, inclusief ottertje, egeltje en varkentje</span></div>
+      <div class="feit"><b>44</b><span>kledingitems in 7 slots, 22 al te dragen</span></div>
+      <div class="feit"><b>10</b><span>verbouwingen van jullie eigen huis</span></div>
+    </div>
+    <div class="pets" aria-label="Alle pets">
+      <img src="../assets/bron/konijntje.png" alt="Konijntje"><img src="../assets/bron/hondje.png" alt="Hondje"><img src="../assets/bron/katje.png" alt="Katje"><img src="../assets/bron/parkietje.png" alt="Parkietje"><img src="../assets/bron/kikkertje.png" alt="Kikkertje"><img src="../assets/bron/cavia.png" alt="Cavia"><img src="../assets/bron/schildpadje.png" alt="Schildpadje"><img src="../assets/bron/salamander.png" alt="Salamander"><img src="../assets/bron/kameleon.png" alt="Kameleon"><img src="../assets/bron/haaitje.png" alt="Haaitje"><img src="../assets/bron/draakje.png" alt="Draakje"><img src="../assets/bron/ottertje.png" alt="Ottertje"><img src="../assets/bron/egeltje.png" alt="Egeltje"><img src="../assets/bron/varkentje.png" alt="Varkentje">
+    </div>
+    <p>Niets is overgetekend behalve vier voorbeeldaccessoires (petje, bril, kroontje, sjaal). Die zijn in de kledingkast gemarkeerd.</p>
+  </section>
+
+  <section>
+    <h2>Hoe de app gaat werken</h2>
+    <div class="kaart">
+      <div class="regel"><img src="../assets/items/native/klembord.png" alt=""><p><b>Taken in een open lijst.</b> Je pakt een taak op of wijst hem toe. Elke taak heeft één eigenaar. Plannen en bijhouden (boodschappenlijst, afspraken maken) zijn gewone terugkerende taken, dus dat onzichtbare werk telt mee.</p></div>
+      <div class="regel"><img src="../assets/items/native/ster.png" alt=""><p><b>Punten naar moeite.</b> Een taak is waard: minuten × (1 + 0,3 × zwaarte). Jullie stellen die waarde samen vast.</p></div>
+      <div class="regel"><img src="../assets/items/native/hart.png" alt=""><p><b>Eén gezamenlijk weekdoel.</b> Bovenaan staat bijvoorbeeld "Samen 420 van 600". Geen percentages per persoon, geen winnaar. Een bedankje geeft geen punten, wel een blij pet.</p></div>
+      <div class="regel"><img src="../assets/items/native/plant.png" alt=""><p><b>Pets groeien mee.</b> Je reeks loopt door als jullie samen 80% van het weekdoel halen. Bij ziekte gaat het doel omlaag en er is één rustweek per maand. Pets gaan nooit dood.</p></div>
+      <div class="regel"><img src="../assets/items/native/munt.png" alt=""><p><b>Winkel komt later.</b> Dan komen er munten in één gedeelde huispot, voor outfits en accessoires. Echte uitjes, zoals een date night, worden gezamenlijke mijlpalen.</p></div>
+      <div class="regel"><img src="../assets/items/native/rugzak.png" alt=""><p><b>Zondag samen terugkijken.</b> De week wordt in woorden beschreven. Ieder geeft privé een cijfer van 1 tot 5 voor hoe eerlijk het voelde.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Ons huis</h2>
+    <p>Jullie hebben één huis, en dat groeit. Je begint in een starthuisje met een woonkeuken en slaaphoek. Elke verbouwing koop je uit de gedeelde huispot. Er verdwijnt nooit iets, en meubels blijven staan waar jullie ze neerzetten.</p>
+    <div class="kaart">
+      <div class="regel"><img src="../assets/items/native/munt.png" alt=""><p><b>Van starthuisje naar villa (voorstel):</b> badkamer 400 → slaapkamer 600 → tuin 700 → leefkeuken met kookeiland 900 → eerste verdieping 1.500 → gevelrenovatie naar modern 1.800 → mastersuite 1.600 → overdekt terras 1.400 → villa met zwembad en carport 3.000 (na een half jaar weekdoelen). Samen ongeveer 40 weken volle huispot. Kijk bij <i>Ons huis → Verbouwen</i>.</p></div>
+      <div class="regel"><img src="../assets/items/native/plant.png" alt=""><p><b>Taken in huis:</b> een taak die bijna moet geeft een glinster bij het meubel, een vraagteken als hij aan de beurt is. Nooit rommel en nooit een boos pet. Afvinken geeft sterretjes.</p></div>
+      <div class="regel"><img src="../assets/items/native/hart.png" alt=""><p><b>Nog tijdelijk:</b> de meubels zijn blokvormen en muren en daken zijn in code getekend. Met een meubelblad in jullie stijl worden ze vanzelf vervangen.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Weer, seizoenen en feestdagen</h2>
+    <div class="kaart">
+      <div class="regel"><img src="../assets/items/native/ster.png" alt=""><p><b>Echt licht.</b> Het huis volgt de echte zon in jullie stad: dageraad, ochtend, middag, gouden uur, schemering en nacht. Lampen gaan vanzelf aan.</p></div>
+      <div class="regel"><img src="../assets/items/native/gieter.png" alt=""><p><b>Echt weer.</b> Helder, bewolkt, regen of sneeuw, met druppels op het raam en sneeuw op het dak. Op deze telefoonpagina kies je het weer zelf; de echte app haalt het straks via jullie server.</p></div>
+      <div class="regel"><img src="../assets/items/native/plant.png" alt=""><p><b>Seizoenen.</b> Bloesem in de lente, oranje blad in de herfst, kale bomen en rijp in de winter.</p></div>
+      <div class="regel"><img src="../assets/items/native/hart.png" alt=""><p><b>Sinterklaas en Kerst.</b> Een schoen met wortel en pepernoten, een kerstboom met lampjes en lichtjes aan de gevel. Bij regen trekken jullie vanzelf je regenjas aan, als je die hebt.</p></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Agenda en Uurwerk</h2>
+    <ul>
+      <li>Taken met een tijd en deadlines verschijnen in jullie telefoonagenda via een agenda-abonnement, per persoon.</li>
+      <li>Uurwerk krijgt een eigen feed met alleen taken die een tijdslot hebben, zonder deadlines. Een hele-dag-deadline blokkeert anders de dagplanning van Jarvis.</li>
+      <li>Die taken tellen níet als gewerkte uren; uren blijven uit je timer komen. Standaard staan alleen Hiddes eigen taken erin; samen-taken pas als Tessie akkoord geeft.</li>
+      <li>Later kun je taken via Jarvis afvinken, met een eigen beperkte sleutel. De taken-app krijgt nooit toegang tot je uren of screenshots.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Techniek</h2>
+    <p>Een web-app op Hiddes VPS die je op het beginscherm zet, zodat Tessie geen SideStore nodig heeft. De server houdt de punten bij, wijzigingen verschijnen direct bij de ander, en offline afvinken wordt later gesynchroniseerd. Er wordt pas uitgerold na een week proefdraaien.</p>
+  </section>
+
+  <section>
+    <h2>Keuzes voor jullie</h2>
+    <p>De belangrijkste negen. De volledige lijst (23) staat in het app-ontwerp.</p>
+    <ol class="keuzes">
+      <li><div><b>Verdeling:</b> streven naar 50/50, of naar wat ieder kan (stage, werk, studie)? <div class="wie">samen</div></div></li>
+      <li><div><b>Weekdoel:</b> hoeveel taakwerk doen jullie samen per week? <div class="wie">samen</div></div></li>
+      <li><div><b>Startpet:</b> met welk dier beginnen jullie? Het draakje is het verste doel. <div class="wie">samen</div></div></li>
+      <li><div><b>Mijlpalen in de pot:</b> welke echte uitjes horen erbij (date night, uit eten, weekendje weg)? <div class="wie">samen</div></div></li>
+      <li><div><b>Tessie's telefoon en inloggen:</b> welke telefoon, en inloggen met passkey of wachtwoord? <div class="wie">Tessie</div></div></li>
+      <li><div><b>Agenda delen:</b> zie je elkaars afspraaktitels, of alleen "bezet"? <div class="wie">samen</div></div></li>
+      <li><div><b>Jarvis:</b> mogen gezamenlijke taken via Jarvis naar een AI-dienst (Gemini)? Dat vraagt Tessie's toestemming. <div class="wie">Tessie</div></div></li>
+      <li><div><b>Hoodie-outfit:</b> mogen twee ontbrekende stukjes omlijning worden bijgetekend? <div class="wie">samen</div></div></li>
+      <li><div><b>Nieuwe pets:</b> even groot als de andere pets (nu), of op hun eigen, grovere pixelgrootte en dan groter? <div class="wie">samen</div></div></li>
+    </ol>
+  </section>
+
+  <p class="voetnoot">Gemaakt van de goedgekeurde Pixel Quest-bladen. Bronbestanden en documenten staan in Documenten\hidde_tessie_app.</p>
+</div>
+</body>
+</html>

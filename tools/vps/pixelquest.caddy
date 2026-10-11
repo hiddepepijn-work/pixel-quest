@@ -1,0 +1,36 @@
+# Pixel Quest. Zelfde VPS als Reisbouwer (8787) en Uurwerk (8790), maar geen eigen proces: alleen statische
+# bestanden uit /opt/pixelquest/web. Eigen hostnaam, eigen certificaat. Wordt in /etc/caddy/Caddyfile
+# ingehaakt met één regel:  import /etc/caddy/pixelquest.caddy
+# sslip.io wijst elke naam met het IP erin naar dat IP, dus er is geen DNS-record nodig.
+pixelquest.51-75-74-94.sslip.io {
+	encode zstd gzip
+	root * /opt/pixelquest/web
+	file_server
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		-Server
+	}
+	# Scripts en data altijd vers ophalen na een update; plaatjes mogen een dag in de cache.
+	@code path *.html *.js *.css /
+	header @code Cache-Control "no-cache"
+	@beeld path *.png
+	header @beeld Cache-Control "public, max-age=86400"
+
+	log {
+		output stderr
+		format filter {
+			wrap console
+			fields {
+				request>remote_ip ip_mask {
+					ipv4 24
+					ipv6 48
+				}
+				request>headers>Cookie delete
+				request>headers>Authorization delete
+			}
+		}
+	}
+}

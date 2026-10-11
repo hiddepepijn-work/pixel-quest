@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pixel Quest – ons huis</title>
+<script src="testindicator.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="pixelquest.css">
+<link rel="stylesheet" href="huis.css">
+<script src="../assets/manifest.js"></script>
+<script src="../assets/kleding.js"></script>
+<script src="../assets/huis.js"></script>
+<script src="../assets/beweging.js"></script>
+</head>
+<body>
+<header class="kop">
+  <div class="logo"><span class="hart">♥</span> ONS HUIS <span class="hart">♥</span></div>
+  <nav class="tabs">
+    <a class="tablink" href="index.html">Assets</a>
+    <a class="tablink" href="kledingkast.html">Kledingkast</a>
+    <a class="tablink" href="huis.html" aria-current="page">Ons huis</a>
+  </nav>
+</header>
+
+<main class="huispagina">
+  <div class="weergaven" role="tablist" aria-label="Weergave">
+    <button role="tab" id="tabHuis" data-weergave="huis" aria-selected="true" aria-controls="paneelHuis">Ons huis</button>
+    <button role="tab" id="tabHuizen" data-weergave="verbouwen" aria-selected="false" aria-controls="paneelHuizen">Verbouwen</button>
+  </div>
+
+  <section id="paneelHuis" role="tabpanel" aria-labelledby="tabHuis">
+    <div class="voorbeeldbalk" id="voorbeeldBalk" hidden>
+      <div><strong id="vbTitel"></strong> <span id="vbTekst"></span></div>
+      <div class="knoppen">
+        <button class="knop goud" id="vbTerug">Terug naar ons huis</button>
+        <button class="knop" id="vbVerhuis" hidden>Zet het huis op dit niveau (test)</button>
+      </div>
+    </div>
+
+    <div class="balk huisbalk">
+      <button class="knop" id="bewerk" aria-pressed="false">Bewerken</button>
+      <label>Zoom
+        <select id="zoom">
+          <option value="auto">Auto</option>
+          <option value="1">1×</option>
+          <option value="2">2×</option>
+          <option value="3">3×</option>
+        </select>
+      </label>
+      <label>Kleding
+        <select id="outfit"></select>
+      </label>
+      <label class="vink"><input type="checkbox" id="markeer"> Markeer placeholders</label>
+      <button class="knop" id="herstel" hidden>Indeling herstellen</button>
+    </div>
+    <div class="balk omgevingsbalk" id="omgevingBalk" aria-label="Licht, weer en seizoen"></div>
+    <p class="noot bewerkuitleg" id="bewerkUitleg" hidden>Sleep meubels en jullie twee naar een andere plek, ook met je vinger, en ook naar een andere kamer. Ze klikken vast op een raster. Met Tab en de pijltjes kan het ook. Alles wordt op dit apparaat onthouden.</p>
+    <div class="bewerkbalk" id="bewerkBalk" hidden>
+      <span>Gekozen: <strong id="gekozen">niets</strong></span>
+      <button class="knop mini" id="naarDoos" disabled>In de verhuisdoos</button>
+    </div>
+
+    <div class="huisvenster" id="venster" aria-label="Ons huis, doorsnede">
+      <div class="diorama" id="diorama">
+        <canvas class="decor" id="decor" aria-hidden="true"></canvas>
+        <div class="laag" id="laag"></div>
+        <div class="tint" id="tint" aria-hidden="true"></div>
+        <canvas class="licht" id="licht" aria-hidden="true"></canvas>
+        <canvas class="weer" id="weer" aria-hidden="true"></canvas>
+        <div class="signalen" id="signalen"></div>
+      </div>
+    </div>
+
+    <div class="onder">
+      <section class="kaart">
+        <h3>In huis</h3>
+        <p class="noot">Een behoefte-klok per taak, zoals Tody, maar zonder rood en zonder alarm. Bijna aan de beurt: een glinster. Klaar voor een beurt: een vraagteken. Er wordt nooit iets vies, en geen pet wordt boos.</p>
+        <ul class="takenlijst" id="takenlijst"></ul>
+      </section>
+      <section class="kaart">
+        <h3>Verhuisdoos</h3>
+        <p class="noot" id="doosLeeg">Leeg. Past er na een verbouwing iets niet meer, dan gaat het hierin.</p>
+        <ul class="doos" id="doos"></ul>
+      </section>
+      <section class="kaart">
+        <h3>Over dit prototype</h3>
+        <ul class="uitleglijst">
+          <li>Het huis is van jullie samen. Het groeit mee: elke verbouwing komt later uit de gedeelde huispot (fase 3); kijk alvast rond bij <em>Verbouwen</em>.</li>
+          <li><span class="label nieuw">placeholder</span> Meubels met een gestippelde rand zijn tijdelijke vormen. Echte sprites passen er later in zonder codewijziging.</li>
+          <li>Hidde, Tessie, de pets en de items (plant, gieter, bezem, rugzak, klembord, ster, hart, munt) komen exact uit de goedgekeurde bladen. Muren, ramen en daken zijn in code getekend.</li>
+          <li>Tik op een pet voor een hartje. Tik op een signaal om de taak te zien.</li>
+        </ul>
+      </section>
+    </div>
+  </section>
+
+  <section id="paneelHuizen" role="tabpanel" aria-labelledby="tabHuizen" hidden>
+    <p class="noot huizenuitleg">Jullie hebben één huis, en dat groeit. Elke verbouwing maakt het groter of mooier; er verdwijnt nooit iets. Kopen kan later in de winkel, uit de gedeelde huispot (fase 3: 0,5 munt per inzet, hooguit 300 per week). <em>Bekijk</em> laat het huis na die verbouwing zien, met jullie eigen spullen erin.</p>
+    <div class="kaart nuniveau" id="nuNiveau"></div>
+    <div class="huizenraster" id="huizen"></div>
+  </section>
+</main>
+
+<div class="taakblad" id="taakblad" role="dialog" aria-modal="false" aria-labelledby="taakTitel" hidden>
+  <div class="taakblad-binnen kaart">
+    <div class="taakblad-kop">
+      <h3 id="taakTitel">Taak</h3>
+      <button class="knop mini" id="taakSluit" aria-label="Sluiten">×</button>
+    </div>
+    <p class="taakstand" id="taakStand"></p>
+    <p class="noot" id="taakMeta"></p>
+    <div class="knoppen">
+      <button class="knop goud groot" id="taakKlaar"><img src="../assets/items/bron/gieter.png" alt="" class="knopicoon"> Gedaan</button>
+      <button class="knop groot" id="taakLater">Straks</button>
+    </div>
+  </div>
+</div>
+
+<div class="melding" id="melding" role="status" aria-live="polite" hidden>
+  <span id="meldingTekst"></span>
+  <button class="knop mini" id="meldingOngedaan">Ongedaan maken</button>
+</div>
+
+<footer class="voet"><span id="testregel"></span></footer>
+<script src="../assets/kast.js"></script>
+<script src="figuur.js"></script>
+<script src="kast-auto.js"></script>
+<script src="huis-model.js"></script>
+<script src="omgeving.js"></script>
+<script src="huis-pixel.js"></script>
+<script src="huis-buiten.js"></script>
+<script src="huis-bomen.js"></script>
+<script src="omgeving-teken.js"></script>
+<script src="huis-teken.js"></script>
+<script src="huis-anim.js"></script>
+<script src="huis-anim-gedrag.js"></script>
+<script src="omgeving-huis.js"></script>
+<script src="huis.js"></script>
+</body>
+</html>

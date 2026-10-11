@@ -1,0 +1,197 @@
+/* Pixel Quest huisstijl - kleuren gemeten uit de paletvakken van de bronbladen. */
+:root {
+  --nacht: #2b364f;
+  --titel: #0b1238;
+  --creme: #fcf8ec;
+  --papier: #fef2dc;
+  --rasterlijn: #f1e4cf;
+  --eik: #915b43;
+  --koffie: #543228;
+  --bordeaux: #8b2e38;
+  --koraal: #f16446;
+  --abrikoos: #fea463;
+  --goud: #febb42;
+  --lavendel: #b27fc8;
+  --petrol: #3f808c;
+  --blad: #557f5a;
+  --hidde: #3f808c;
+  --tessie: #8b2e38;
+  --pixelfont: 'Pixelify Sans', 'Courier New', monospace;
+  --tekstfont: 'Nunito', system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+  background: var(--creme);
+  color: var(--nacht);
+  font: 15px/1.45 var(--tekstfont);
+}
+
+img, .sprite { image-rendering: pixelated; }
+
+/* Pixelrand: getrapte hoeken met box-shadow, geen afgeronde hoeken. */
+.pixelrand {
+  box-shadow:
+    0 -3px 0 0 var(--nacht), 0 3px 0 0 var(--nacht),
+    -3px 0 0 0 var(--nacht), 3px 0 0 0 var(--nacht);
+}
+
+.kop {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  flex-wrap: wrap;
+  padding: 16px 24px;
+  border-bottom: 3px solid var(--rasterlijn);
+}
+.logo {
+  font: 700 28px/1 var(--pixelfont);
+  color: var(--titel);
+  letter-spacing: 2px;
+}
+.hart { color: var(--koraal); font-size: 20px; vertical-align: 3px; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+.tabs button {
+  font: 600 16px var(--pixelfont);
+  color: var(--nacht);
+  background: var(--papier);
+  border: 3px solid var(--nacht);
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.tabs button[aria-selected="true"] { background: var(--goud); }
+.tablink {
+  font: 600 16px var(--pixelfont); color: var(--nacht); text-decoration: none;
+  background: var(--papier); border: 3px solid var(--nacht); padding: 6px 14px;
+}
+.tablink[aria-current="page"] { background: var(--goud); }
+
+main { padding: 16px 24px 48px; max-width: 1400px; margin: 0 auto; }
+
+.balk {
+  display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center;
+  font-weight: 600;
+}
+.balk label { display: flex; gap: 6px; align-items: center; }
+.balk select {
+  font: inherit; color: var(--nacht);
+  background: var(--papier); border: 2px solid var(--nacht); padding: 3px 6px;
+}
+.toelichting { max-width: 900px; margin: 10px 0 0; }
+
+.sectie {
+  font: 700 22px var(--pixelfont);
+  color: var(--titel);
+  margin: 28px 0 12px;
+}
+
+.raster {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 560px), 1fr));
+  gap: 16px;
+}
+
+.kaart {
+  background: #fffdf6;
+  border: 3px solid var(--rasterlijn);
+  padding: 12px;
+}
+.kaart h3 {
+  font: 700 18px var(--pixelfont); color: var(--titel);
+  margin: 0 0 8px; letter-spacing: 1px; text-transform: uppercase;
+}
+.vergelijk {
+  display: flex; gap: 16px; align-items: flex-end; justify-content: center; flex-wrap: wrap;
+}
+.vergelijk figure { margin: 0; text-align: center; }
+.vergelijk figcaption { font-size: 12px; font-weight: 700; margin-top: 4px; opacity: .75; }
+
+.doek { position: relative; }
+.doek img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.doek.toon { outline: 2px dashed rgba(43, 54, 79, .35); }
+.anker { display: none; position: absolute; width: 0; height: 0; }
+.doek.toon .anker { display: block; }
+.anker::before, .anker::after { content: ''; position: absolute; background: var(--koraal); }
+.anker::before { left: -9px; top: -1px; width: 18px; height: 2px; }
+.anker::after { left: -1px; top: -9px; width: 2px; height: 18px; }
+
+.bg-creme { background: var(--creme); }
+.bg-donker { background: var(--titel); }
+.bg-groen { background: #3c8c5a; }
+.bg-ruit {
+  background-color: #fff;
+  background-image:
+    linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%),
+    linear-gradient(45deg, #ddd 25%, transparent 25%, transparent 75%, #ddd 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 8px 8px;
+}
+
+.meta {
+  display: grid; grid-template-columns: auto 1fr; gap: 2px 10px;
+  margin: 10px 0 0; font-size: 13px;
+}
+.meta dt { font-weight: 700; }
+.meta dd { margin: 0; font-family: ui-monospace, Consolas, monospace; }
+
+/* --- In de app --- */
+.telefoon {
+  max-width: 420px; margin: 8px auto;
+  border: 4px solid var(--nacht);
+  background: var(--creme);
+  padding: 18px 16px 24px;
+}
+.pixeltitel { font: 700 18px var(--pixelfont); color: var(--titel); letter-spacing: 1px; }
+h3.pixeltitel { margin: 22px 0 10px; text-transform: uppercase; }
+
+.duo { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.speler { margin: 0; text-align: center; }
+.speler figcaption { font: 700 15px var(--pixelfont); }
+.score { text-align: center; padding-bottom: 28px; }
+.sterren { font: 700 20px var(--pixelfont); color: var(--goud); text-shadow: 2px 2px 0 var(--nacht); }
+
+.sprite { position: relative; margin: 0 auto; isolation: isolate; }
+.sprite img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.sprite::after {
+  /* Losse grondschaduw: blijft staan wanneer de sprite later springt. */
+  content: ''; position: absolute; left: 22%; right: 22%;
+  top: var(--voet, 95%); height: 6px; margin-top: -3px;
+  background: rgba(145, 91, 67, .25); border-radius: 50%; z-index: -1;
+}
+
+.taken { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.taak {
+  display: flex; align-items: center; gap: 10px;
+  background: #fffdf6; border: 3px solid var(--nacht); padding: 8px 10px;
+}
+.taak .tekst { flex: 1; }
+.taak.klaar .tekst { text-decoration: line-through; opacity: .6; }
+.vinkje {
+  width: 22px; height: 22px; flex: none;
+  border: 3px solid var(--nacht); display: grid; place-items: center;
+  font-weight: 800; color: var(--blad); background: var(--papier);
+}
+.wie { font: 700 13px var(--pixelfont); color: #fff; padding: 2px 8px; }
+.wie.hidde { background: var(--hidde); }
+.wie.tessie { background: var(--tessie); }
+.wie.samen { background: var(--lavendel); }
+
+.huisdier { display: flex; align-items: center; gap: 12px; }
+.beloning { display: grid; gap: 2px; }
+.beloning .pixeltitel { color: var(--koraal); }
+
+.collectie {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+}
+.collectie .vak {
+  background: #fffdf6; border: 2px solid var(--rasterlijn);
+  display: grid; justify-items: center; padding: 4px 0 2px;
+  font: 600 11px var(--pixelfont); text-transform: uppercase; overflow: hidden;
+}
+
+@media (max-width: 600px) {
+  .kop, main { padding-left: 16px; padding-right: 16px; }
+  .logo { font-size: 22px; }
+}
+
+.schakel { display: flex; gap: 8px; align-items: flex-start; margin-top: 10px; font-size: 13px; }

@@ -1,0 +1,16 @@
+{
+  "name": "pixel-quest-mobile",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Pixel Quest op de iPhone: een Capacitor-schil om de webversie (dist/). Gebouwd op GitHub (macOS) als ongetekende .ipa voor SideStore.",
+  "scripts": {
+    "web": "bash ../tools/bouw_web.sh && rm -rf www && cp -r ../dist www"
+  },
+  "dependencies": {
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.5.2"
+  }
+}

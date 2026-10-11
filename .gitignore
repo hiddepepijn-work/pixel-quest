@@ -1,0 +1,17 @@
+# afhankelijkheden en bouwresultaten
+node_modules/
+dist/
+mobile/www/
+mobile/ios/
+mobile/*.ipa
+source.json
+# debug-renders en lokale rommel
+assets/debug/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+# geheimen (er zijn er nu geen; voor later)
+.env
+.env.*
+secrets.json
