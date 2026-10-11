@@ -305,6 +305,15 @@
       if (plek.kamer) { const k = kamerVan(scene.geo, plek.kamer); return k ? { x: k.x + k.b / 2 - 8, y: k.y + 24, b: 16, h: 8 } : null; }
       return null;
     }
+    // Een signaal mag nooit een gezicht bedekken: Hidde en Tessie lopen vrij door de kamer, dus de punt van de bubbel
+    // hangt altijd boven hun kruin (vloer − figuurhoogte), ook als het meubel lager is. In een lage kamer steekt de
+    // bubbel dan iets over de plafondrand; dat is beter dan over een gezicht.
+    function signaalY(b) {
+      const k = b.k || (scene && scene.geo.kamers.find(x => b.x >= x.x && b.x < x.x + x.b && b.y >= x.y && b.y < x.y + x.h));
+      if (!k) return b.y - 3;
+      const kruin = Math.max(...H.bewoners.map(w => { const a = asset(w.id); return a ? a.figuur.bron[1] / a.bronpx_per_artpixel : 0; }));
+      return Math.min(b.y - 3, k.vloerY - kruin - 3);
+    }
     function tekenSignalen() {
       signalen.querySelectorAll('.signaal').forEach(x => x.remove());   // hartjes en sterretjes mogen uitspelen
       if (!scene || scene.voorbeeld || !opties.taken) return;
@@ -317,7 +326,7 @@
         knop.type = 'button'; knop.dataset.taak = t.id;
         if (t.signaal === 'vraag') knop.textContent = '?'; else knop.appendChild(glinster(3));
         knop.setAttribute('aria-label', `${t.titel}: ${t.tekst}`);
-        knop.style.left = px((b.x + b.b * 0.5) * Z + (n - 1) * 36); knop.style.top = px((b.y - 3) * Z);
+        knop.style.left = px((b.x + b.b * 0.5) * Z + (n - 1) * 36); knop.style.top = px(signaalY(b) * Z);
         knop.onclick = () => opties.opTaak && opties.opTaak(t.id);
         signalen.appendChild(knop);
       }
