@@ -6,7 +6,7 @@
 
 - **Openen:** dubbelklik `app/index.html`. Met `?test` zie je rechtsboven de JS-foutenteller; `#huis`, `#kast` enz. opent dat tabblad.
 - **Bouwen:** `bash tools/bouw_web.sh` zet de app in `dist/` (`dist/index.html` = de app). De workflow `.github/workflows/ios.yml` roept dit ongewijzigd aan.
-- **Testen:** `PQ_PUPPETEER=<pad>/node_modules/puppeteer-core node tools/test_app.js [--dist]` (zie *Testscript*).
+- **Testen:** `node tools/test_regels.js` (spelregels, zonder browser) en `PQ_PUPPETEER=<pad>/node_modules/puppeteer-core node tools/test_app.js [--dist]` (de app in Edge; zie *Testscript*).
 
 ## Schermen
 
@@ -86,7 +86,7 @@ Alles wat gedeeld is, verandert alleen via een **opdracht** `{ id (uuid), soort,
 
 `tools/test_app.js` draait in Edge (headless) via puppeteer-core, eerst als telefoon (402×874, touch) en dan als desktop (1400×900), met een leeg profiel. Laatste run: **46 goed, 0 fout**, zowel `app/` als het gebouwde `dist/` via `file://`. Schermafbeeldingen staan in `test-uitvoer/app/` en `test-uitvoer/dist/` (niet in git).
 
-Getest: eerste start en "Wie ben jij?"; taak maken in de sheet; afronden (feestje, weekdoel +inzet, pot stijgt, melding); ongedaan maken (alles terug); claimen op het prikbord; Huis: knijpen uit en in met twee touchpoints (CDP), vastklikken op een hele stap, pannen met één vinger, "alles in beeld", knop +, zoom bewaard; bewerken (meubel slepen boekt `huis.inrichting` en pant niet, een lege plek pant wel); verbouwing 2 kopen met voorstel en akkoord (−400); kleding (petje) kopen met akkoord; herladen (log, huis, kast, claim, taak, tabblad bewaard); elk tabblad zonder JS-fouten en zonder horizontale scroll; desktop Ctrl + scrollwiel; `prefers-reduced-motion`. Met node: golden A en B, idempotent naspelen, dubbele opdracht.
+Getest: eerste start en "Wie ben jij?"; taak maken in de sheet; afronden (feestje, weekdoel +inzet, pot stijgt, melding); ongedaan maken (alles terug); claimen op het prikbord; Huis: knijpen uit en in met twee touchpoints (CDP), vastklikken op een hele stap, pannen met één vinger, "alles in beeld", knop +, zoom bewaard; bewerken (meubel slepen boekt `huis.inrichting` en pant niet, een lege plek pant wel); verbouwing 2 kopen met voorstel en akkoord (−400); kleding (petje) kopen met akkoord; herladen (log, huis, kast, claim, taak, tabblad bewaard); elk tabblad zonder JS-fouten en zonder horizontale scroll; desktop Ctrl + scrollwiel; `prefers-reduced-motion`. Met node (`node tools/test_regels.js`, 12 goed): golden A en B, huispot, pet, ongedaan maken, naspelen uit het log, dubbele opdracht, voorstel met akkoord van de ander.
 
 Niet getest: een echte iPhone (Safari/WKWebView: knijpen, safe-areas, `:has()`), Android, VoiceOver, twee telefoons tegelijk (er is geen server), offline/online, de terugblik-flow en ziek/rustweek via de UI (wel de rekenregels), de pixel-editor en eigen outfits in de nieuwe kast-layout, alle 10 niveaus op het scherm.
 
