@@ -1,6 +1,8 @@
 // Kledingkast: modulaire kleding per slot (kastitems als lagen), stel-outfits, eigen outfits en pixel-editor.
 // Leest window.PQ_KLEDING (assets/kleding.js) en window.PQ_KAST (assets/kast.js), beide gegenereerd.
 // Tekenen gebeurt in app/figuur.js (tekenLook); dat bestand deelt het huis.
+// In de app (PQStore aanwezig) komen looks en bezit uit de store: een look boekt 'kleding.look', kopen is een voorstel
+// via window.PQKastKoop (scherm-kast.js) dat de ander goedkeurt. Los (kledingkast.html) werkt alles zoals voorheen.
 (function () {
   'use strict';
   const D = window.PQ_KLEDING, F = window.PQ_FIGUUR, KAST = F.KAST;
@@ -11,6 +13,8 @@
   // Oude zone-recolor <-> uitgesneden items (de stel-outfits en het huis gebruiken nog zones).
   const ZONE_ITEM = { shirt: 'tshirt_basis', broek: 'broek_basis', schoenen: 'sneakers_basis', accessoire: 'ketting_basis' };
   const TEST = /[?&]test(=|&|$)/.test(location.search);
+  const S = window.PQStore || null;
+  const kloon = o => JSON.parse(JSON.stringify(o));
   const { OPSLAG_KAST: OPSLAG, laadBeeld, laadAlles, verkleur, accRaster, tekenLook, itemVan, kastItems, draagbaar } = F;
 
   // ---------- opslag (altijd in try/catch) ----------
@@ -22,7 +26,7 @@
   }
   function schrijf(sleutel, waarde) {
     try { localStorage.setItem(sleutel, JSON.stringify(waarde)); return true; } catch (e) {
-      $('#opslagMelding').hidden = false;
+      if ($('#opslagMelding')) $('#opslagMelding').hidden = false;
       return false;
     }
   }
@@ -34,8 +38,8 @@
   }, lees(OPSLAG.staat, {}));
   let eigenAcc = lees(OPSLAG.acc, []);          // eigen items uit de editor, met slot
   let eigenOutfits = lees(OPSLAG.outfits, []);
-  const looks = lees(OPSLAG.look, {}) || {};
-  const bezit = lees(OPSLAG.bezit, {}) || {};
+  const looks = S ? kloon(S.staat().kleding.looks || {}) : (lees(OPSLAG.look, {}) || {});
+  let bezit = S ? kloon(S.staat().kleding.bezit || {}) : (lees(OPSLAG.bezit, {}) || {});
   function startBezit(fid) {   // startkast: shirt, broek, schoenen, pyjama (en Tessies kettinkje uit het goedgekeurde figuur)
     const b = {};
     for (const it of KAST.items) if (it.startkast && it.lichaam.includes(fid)) b[it.id] = [it.kleuren[0]];
@@ -75,8 +79,22 @@
       staat.acc[f] = Object.values(looks[f]).map(x => x && x.item).filter(id => eigenAcc.some(a => a.id === id));
     }
     schrijf(OPSLAG.staat, staat);
+    if (S) {   // alleen een opdracht als de look echt veranderde
+      for (const f of CHARS) if (JSON.stringify(S.staat().kleding.looks[f] || F.standaardLook(f)) !== JSON.stringify(looks[f])) S.doe('kleding.look', { fid: f, look: looks[f] });
+      return;
+    }
     schrijf(OPSLAG.look, looks);
     schrijf(OPSLAG.bezit, bezit);
+  }
+  // Na een goedgekeurde aankoop (of een wijziging van de ander): bezit en looks opnieuw uit de store.
+  function herlaad() {
+    if (!S) return;
+    bezit = kloon(S.staat().kleding.bezit || {});
+    for (const f of CHARS) {
+      if (!bezit[f]) bezit[f] = startBezit(f);
+      const l = S.staat().kleding.looks[f];
+      looks[f] = l ? kloon(l) : F.standaardLook(f);
+    }
   }
 
   // Eigen items + het ontwerp in de editor bekendmaken bij figuur.js.
@@ -243,7 +261,12 @@
     const kleur = pas && pas.item === it.id ? pas.kleur : aan ? gedragen.kleur : it.kleuren[0];
     if (kan && !aan && heeftItem(fid, it.id)) knoppen.append(knop('Aantrekken', () => kiesItem(it)));
     if (aan && it.herkomst !== 'uitgesneden') knoppen.append(knop('Uittrekken', () => { trekUit(fid, it.slot); alles(); }));
-    if (it.soort !== 'pixels' && kleur && !heeftKleur(fid, it.id, kleur)) {
+    if (S && window.PQKastKoop && it.soort !== 'pixels' && kleur && kan && !heeftKleur(fid, it.id, kleur)) {
+      const open = window.PQKastKoop.open(fid, it.id, kleur);
+      const k = knop(open ? 'Voorstel staat open' : `Kopen: ${it.prijs} munten`, () => window.PQKastKoop.koop(fid, it, kleur));
+      k.classList.add('goud'); k.disabled = !!open;
+      knoppen.append(k);
+    } else if (!S && it.soort !== 'pixels' && kleur && !heeftKleur(fid, it.id, kleur)) {
       knoppen.append(knop(`Test: ${kleur} in bezit zetten`, () => {
         bezit[fid][it.id] = [...new Set([...(bezit[fid][it.id] || []), kleur])];
         if (kan) trekAan(fid, it, kleur);
@@ -558,7 +581,7 @@
           a.bron = 'import'; a.anker = a.anker || 'kruin';
           laad(a);
           $('#edNaam').value = a.naam || 'Import';
-        } catch (err) { alert('Dit bestand is geen item-JSON.'); }
+        } catch (err) { if (window.PQUI) window.PQUI.fout('Dit bestand is geen item-JSON.'); else $('#edNaam').value = 'Geen item-JSON'; }
       };
       r.readAsText(f);
       e.target.value = '';
@@ -570,6 +593,7 @@
   // ---------- van het blad ----------
   function tekenBlad() {
     const box = $('#figuren');
+    if (!box) return;
     box.replaceChildren();
     for (const f of D.figuurvarianten) {
       const fig = document.createElement('figure');
@@ -619,6 +643,8 @@
     tekenPreview(); tekenSlotTabs(); tekenRooster(); tekenDetail(); tekenCatalogus(); tekenEigenOutfits(); ed.teken();
     bewaar();
   }
+  window.PQ_KLEDINGKAST = { alles: () => alles(), herlaad: () => { herlaad(); alles(); }, char: () => staat.char,
+    zetChar: f => { staat.char = f; staat.gekozen = null; alles(); }, klaar: null };
 
   document.querySelectorAll('#charKeuze button').forEach(b => b.onclick = () => { staat.char = b.dataset.char; staat.gekozen = null; alles(); });
   $('#variant').onchange = e => { staat.variant = e.target.value; alles(); };
@@ -633,6 +659,7 @@
   // Controles: JS-recolor = Python-recolor (zones), en tekenLook = tools/kast.py samenstel() (lagen).
   async function controle() {
     const c = D.controle;
+    if (!$('#pariteit')) return;
     if (c) {
       const verwacht = await laadBeeld(c.verwacht);
       const o = D.catalogus.find(x => x.id === c.outfit);
@@ -700,5 +727,6 @@
     tekenBlad();
     if (window.PQ_TEST) window.PQ_TEST.info.items = `${KAST.items.length} in catalogus, ${KAST.items.filter(i => i.status === 'klaar').length} getekend`;
     return controle();
-  }).catch(e => { $('#pariteit').textContent = 'Laden mislukt: ' + e; console.error(e); });
+  }).then(() => { if (window.PQ_KLEDINGKAST.klaar) window.PQ_KLEDINGKAST.klaar(); })
+    .catch(e => { if ($('#pariteit')) $('#pariteit').textContent = 'Laden mislukt: ' + e; if (window.PQ_TEST) window.PQ_TEST.fouten.push('kast: ' + e); console.error(e); });
 })();

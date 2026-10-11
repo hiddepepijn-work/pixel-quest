@@ -2,93 +2,160 @@
 <html lang="nl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pixel Quest assets</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#fcf8ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="description" content="Pixel Quest: de gedeelde taken-app van Hidde en Tessie.">
+<title>Pixel Quest</title>
 <script src="testindicator.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@500;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="pixelquest.css">
+<link rel="stylesheet" href="huis.css">
+<link rel="stylesheet" href="app.css">
+<link rel="stylesheet" href="app-schermen.css">
 <script src="../assets/manifest.js"></script>
+<script src="../assets/kleding.js"></script>
+<script src="../assets/kast.js"></script>
+<script src="../assets/huis.js"></script>
+<script src="../assets/beweging.js"></script>
 </head>
-<body>
-<header class="kop">
-  <div class="logo"><span class="hart">♥</span> PIXEL QUEST <span class="hart">♥</span></div>
-  <nav class="tabs" role="tablist">
-    <button role="tab" data-tab="controle" aria-selected="true">Controle</button>
-    <button role="tab" data-tab="app" aria-selected="false">In de app</button>
-    <a class="tablink" href="kledingkast.html">Kledingkast</a>
-    <a class="tablink" href="huis.html">Ons huis</a>
-  </nav>
-</header>
-
-<main>
-  <section id="controle" class="paneel">
-    <div class="balk">
-      <label>Versie
-        <select id="versie">
-          <option value="bron">Bronuitsnede (exact)</option>
-          <option value="native">Native raster (reconstructie)</option>
-        </select>
-      </label>
-      <label>Achtergrond
-        <select id="achtergrond">
-          <option value="creme">Crème</option>
-          <option value="ruit">Transparantieruit</option>
-          <option value="donker">Donker</option>
-          <option value="groen">Groen</option>
-        </select>
-      </label>
-      <label>Zoom
-        <select id="zoom">
-          <option value="2">2×</option>
-          <option value="3" selected>3×</option>
-          <option value="4">4×</option>
-        </select>
-      </label>
-      <label class="vink"><input type="checkbox" id="toonCanvas" checked> Canvas + anker</label>
-    </div>
-    <p class="toelichting" id="toelichting"></p>
-    <h2 class="sectie">Characters</h2>
-    <div class="raster" id="rasterCharacters"></div>
-    <h2 class="sectie">Pets</h2>
-    <div class="raster" id="rasterPets"></div>
-  </section>
-
-  <section id="app" class="paneel" hidden>
-    <div class="telefoon">
-      <div class="scherm">
-        <div class="duo">
-          <figure class="speler"><div class="sprite" data-id="hidde" data-px="2"></div><figcaption>Hidde</figcaption></figure>
-          <div class="score">
-            <div class="pixeltitel">Vandaag</div>
-            <div class="sterren">★ 3 / 5</div>
+<body class="app">
+<div class="schil">
+  <main class="views">
+    <section class="view" id="view-vandaag" aria-label="Vandaag"></section>
+    <section class="view" id="view-quests" aria-label="Quests" hidden></section>
+    <section class="view vol" id="view-huis" aria-label="Ons huis" hidden></section>
+    <section class="view" id="view-kast" aria-label="Kledingkast" hidden>
+      <div class="kast-podium kaart">
+        <div class="kast-spiegel bg-creme" id="spiegel"><canvas id="preview" width="64" height="112" aria-label="Character met look"></canvas></div>
+        <div class="kast-zij">
+          <div class="chips wissel" role="radiogroup" aria-label="Wiens look" id="charKeuze">
+            <button class="chip" type="button" data-char="hidde" aria-pressed="true">Hidde</button>
+            <button class="chip" type="button" data-char="tessie" aria-pressed="false">Tessie</button>
           </div>
-          <figure class="speler"><div class="sprite" data-id="tessie" data-px="2"></div><figcaption>Tessie</figcaption></figure>
+          <p class="outfitnaam" id="outfitNaam">Startkast</p>
+          <ul class="looklijst" id="lookLijst" aria-label="Huidige look"></ul>
+          <button class="knop mini stil" type="button" id="naarOrigineel">Startkast</button>
         </div>
-
-        <h3 class="pixeltitel">Quests</h3>
-        <ul class="taken">
-          <li class="taak klaar"><span class="vinkje">✓</span><span class="tekst">Planten water geven</span><span class="wie hidde">Hidde</span></li>
-          <li class="taak"><span class="vinkje"></span><span class="tekst">Boodschappen voor het weekend</span><span class="wie tessie">Tessie</span></li>
-          <li class="taak"><span class="vinkje"></span><span class="tekst">Badkamer schoonmaken</span><span class="wie samen">Samen</span></li>
-          <li class="taak klaar"><span class="vinkje">✓</span><span class="tekst">Was ophangen</span><span class="wie tessie">Tessie</span></li>
-        </ul>
-
-        <h3 class="pixeltitel">Huisdier</h3>
-        <div class="huisdier">
-          <div class="sprite" data-id="draakje" data-px="2"></div>
-          <div class="beloning"><span class="pixeltitel">+20 XP</span><span>Nog 2 quests tot de volgende beloning</span></div>
-        </div>
-
-        <h3 class="pixeltitel">Collectie</h3>
-        <div class="collectie" id="collectie"></div>
-        <label class="vink schakel"><input type="checkbox" id="eigenPixel">
-          Ottertje, egeltje en varkentje op eigen pixelgrootte (1,5× groter)</label>
+        <p class="pasbalk" id="pasBalk" hidden></p>
       </div>
-    </div>
-  </section>
-</main>
+      <section class="kaart kast-kaart" id="kastKaart" aria-label="Kast">
+        <div class="chips slottabs" role="tablist" aria-label="Slot" id="slotTabs"></div>
+        <div class="itemrooster" id="itemRooster"></div>
+        <div class="itemdetail" id="itemDetail"></div>
+      </section>
+      <details class="kaart kast-meer">
+        <summary><h2>Stel-outfits</h2></summary>
+        <p class="noot">Bijpassende looks voor jullie allebei, met de startkast in andere kleuren.</p>
+        <div class="catalogus" id="catalogus"></div>
+      </details>
+      <details class="kaart kast-meer">
+        <summary><h2>Mijn outfits</h2></summary>
+        <div class="rij">
+          <input class="invoer" type="text" id="outfitInvoer" placeholder="Naam van je outfit" maxlength="40" aria-label="Naam van je outfit">
+          <button class="knop mini" type="button" id="outfitOpslaan">Opslaan</button>
+        </div>
+        <ul class="lijst" id="eigenOutfits"></ul>
+        <p class="noot" id="opslagMelding" hidden>Opslaan lukt niet in deze browser (privévenster?).</p>
+      </details>
+      <details class="kaart kast-meer" id="editorKaart">
+        <summary><h2>Zelf tekenen</h2></summary>
+        <div class="editor">
+          <div class="rij">
+            <input class="invoer" type="text" id="edNaam" placeholder="Naam" maxlength="30" value="Mijn item" aria-label="Naam van je item">
+            <label>B <input type="number" id="edB" min="1" max="40" value="16"></label>
+            <label>H <input type="number" id="edH" min="1" max="48" value="10"></label>
+          </div>
+          <div class="ed-raster-houder"><canvas id="edRaster" width="16" height="10" aria-label="Tekenraster"></canvas></div>
+          <div class="chips gereedschap" role="radiogroup" aria-label="Gereedschap" id="gereedschap">
+            <button class="chip" type="button" data-tool="potlood" aria-pressed="true">Potlood</button>
+            <button class="chip" type="button" data-tool="gum" aria-pressed="false">Gum</button>
+            <button class="chip" type="button" data-tool="vullen" aria-pressed="false">Vullen</button>
+            <button class="chip" type="button" data-tool="ankerpunt" aria-pressed="false">Anker</button>
+          </div>
+          <div class="swatches" id="edPalet" aria-label="Palet"></div>
+          <div class="swatches tinten" id="edTinten" aria-label="Tinten"></div>
+          <div class="rij">
+            <button class="knop mini" type="button" id="edSpiegel">Spiegelen</button>
+            <label class="schakel"><input type="checkbox" id="edSymmetrie"> Symmetrisch</label>
+            <button class="knop mini" type="button" id="edWissen">Wissen</button>
+          </div>
+          <div class="rij">
+            <label>Slot <select id="edSlot"><option value="hoofd">Hoofd</option><option value="accessoire">Accessoire</option><option value="jas">Jas (overlay)</option></select></label>
+            <label>Anker <select id="edAnker"><option value="kruin">Bovenkant hoofd</option><option value="voorhoofd">Voorhoofd</option><option value="ogen">Ogen</option><option value="nek">Nek</option><option value="hand_links">Hand links</option><option value="hand_rechts">Hand rechts</option></select></label>
+            <label>Laag <select id="edLaag"><option value="voor">Voor</option><option value="achter">Achter</option></select></label>
+          </div>
+          <div class="rij">
+            <span>Verschuif (<span id="edVerschuivingTekst">0, 0</span>)</span>
+            <button class="knop mini" type="button" data-schuif="-1,0" aria-label="links">←</button>
+            <button class="knop mini" type="button" data-schuif="1,0" aria-label="rechts">→</button>
+            <button class="knop mini" type="button" data-schuif="0,-1" aria-label="omhoog">↑</button>
+            <button class="knop mini" type="button" data-schuif="0,1" aria-label="omlaag">↓</button>
+          </div>
+          <label class="schakel"><input type="checkbox" id="edToon" checked> Toon ontwerp op character</label>
+          <div class="knoprij">
+            <button class="knop mini goud" type="button" id="edOpslaan">Bewaar item</button>
+            <button class="knop mini" type="button" id="edPng">PNG</button>
+            <button class="knop mini" type="button" id="edJson">JSON</button>
+            <label class="knop mini">Importeer<input type="file" id="edImport" accept=".json,application/json" hidden></label>
+          </div>
+          <p class="noot">Teken op het native raster (1 vakje = 1 artpixel). Eigen ontwerpen dragen is gratis.</p>
+        </div>
+      </details>
+      <details class="kaart kast-meer">
+        <summary><h2>Weergave</h2></summary>
+        <div class="rij">
+          <label>Versie <select id="variant"><option value="bron">Bron (exact)</option><option value="native">Native raster</option></select></label>
+          <label>Achtergrond <select id="achtergrond"><option value="creme">Crème</option><option value="groen">Groen</option><option value="donker">Donker</option><option value="ruit">Ruit</option></select></label>
+          <label class="schakel"><input type="checkbox" id="toonAnkers"> Ankers</label>
+          <button class="knop mini" type="button" id="exportPreview">PNG van preview</button>
+        </div>
+      </details>
+    </section>
+    <section class="view" id="view-meer" aria-label="Meer" hidden></section>
+  </main>
+  <nav class="tabbalk" role="tablist" aria-label="Schermen">
+    <button type="button" role="tab" data-tab="vandaag" aria-controls="view-vandaag"><span class="tabicoon"><img src="../assets/items/bron/ster.png" alt=""></span>Vandaag</button>
+    <button type="button" role="tab" data-tab="quests" aria-controls="view-quests"><span class="tabicoon"><img src="../assets/items/bron/klembord.png" alt=""></span>Quests<span class="tabbadge" hidden></span></button>
+    <button type="button" role="tab" data-tab="huis" aria-controls="view-huis"><span class="tabicoon"><span class="ic-huis"></span></span>Huis</button>
+    <button type="button" role="tab" data-tab="kast" aria-controls="view-kast"><span class="tabicoon"><img src="../assets/items/bron/rugzak.png" alt=""></span>Kast</button>
+    <button type="button" role="tab" data-tab="meer" aria-controls="view-meer"><span class="tabicoon"><span class="ic-meer"></span></span>Meer<span class="tabbadge" hidden></span></button>
+  </nav>
+</div>
+<div class="melding" id="melding" role="status" aria-live="polite" hidden></div>
 
-<script src="preview.js"></script>
+<script src="figuur.js"></script>
+<script src="kast-auto.js"></script>
+<script src="huis-model.js"></script>
+<script src="omgeving.js"></script>
+<script src="huis-pixel.js"></script>
+<script src="huis-buiten.js"></script>
+<script src="huis-bomen.js"></script>
+<script src="omgeving-teken.js"></script>
+<script src="huis-teken.js"></script>
+<script src="huis-anim.js"></script>
+<script src="huis-anim-gedrag.js"></script>
+<script src="omgeving-huis.js"></script>
+<script src="huis-zoom.js"></script>
+<script src="huis.js"></script>
+<script src="store-regels.js"></script>
+<script src="store-week.js"></script>
+<script src="store-opdrachten.js"></script>
+<script src="store-winkel.js"></script>
+<script src="store-start.js"></script>
+<script src="store.js"></script>
+<script src="ui.js"></script>
+<script src="app.js"></script>
+<script src="app-taken.js"></script>
+<script src="app-taken-sheet.js"></script>
+<script src="app-voorstel.js"></script>
+<script src="scherm-vandaag.js"></script>
+<script src="scherm-quests.js"></script>
+<script src="scherm-huis.js"></script>
+<script src="scherm-kast.js"></script>
+<script src="scherm-meer.js"></script>
+<script src="kledingkast.js"></script>
 </body>
 </html>
