@@ -196,6 +196,7 @@
     // ---------- publiek ----------
     function begin(stand, focus) {
       const { vw, vh } = maat();
+      if (stand && !(Number.isFinite(stand.eff) && Number.isFinite(stand.cx) && Number.isFinite(stand.cy))) stand = null;   // beschadigde of oude stand
       eff = stand && stand.eff ? klem(stand.eff, minEff(), maxEff()) : klem(2, minEff(), maxEff());
       if (eff >= 1) eff = doelEff(eff);
       const c = stand && stand.cx != null ? stand : focus || { cx: inhoud().w / 2, cy: inhoud().h / 2 };

@@ -25,20 +25,33 @@
 
   // ---------- migraties: MIGRATIES[n] zet een bestand van versie n om naar n + 1 ----------
   const MIGRATIES = {};
+  const isObj = o => !!o && typeof o === 'object' && !Array.isArray(o);
   function migreer(data) {
-    if (!data || typeof data !== 'object' || !data.basis || !Array.isArray(data.log)) return null;
+    if (!isObj(data) || !isObj(data.basis) || !Array.isArray(data.log)) return null;
     let v = data.versie || 1;
     while (v < VERSIE) { if (!MIGRATIES[v]) return null; data = MIGRATIES[v](data); v = data.versie; }
     return data;
   }
-  // Velden die er altijd moeten zijn (ook als een oudere basis ze mist).
+  // Velden die er altijd moeten zijn (ook als een oudere of beschadigde basis ze mist of iets anders bevat).
   function vulAan(st) {
     for (const [k, v] of Object.entries({ taken: {}, afrondingen: [], bedankjes: [], weekdoel: [], afwezig: [], rustweken: [],
-      terugblik: {}, voorstellen: [], overnames: 0 })) if (st[k] == null) st[k] = kloon(v);
-    st.pets = Object.assign({ actief: 'draakje', start: { draakje: 0 }, namen: {} }, st.pets);
-    st.kleding = Object.assign({ bezit: { hidde: {}, tessie: {} }, looks: { hidde: null, tessie: null } }, st.kleding);
+      terugblik: {}, voorstellen: [], overnames: 0 })) if (st[k] == null || (typeof st[k]) !== (typeof v) || Array.isArray(st[k]) !== Array.isArray(v)) st[k] = kloon(v);
+    for (const [id, t] of Object.entries(st.taken)) {
+      if (!isObj(t)) { delete st.taken[id]; continue; }
+      t.id = id; t.titel = String(t.titel == null ? 'Taak' : t.titel);
+    }
+    for (const k of ['afrondingen', 'bedankjes', 'weekdoel', 'afwezig', 'voorstellen']) st[k] = st[k].filter(isObj);
+    st.pets = Object.assign({ actief: 'draakje', start: { draakje: 0 }, namen: {} }, isObj(st.pets) ? st.pets : {});
+    for (const k of ['start', 'namen']) if (!isObj(st.pets[k])) st.pets[k] = k === 'start' ? { draakje: 0 } : {};
+    st.kleding = Object.assign({ bezit: { hidde: {}, tessie: {} }, looks: { hidde: null, tessie: null } }, isObj(st.kleding) ? st.kleding : {});
+    if (!isObj(st.kleding.bezit)) st.kleding.bezit = { hidde: {}, tessie: {} };
+    if (!isObj(st.kleding.looks)) st.kleding.looks = { hidde: null, tessie: null };
+    const HM = wortel.PQ_HUISMODEL;
+    const huisOk = isObj(st.huis) && st.huis.versie === 3 && Array.isArray(st.huis.inrichting) && Array.isArray(st.huis.doos);
+    if (HM && !huisOk) { try { st.huis = HM.normaliseer(isObj(st.huis) ? st.huis : null); } catch (e) { st.huis = HM.normaliseer(null); } }
     return st;
   }
+  const geldigeOp = op => isObj(op) && typeof op.id === 'string' && typeof op.soort === 'string' && isObj(op.data);
 
   // ---------- opbouwen ----------
   function pas(st, op) {
@@ -49,17 +62,24 @@
   function bouw() {
     staat = vulAan(kloon(basis));
     gezien = new Set();
+    log = log.filter(geldigeOp);     // rommel in het log (beschadigd bestand) overslaan in plaats van vastlopen
     for (const op of log) {
       gezien.add(op.id);
       try { pas(staat, op); op.mislukt = undefined; } catch (e) { op.mislukt = e.message; }
     }
     spiegel();
   }
+  // Een beschadigd bestand wordt letterlijk bewaard als 'pq-app-kapot' (niet weggooien) en de app begint schoon.
   function laad() {
-    const data = migreer(leesJson(SLEUTEL));
-    if (!data && leesJson(SLEUTEL)) schrijfJson('pq-app-kapot', leesJson(SLEUTEL));   // bewaren, niet weggooien
-    if (data) { basis = data.basis; log = data.log; }
-    else { basis = wortel.PQStart.basis(Date.now()); log = []; bewaar(); }
+    let ruw = null, data = null;
+    try { ruw = localStorage.getItem(SLEUTEL); } catch (e) { /* geen opslag: schoon beginnen */ }
+    try { data = migreer(JSON.parse(ruw || 'null')); } catch (e) { data = null; }
+    if (data) {
+      basis = data.basis; log = data.log;
+      try { bouw(); return staat; } catch (e) { data = null; }
+    }
+    if (ruw) { try { localStorage.setItem('pq-app-kapot', ruw); } catch (e) { /* */ } }
+    basis = wortel.PQStart.basis(Date.now()); log = []; bewaar();
     bouw();
     return staat;
   }
@@ -101,9 +121,15 @@
   }
 
   // ---------- apparaat (niet gedeeld, niet in het log) ----------
-  const apparaat = () => leesJson(APPARAAT) || {};
-  const zetApparaat = (k, v) => { const a = apparaat(); a[k] = v; schrijfJson(APPARAAT, a); };
-  const ik = () => apparaat().ik || null;
+  // Zonder opslag (privévenster) of met rommel in de sleutel onthoudt de app het in het geheugen, tot herladen.
+  let apparaatGeheugen = {};
+  function apparaat() {
+    const a = leesJson(APPARAAT);
+    if (isObj(a)) apparaatGeheugen = a;
+    return Object.assign({}, apparaatGeheugen);
+  }
+  const zetApparaat = (k, v) => { const a = apparaat(); a[k] = v; apparaatGeheugen = a; schrijfJson(APPARAAT, a); };
+  const ik = () => { const i = apparaat().ik; return i === 'hidde' || i === 'tessie' ? i : null; };
   function reset() {
     for (const k of [SLEUTEL, APPARAAT, 'pq-kk-look', 'pq-kk-bezit', 'pq-huis-staat']) { try { localStorage.removeItem(k); } catch (e) { /* */ } }
     basis = wortel.PQStart.basis(Date.now(), true); log = [];

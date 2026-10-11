@@ -53,7 +53,7 @@
     root = r;
     chips = el('div.chips', { role: 'tablist', 'aria-label': 'Filter' }, FILTERS.map(([f, n]) => el('button.chip', { type: 'button', role: 'tab', 'data-f': f,
       onclick: () => { filterNu = f; S.zetApparaat('questFilter', f); teken(); } }, n, el('span.tel'))));
-    filterNu = S.apparaat().questFilter || 'mijn';
+    filterNu = FILTERS.some(([f]) => f === S.apparaat().questFilter) ? S.apparaat().questFilter : 'mijn';
     lijst = el('div.quests-lijst');
     root.append(
       el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Quests' }), el('p.sub', { tekst: 'Wie wil, pakt. Niemand is de manager.' })),
