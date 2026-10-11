@@ -346,14 +346,21 @@
         signalen.appendChild(knop);
       }
     }
-    function feestje(plek) {
+    // Feestje in het huis: sterretjes (en optioneel "+inzet" dat opstijgt) bij de plek, en een loper-pet huppelt.
+    function feestje(plek, tekst) {
       const b = plekBox(plek), s = schaal();
       let x, y;
       if (b) { x = (b.x + b.b / 2) * Z; y = b.y * Z; }
       else { const st = zoom ? zoom.stand() : { tx: 0, ty: 0 }; x = (venster.clientWidth / 2 - st.tx) / s; y = (venster.clientHeight / 3 - st.ty) / s; }
-      const n = minderBeweging ? 5 : 12;
+      const n = minderBeweging ? 5 : 16, groot = 1 / Math.max(0.5, s);
+      if (tekst) {
+        const plus = el('div', 'pluslabel', tekst);
+        plus.style.left = px(x); plus.style.top = px(y - 18 * groot); plus.style.fontSize = px(20 * groot);
+        signalen.appendChild(plus);
+        setTimeout(() => plus.remove(), 1700);
+      }
       for (let i = 0; i < n; i++) {
-        const st = el('div', 'deeltje', '★'), hoek = (i / n) * Math.PI * 2, r = 30 + Math.random() * 30;
+        const st = el('div', 'deeltje', i % 4 ? '★' : '♥'), hoek = (i / n) * Math.PI * 2, r = (40 + Math.random() * 50) * groot;
         st.style.left = px(x - 8); st.style.top = px(y - 12);
         st.style.setProperty('--dx', px(Math.cos(hoek) * r)); st.style.setProperty('--dy', px(Math.sin(hoek) * r - 10));
         signalen.appendChild(st);
@@ -583,7 +590,7 @@
     const api = {
       teken, tekenLicht, tekenSignalen, feestje, naarDoos, uitDoos, herstel, zoom, element: venster,
       // Schuif het huis zacht zodat de plek van een taak op schermhoogte y staat (bv. boven een open menu).
-      kijkNaar(plek, y) { const b = plekBox(plek); if (b) zoom.glijNaar(b.x + b.b / 2, b.y, y); },
+      kijkNaar(plek, y, x) { const b = plekBox(plek); if (b) zoom.glijNaar(b.x + b.b / 2, b.y, y, x); },
       scene: sceneInfo,
       pauze() {
         if (actief !== api) return;

@@ -38,32 +38,33 @@
     // Staat het menu open (telefoon), dan schuift het huis eerst zo dat het feestje boven het menu te zien is.
     document.addEventListener('pq-afgerond', e => {
       const a = e.detail.afronding || {}, plek = e.detail.taak.plek || { bewoner: a.samen ? 'samen' : (a.door || S.ik()) };
-      const menu = wortel.PQApp.menuOpen() && !breed();
-      if (menu) huis.kijkNaar(plek, zichtbaar().midden);
-      setTimeout(() => { huis.feestje(plek); blij(); }, menu ? 320 : 0);
+      const menu = wortel.PQApp.menuOpen(), z = zichtbaar();
+      if (menu) huis.kijkNaar(plek, z.midden, z.rechts / 2);
+      setTimeout(() => { huis.feestje(plek, a.inzet ? '+' + a.inzet : null); blij(); }, menu ? 320 : 0);
     });
     // Menu open op de telefoon: het huis schuift zodat Hidde en Tessie boven het menu staan; bij sluiten terug.
     let voorMenu = null;
     document.addEventListener('pq-menu', e => {
-      if (breed() || huis.bewerkt()) return;
+      if (huis.bewerkt()) return;
       if (e.detail.open) {
         const z = zichtbaar();
-        voorMenu = huis.zoom.stand(); huis.zoom.zetVeld({ boven: z.boven, onder: z.onder });
-        huis.kijkNaar({ bewoner: 'samen' }, z.kruin);
+        voorMenu = huis.zoom.stand(); huis.zoom.zetVeld({ boven: z.boven, onder: z.onder, rechts: z.rechts });
+        huis.kijkNaar({ bewoner: 'samen' }, breed() ? (z.boven + z.onder) / 2 - 40 : z.kruin, z.rechts / 2);
       } else { huis.zoom.zetVeld(null); if (voorMenu) huis.zoom.terugNaar(voorMenu); voorMenu = null; }
     });
     document.addEventListener('pq-bedankt', blij);
     if (!S.apparaat().zoomUitleg) {
       S.zetApparaat('zoomUitleg', 1);
-      setTimeout(() => { if (!document.querySelector('.sheet-achter') && !wortel.PQApp.menuOpen()) U.meld('Knijp om te zoomen, sleep om rond te kijken. Het menu opent onderin.'); }, 900);
+      setTimeout(() => { if (!document.querySelector('.sheet-achter') && !wortel.PQApp.menuOpen()) U.meld('Knijp om te zoomen, sleep om rond te kijken. Het menu opent onderin.', { soort: 'boven', duur: 5000 }); }, 900);
     }
   }
   const breed = () => matchMedia('(min-width: 900px)').matches;
   // Het zichtbare stuk huis tussen de HUD en het (open) menu, in schermpixels.
   function zichtbaar() {
     const m = document.getElementById('menu'), top = hud.getBoundingClientRect().bottom;
-    const onder = innerHeight - (m ? m.offsetHeight : 0);
-    return { boven: top, onder, midden: (top + onder) / 2 + 20, kruin: top + 58 };
+    // Telefoon: het menu ligt onderin; breed scherm: het menu is een zijpaneel rechts.
+    const onder = breed() ? innerHeight : innerHeight - (m ? m.offsetHeight : 0), rechts = breed() ? innerWidth - (m ? m.offsetWidth : 0) : innerWidth;
+    return { boven: top, onder, rechts, midden: (top + onder) / 2 + 20, kruin: top + 58 };
   }
   function blij() {
     const p = hud.querySelector('.hud-pet');
@@ -156,7 +157,8 @@
 
   wortel.PQHuisScherm = {
     huis: () => huis, info: () => laatsteInfo, bewerk, doos, instellingen, gereedschap,
-    bekijk(n) { wortel.PQApp.ga('huis'); huis.bekijk(n); },
+    // Voorbeeld van een niveau: het menu dicht en het hele (nieuwe) huis in beeld, niet alleen de lucht.
+    bekijk(n) { wortel.PQApp.ga('huis'); huis.bekijk(n); setTimeout(() => huis.zoom.pas(), 320); },
   };
   wortel.PQApp.scherm('huis', {
     maak,

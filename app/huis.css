@@ -123,6 +123,13 @@ canvas, .huisvenster img { image-rendering: pixelated; image-rendering: crisp-ed
   transform: translate(-50%, -100%); font: 700 13px var(--pixelfont); white-space: nowrap;
   background: var(--creme); border: 2px solid var(--nacht); padding: 1px 6px; animation: vervaag 2.2s steps(4) forwards;
 }
+.pluslabel {
+  position: absolute; transform: translate(-50%, -100%); pointer-events: none; z-index: 7; white-space: nowrap;
+  font: 800 20px var(--tekstfont); color: var(--goud); text-shadow: 2px 2px 0 var(--nacht), -1px -1px 0 var(--nacht);
+  animation: stijg-plus 1.6s ease-out forwards;
+}
+@keyframes stijg-plus { 0% { translate: 0 6px; opacity: 0; } 15% { translate: 0 0; opacity: 1; } 70% { opacity: 1; } 100% { translate: 0 -34px; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .pluslabel { animation: vervaag 1.6s steps(2) forwards; } }
 .deeltje { font: 700 18px var(--pixelfont); color: var(--goud); text-shadow: 1px 1px 0 var(--nacht); animation: spat 1s steps(5) forwards; }
 @keyframes stijg { to { translate: 0 -28px; opacity: 0; } }
 @keyframes vervaag { 0%, 70% { opacity: 1; } 100% { opacity: 0; } }
