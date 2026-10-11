@@ -24,11 +24,14 @@
     const maxEff = () => Math.max(MAX, Math.ceil(minEff()));
     // Grenzen voor tx, ty bij deze zoom. Kleiner dan het venster: horizontaal in het midden, en verticaal met de
     // grondlijn op ~70% van de hoogte (lucht erboven, een strook grond eronder), binnen het venster.
+    // Met een open menu is alleen het stuk tussen boven en onder zichtbaar (zetVeld); dan mag je verticaal meer pannen.
+    let veld = null;
     function grenzen(e) {
       const { vw, vh } = maat(), { w, h, g } = inhoud(), sw = w * e, sh = h * e;
+      const v = veld || { boven: 0, onder: vh }, hv = v.onder - v.boven;
       const gx = sw <= vw ? [(vw - sw) / 2, (vw - sw) / 2] : [vw - sw, 0];
-      const y = klem(vh * 0.7 - (g || h) * e, 0, vh - sh);
-      const gy = sh <= vh ? [y, y] : [vh - sh, 0];
+      const y = klem(v.boven + hv * 0.7 - (g || h) * e, v.boven, v.onder - sh);
+      const gy = sh <= hv ? [y, y] : [v.onder - sh, v.boven];
       return { gx, gy };
     }
     const elastisch = (v, [a, b]) => (v < a ? a - (a - v) * 0.35 : v > b ? b + (v - b) * 0.35 : v);
@@ -214,6 +217,9 @@
       in: () => { const { vw, vh } = maat(); animeer(eff < 1 ? 1 : Math.min(maxEff(), Math.round(eff) + 1), vw / 2, vh / 2, () => zetVast()); },
       uit: () => { const { vw, vh } = maat(); animeer(eff > 1 ? Math.max(minEff(), Math.round(eff) - 1) : minEff(), vw / 2, vh / 2, () => zetVast()); },
       pas: () => { const { vw, vh } = maat(); animeer(minEff(), vw / 2, vh / 2, () => zetVast()); },
+      zetVeld(v) { veld = v || null; },
+      // Terug naar een eerdere stand (zelfde zoom), bv. na het sluiten van het menu.
+      terugNaar(st) { if (!st || Math.abs(st.eff - eff) > 1e-6) return; const { vw, vh } = maat(); this.glijNaar((vw / 2 - st.tx) / eff, (vh / 2 - st.ty) / eff, vh / 2); },
       // Zacht pannen (geen zoom) zodat scènepunt (cx, cy) op schermpunt (midden, y) komt.
       glijNaar(cx, cy, y) {
         const { vw } = maat(), van = { x: tx, y: ty };

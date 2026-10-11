@@ -25,7 +25,7 @@ const { start, server, check, telling, wacht, DIST } = require('./hulp');
   await naar(2.2);
   await h.tab('vandaag');
   check('na 2,2 dagen weer op Vandaag (dorstig)', await R(id => { const e = document.querySelector(`#view-vandaag [data-taak="${id}"] .stand`); return e && e.classList.contains('dorstig'); }, plant));
-  await naar(3.5);
+  await naar(3.5); await h.tab('vandaag');
   check('na 3,5 dagen hangend', await R(id => { const e = document.querySelector(`#view-vandaag [data-taak="${id}"] .stand`); return e && e.classList.contains('hangend'); }, plant));
   await naar(0);
 

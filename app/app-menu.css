@@ -77,6 +77,9 @@
 .ic-hamer { width: 22px; height: 22px; background: var(--eik); clip-path: polygon(0 18%, 64% 18%, 64% 0, 100% 0, 100% 46%, 64% 46%, 64% 30%, 46% 30%, 46% 100%, 28% 100%, 28% 30%, 0 30%); }
 .view .kopregel.klein h1 { font-size: 22px; }
 
+/* Met het menu open staat een melding bovenin, over het huis: zo bedekt hij geen taken of knoppen in het menu. */
+body:has(.menu.open) .melding { bottom: auto; top: calc(var(--veilig-boven) + 70px); }
+
 /* ---------- breed scherm: zijpaneel ---------- */
 @media (min-width: 900px) {
   .menu { left: auto; top: 0; right: 0; width: 440px; max-width: none; height: auto; min-height: 0; margin: 0;

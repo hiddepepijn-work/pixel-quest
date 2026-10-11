@@ -27,8 +27,9 @@ const TELLER = `(() => {
     return r;
   }
   console.log('1. Frametijd met CPU 4× trager');
-  const v = await meet('Vandaag (compact huis loopt)');
-  check('Vandaag: p95 frametijd < 50 ms bij 4× throttling', v.p95 < 50, v);
+  await h.tab('vandaag'); await wacht(800);
+  const v = await meet('Menu open op Vandaag (huis loopt erboven)');
+  check('Menu open: p95 frametijd < 50 ms bij 4× throttling', v.p95 < 50, v);
   await h.tab('huis'); await wacht(1500);
   const hu = await meet('Huis volledig');
   check('Huis: p95 frametijd < 50 ms bij 4× throttling', hu.p95 < 50, hu);
@@ -37,13 +38,13 @@ const TELLER = `(() => {
   await wacht(1500);
   const lang = await R(() => window.__qa.lang);
   console.log('    lange taken bij inzoomen (hertekenen):', JSON.stringify(lang));
+  // Huis-eerst: het huis staat altijd in beeld (ook boven het menu) en loopt dus door. Op de achtergrond stopt het:
+  // de browser draait dan geen animatieframes en het gedrag/de weerdeeltjes slaan document.hidden over.
   await h.tab('quests'); await wacht(1500);
-  const q = await meet('Quests (huis buiten beeld)', 3000);
-  check('buiten beeld: huis vraagt geen animatieframes meer aan', q.raf <= 2, q);
-  check('buiten beeld: weinig timers (< 10 in 3 s)', q.timers < 10, q);
-  await h.tab('meer'); await wacht(800);
-  const m = await meet('Meer', 3000);
-  check('Meer: geen animatieframes van het huis', m.raf <= 2, m);
+  const q = await meet('Menu open op Quests', 3000);
+  check('menu open: weinig timers (< 10 in 3 s)', q.timers < 10, q);
+  check('menu open: p95 frametijd < 50 ms', q.p95 < 50, q);
+  await h.tab('huis'); await wacht(500);
   await cdp.send('Emulation.setCPUThrottlingRate', { rate: 1 });
   const f = await h.jsFouten();
   check('0 JS-fouten', f.length === 0, f);
@@ -54,9 +55,9 @@ const TELLER = `(() => {
   const t0 = Date.now();
   await o.p.goto(url + 'index.html?test', { waitUntil: 'load' }); const laad = Date.now() - t0; await wacht(800);
   await o.tik('.wiekaart[aria-label="Ik ben Tessie"]'); await wacht(1000);
-  const fonts = await o.R(async () => { await document.fonts.ready; return { geladen: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family), h1: getComputedStyle(document.querySelector('h1')).fontFamily }; });
+  const fonts = await o.R(async () => { await document.fonts.ready; return { geladen: [...document.fonts].filter(f => f.status === 'loaded').map(f => f.family), menuknop: getComputedStyle(document.querySelector('.menuknop')).fontFamily }; });
   console.log(`    laadtijd ${laad} ms, fonts ${JSON.stringify(fonts)}`);
-  await o.foto('o01-offline-vandaag');
+  await o.foto('o00-offline-huis'); await o.tab('vandaag'); await o.foto('o01-offline-vandaag');
   await o.tab('quests'); await o.foto('o02-offline-quests');
   await o.tab('meer'); await o.foto('o03-offline-meer');
   check('offline: lokale fonts geladen', fonts.geladen.includes('Pixelify Sans') && fonts.geladen.includes('Nunito'), fonts);

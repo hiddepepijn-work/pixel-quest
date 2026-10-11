@@ -70,13 +70,19 @@ async function start(opties) {
       await wacht(100);
       await e.asElement().tap(); await wacht(300);
     },
-    async tab(n) { await h.tik(`.tabbalk [data-tab="${n}"]`); await wacht(600); },
+    // Huis-eerst: tab('huis') sluit het menu; elke andere naam opent het menu (menuknop) op dat tabblad.
+    async tab(n) {
+      const open = await R(() => window.PQApp && window.PQApp.menuOpen());
+      if (n === 'huis') { if (open) { await h.tik('#menuSluit'); await wacht(450); } return; }
+      if (!open) { await h.tik('#menuKnop'); await wacht(450); }
+      await h.tik(`.menu-tabs [data-tab="${n}"]`); await wacht(500);
+    },
     st: () => R(() => JSON.parse(JSON.stringify(window.PQStore.staat()))),
     week: () => R(() => { const R = window.PQRegels, S = window.PQStore; const wk = R.weken(S.staat(), Date.now()); return { nu: wk.nu, streak: wk.streak, record: wk.record, gehaald: wk.gehaald, pot: R.pot(S.staat(), Date.now()), lijst: wk.lijst }; }),
     async klok(dagen, laad) { await R(ms => localStorage.setItem('qa-klok', String(ms)), Math.round(dagen * 864e5)); if (laad !== false) { await p.reload({ waitUntil: 'load' }); await wacht(1200); } },
     sheetDicht: async () => { await R(() => window.PQUI.sluitAlles()); await wacht(350); },
     async jsFouten() { const w = await R(() => (window.__qaFouten || []).concat((window.PQ_TEST && window.PQ_TEST.fouten) || [])).catch(() => []); return fouten.concat(w); },
-    async horizontaal() { return R(() => [...document.querySelectorAll('.view:not([hidden]), .sheet-binnen')].some(v => v.scrollWidth > v.clientWidth + 1)); },
+    async horizontaal() { return R(() => [...document.querySelectorAll('.view:not([hidden]), .sheet-binnen, .hud')].some(v => v.scrollWidth > v.clientWidth + 1)); },
   };
   return h;
 }

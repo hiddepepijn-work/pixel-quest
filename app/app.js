@@ -57,6 +57,7 @@
       void m.offsetWidth;
       m.classList.add('open'); m.style.transform = '';
       $('#menuKnop').setAttribute('aria-expanded', 'true');
+      document.dispatchEvent(new CustomEvent('pq-menu', { detail: { open: true } }));
     }
     zetHash('#' + tab);
     werkBadges();
@@ -69,6 +70,7 @@
     m.classList.remove('open'); m.style.transform = '';
     $('#menuAchter').hidden = true;
     $('#menuKnop').setAttribute('aria-expanded', 'false');
+    document.dispatchEvent(new CustomEvent('pq-menu', { detail: { open: false } }));
     wacht = setTimeout(() => { if (!open) m.hidden = true; }, U.rustig() ? 0 : 280);
     zetHash('');
     if (m.contains(document.activeElement)) $('#menuKnop').focus({ preventScroll: true });

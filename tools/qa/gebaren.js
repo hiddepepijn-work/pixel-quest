@@ -24,12 +24,13 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
   await h.tik('.wiekaart[aria-label="Ik ben Hidde"]'); await wacht(1000);
   const meta = await R(() => document.querySelector('meta[name=viewport]').content);
   check('viewport-meta: viewport-fit=cover en user-scalable=no', /viewport-fit=cover/.test(meta) && /user-scalable=no/.test(meta), meta);
-  const ta = await R(() => ({ html: getComputedStyle(document.documentElement).overscrollBehaviorY, body: getComputedStyle(document.body).overscrollBehaviorY, view: getComputedStyle(document.querySelector('.view')).overscrollBehaviorY, compact: getComputedStyle(document.querySelector('.huis-compact .huisvenster')).touchAction }));
-  check('overscroll none op html/body, contain op views; compact huis pan-y', ta.html === 'none' && ta.body === 'none' && ta.view === 'contain' && ta.compact === 'pan-y', ta);
+  const ta = await R(() => ({ html: getComputedStyle(document.documentElement).overscrollBehaviorY, body: getComputedStyle(document.body).overscrollBehaviorY, view: getComputedStyle(document.querySelector('#view-vandaag')).overscrollBehaviorY, menukop: getComputedStyle(document.querySelector('.menu-kop')).touchAction }));
+  check('overscroll none op html/body, contain op de menutabs; menukop touch-action none (vegen)', ta.html === 'none' && ta.body === 'none' && ta.view === 'contain' && ta.menukop === 'none', ta);
 
-  console.log('1. Knijpen op Vandaag: geen paginazoom');
-  await knijp(W / 2, 1000 > HH ? 600 : 500, 100, 260);
-  check('visualViewport.scale blijft 1 op Vandaag', (await R(() => visualViewport.scale)) === 1, await R(() => visualViewport.scale));
+  console.log('1. Knijpen in het open menu (Vandaag): geen paginazoom');
+  await h.tab('vandaag');
+  await knijp(W / 2, HH - 200, 100, 260);
+  check('visualViewport.scale blijft 1 in het menu', (await R(() => visualViewport.scale)) === 1, await R(() => visualViewport.scale));
 
   console.log('2. Huis: knijpen, vastklikken, pannen, dubbeltik, knoppen');
   await h.tab('huis'); await wacht(1200);
@@ -69,7 +70,7 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
   check('alles in beeld: scène past in het venster', await R(() => { const v = document.querySelector('#view-huis .huisvenster').getBoundingClientRect(), d = document.querySelector('#view-huis .podium').getBoundingClientRect(); return d.width <= v.width + 2; }), pasZ);
 
   console.log('3. Bewerkmodus: slepen vs pannen');
-  await h.tikTekst('#view-huis button', 'Bewerken'); await wacht(600);
+  await h.tik('.hud-tools'); await h.tikTekst('.sheet button', 'Bewerken'); await wacht(600);
   await R(() => document.querySelector('.zoomknoppen [aria-label="Inzoomen"]').click()); await wacht(900);
   const m = await R(() => { const e = [...document.querySelectorAll('#view-huis .sleepbaar')].find(e => { const r = e.getBoundingClientRect(); return r.width > 20 && r.top > 120 && r.bottom < innerHeight - 160 && r.left > 0 && r.right < innerWidth; }); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, id: e.dataset.id }; });
   const logVoor = await R(() => window.PQStore.log().length), zb = await zoom();

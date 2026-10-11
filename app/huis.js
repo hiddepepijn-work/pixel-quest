@@ -299,8 +299,23 @@
     }
 
     // ---------- taaksignalen uit de echte taken (plek = meubel of kamer van de taak) ----------
+    // Waar staat een bewoner nu (scene-artpx): de lopende figuur uit het gedrag, anders zijn vaste plek. y = kruin.
+    function bewonerPunt(id) {
+      const act = G && G.acteurs().find(a => a.id === id && a.soort === 'mens');
+      if (act && scene) { const k = scene.geo.kamers.find(x => x.verdieping === act.vd); if (k) return { x: act.x, y: k.vloerY - act.hoogte }; }
+      const b = H.bewoners.find(x => x.id === id), a = asset(id);
+      if (!b || !a || !scene) return null;
+      const p = bewonerPlek(b, scene.geo);
+      return { x: p.k.x + p.x, y: p.k.vloerY - a.figuur.bron[1] / a.bronpx_per_artpixel };
+    }
     function plekBox(plek) {
       if (!plek || !scene) return null;
+      if (plek.bewoner) {
+        const ps = (plek.bewoner === 'samen' ? H.bewoners.map(b => b.id) : [plek.bewoner]).map(bewonerPunt).filter(Boolean);
+        if (!ps.length) return null;
+        const x = ps.reduce((s, q) => s + q.x, 0) / ps.length, y = Math.min(...ps.map(q => q.y));
+        return { x: x - 8, y: y + 12, b: 16, h: 8 };
+      }
       if (plek.meubel) { const it = scene.inrichting.find(i => i.id === plek.meubel); return it ? meubelBox(it, scene.geo) : null; }
       if (plek.kamer) { const k = kamerVan(scene.geo, plek.kamer); return k ? { x: k.x + k.b / 2 - 8, y: k.y + 24, b: 16, h: 8 } : null; }
       return null;

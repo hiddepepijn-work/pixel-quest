@@ -15,6 +15,9 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
   await h.foto(PF + '01-welkom');
   await h.tik('.wiekaart[aria-label="Ik ben Tessie"]'); await wacht(1200);
   check('ik = tessie', await R(() => window.PQStore.ik() === 'tessie'));
+  check('start op het huis, menu dicht', await R(() => !window.PQApp.menuOpen() && !!document.querySelector('#view-huis .hud')));
+  await h.foto(PF + '02-start-huis');
+  await h.tab('vandaag');
   await h.foto(PF + '02-vandaag');
   // Vandaag doorscrollen
   for (const [i, y] of [[1, 700], [2, 1400], [3, 3000]]) { await R(y => document.querySelector('#view-vandaag').scrollTo(0, y), y); await wacht(300); await h.foto(PF + '02-vandaag-' + i); }
@@ -118,7 +121,7 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
   check('ongedaan: totaal terug', vk3.nu.totaal === vk.nu.totaal);
   check('taak weer zichtbaar', await R(id => !!document.querySelector(`#view-vandaag [data-taak="${id}"]`), eerste));
   // melding mag de tabbalk niet bedekken
-  check('melding boven tabbalk', await R(() => { const m = document.getElementById('melding'), t = document.querySelector('.tabbalk'); if (m.hidden) return true; return m.getBoundingClientRect().bottom <= t.getBoundingClientRect().top; }));
+  check('melding bedekt het menu niet (staat bovenin over het huis)', await R(() => { const m = document.getElementById('melding'), t = document.querySelector('.menu'); if (m.hidden || !window.PQApp.menuOpen()) return true; return m.getBoundingClientRect().bottom <= t.getBoundingClientRect().top + 1; }));
 
   const f = await h.jsFouten();
   check('0 JS-fouten (http)', f.length === 0, f);

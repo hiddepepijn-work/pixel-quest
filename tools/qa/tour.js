@@ -28,9 +28,13 @@ const IPHONE = `(() => { const go = () => {
   await R(() => { const S = window.PQStore; for (const id of ['vb-2', 'vb-4', 'vb-11']) S.doe('taak.klaar', { id }, { namens: id === 'vb-4' ? 'tessie' : 'hidde' }); });
   await h.tab('vandaag'); await f('02-vandaag');
   check('kop onder de notch', await R(() => document.querySelector('#view-vandaag h1').getBoundingClientRect().top >= 59));
+  await h.tab('huis'); await R(() => { document.getElementById('melding').hidden = true; }); await f('01b-start-huis'); await h.tab('vandaag');
   await scroll('#view-vandaag', 600); await f('03-vandaag-midden');
   await scroll('#view-vandaag', 99999); await f('04-vandaag-onder');
-  check('tabbalk boven de home-indicator', await R(() => { const t = document.querySelector('.tabbalk button').getBoundingClientRect(); return t.bottom <= innerHeight - 34 + 1; }));
+  check('menutabs onder de notch', await R(() => document.querySelector('.menu-tabs button').getBoundingClientRect().top >= 59));
+  await h.tab('huis');
+  check('menuknop boven de home-indicator', await R(() => document.getElementById('menuKnop').getBoundingClientRect().bottom <= innerHeight - 34 + 1));
+  check('HUD onder de notch', await R(() => document.querySelector('.hud').getBoundingClientRect().top >= 59));
   await h.tab('quests'); check('geen horizontale scroll: quests', !(await h.horizontaal())); await f('05-quests-mijn');
   for (const fl of ['Open', 'Samen', 'Alles']) { await h.tikTekst('#view-quests .chip', fl); await f('06-quests-' + fl.toLowerCase()); }
   await scroll('#view-quests', 99999); await f('07-quests-onder');
@@ -43,13 +47,15 @@ const IPHONE = `(() => { const go = () => {
   await h.sheetDicht();
   await R(() => window.PQTaken.bewerk('vb-6')); await wacht(500); await f('11-sheet-bewerk'); await h.sheetDicht();
   await h.tab('huis'); await wacht(1500); await R(() => { const m = document.getElementById('melding'); m.hidden = true; }); await f('12-huis');
-  await h.tikTekst('#view-huis button', 'Bewerken'); await wacht(600); await R(() => { document.getElementById('melding').hidden = true; }); await f('13-huis-bewerken');
+  await h.tik('.hud-tools'); await wacht(400); await f('12b-sheet-huis-gereedschap');
+  await h.tikTekst('.sheet button', 'Bewerken'); await wacht(600); await R(() => { document.getElementById('melding').hidden = true; }); await f('13-huis-bewerken');
   await h.tikTekst('#view-huis button', 'Doos'); await wacht(400); await f('14-sheet-doos'); await h.sheetDicht();
   await h.tikTekst('#view-huis button', 'Klaar'); await wacht(400);
-  await h.tikTekst('#view-huis button', 'Verbouwen'); await wacht(800); await R(() => { document.getElementById('melding').hidden = true; }); await f('15-sheet-verbouwen');
-  await h.tikTekst('.sheet button', 'Bekijk'); await wacht(1200); await f('16-huis-voorbeeld');
+  await h.tab('verbouwen'); await wacht(500); await R(() => { document.getElementById('melding').hidden = true; }); await f('15-menu-bouwen');
+  await h.tikTekst('#view-verbouwen button', 'Bekijk'); await wacht(1200); await f('16-huis-voorbeeld');
   await h.tikTekst('#view-huis button', 'Terug'); await wacht(600);
   await R(() => document.querySelector('#view-huis [aria-label="Weer, seizoen en weergave"]').click()); await wacht(500); await f('17-sheet-weer');
+  await R(() => { const t = [...document.querySelectorAll('.sheet h3')].find(h => /Weer/.test(h.textContent)); if (t) t.scrollIntoView(); }); await wacht(200);
   await scroll('.sheet-binnen', 99999); await f('17b-sheet-weer-onder'); await h.sheetDicht();
   await h.tab('kast'); check('geen horizontale scroll: kast', !(await h.horizontaal())); await wacht(800); await f('18-kast');
   await scroll('#view-kast', 700); await f('19-kast-midden');
@@ -59,6 +65,7 @@ const IPHONE = `(() => { const go = () => {
   await scroll('#view-kast', 99999); await f('21-kast-onder');
   await h.tab('meer'); check('geen horizontale scroll: meer', !(await h.horizontaal())); await f('22-meer');
   for (const [i, y] of [[1, 700], [2, 1400], [3, 2100], [4, 2800], [5, 99999]]) { await scroll('#view-meer', y); await f('23-meer-' + i); }
+  await h.tab('collectie'); check('geen horizontale scroll: pets', !(await h.horizontaal())); await f('23b-pets');
   await R(() => [...document.querySelectorAll('.petvakje')][0].click()); await wacht(400); await f('24-sheet-pet'); await h.sheetDicht();
   await R(() => [...document.querySelectorAll('.petvakje.slot')][3].click()); await wacht(400); await f('25-sheet-ei'); await h.sheetDicht();
   // Lege toestanden
