@@ -9,7 +9,7 @@
     mijn: ['Niets op jouw naam', 'Pak iets van het prikbord, of maak een nieuwe taak.'],
     open: ['Het prikbord is leeg', 'Alles heeft een eigenaar. Nieuwe taken zonder "wie" landen hier.'],
     samen: ['Geen samen-taken', 'Kies bij "Wie?" voor Samen: dan krijgt ieder de helft van de inzet.'],
-    alles: ['Nog geen taken', 'Maak de eerste taak met de knop hieronder.'],
+    alles: ['Nog geen taken', 'Maak de eerste taak met de knop "+ Taak" bovenaan.'],
   };
   function binnenWeek(x, nu) {
     if (x.k) return x.k.waarde >= 1 - 7 / x.t.interval;
@@ -56,9 +56,9 @@
     filterNu = S.apparaat().questFilter || 'mijn';
     lijst = el('div.quests-lijst');
     root.append(
-      el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Quests' }), el('p.sub', { tekst: 'Wie wil, pakt. Niemand is de manager.' }))),
-      chips, lijst, el('div.fab-ruimte'),
-      el('button.fab.knop.goud', { type: 'button', onclick: () => T.bewerk(), 'aria-label': 'Nieuwe taak' }, '+ Nieuwe taak'));
+      el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Quests' }), el('p.sub', { tekst: 'Wie wil, pakt. Niemand is de manager.' })),
+        el('button.knop.mini.goud', { type: 'button', onclick: () => T.bewerk(), 'aria-label': 'Nieuwe taak' }, '+ Taak')),
+      chips, lijst);
   }
   wortel.PQApp.scherm('quests', { maak, toon: teken, ververs: teken });
 })(window);

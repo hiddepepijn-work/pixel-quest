@@ -311,7 +311,7 @@
       const bezet = {};
       for (const t of opties.taken()) {
         const b = plekBox(t.plek);
-        if (!b || !t.signaal) continue;
+        if (!b || !t.signaal || (compact && t.signaal !== 'vraag')) continue;
         const sl = Math.round(b.x) + ',' + Math.round(b.y), n = bezet[sl] = (bezet[sl] || 0) + 1;   // twee taken op één meubel: naast elkaar
         const knop = el('button', 'signaal ' + t.signaal);
         knop.type = 'button'; knop.dataset.taak = t.id;
@@ -523,7 +523,7 @@
     // ---------- zoom en pannen ----------
     let begonnen = false;
     const zoom = window.PQZoom.maak(venster, podium, {
-      inhoud: () => (scene ? { w: scene.geo.W, h: scene.geo.H } : { w: 664, h: 272 }),
+      inhoud: () => (scene ? { w: scene.geo.W, h: scene.geo.H, g: scene.geo.grondY } : { w: 664, h: 272, g: 232 }),
       zr: () => Z,
       herteken: z => { Z = z; teken(); },
       actief: () => !compact && actief === api,

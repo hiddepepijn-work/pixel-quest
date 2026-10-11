@@ -92,9 +92,11 @@
   function afronden(id, bron, li) {
     const t = S.staat().taken[id];
     if (!t) return;
+    const rect = bron && bron.isConnected ? bron.getBoundingClientRect() : null;
     const r = S.doe('taak.klaar', { id });
     if (!r.ok) return U.fout(r.fout);
-    if (bron) U.feestBij(bron);
+    if (rect && rect.width) U.feestje(rect.left + rect.width / 2, rect.top + rect.height / 2);
+    else U.feestje(innerWidth / 2, innerHeight / 2);
     if (li) li.classList.add('klaar-net');
     const a = S.staat().afrondingen.find(x => x.id === r.id);
     document.dispatchEvent(new CustomEvent('pq-afgerond', { detail: { taak: t, afronding: a } }));

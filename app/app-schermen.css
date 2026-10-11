@@ -84,7 +84,11 @@ details.later > summary h2 { margin: 0; font-size: 17px; text-transform: upperca
 .omgevingsbalk label { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 44px; }
 .omgevingsbalk select { width: auto; flex: 1; min-width: 140px; }
 .omgevingsbalk .getal { width: 90px; min-height: 40px; border: 3px solid var(--nacht); }
-.omgevingsbalk details summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
+.omgevingsbalk details summary, details.debug summary { min-height: 44px; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 700; list-style: none; }
+.omgevingsbalk details summary::-webkit-details-marker, details.debug summary::-webkit-details-marker { display: none; }
+.omgevingsbalk details summary::before, details.debug summary::before { content: '▸'; font: 700 15px var(--pixelfont); transition: transform .15s; }
+.omgevingsbalk details[open] summary::before, details.debug[open] summary::before { transform: rotate(90deg); }
+.omgevingsbalk details[open] { display: grid; gap: 2px; }
 .omgevingsbalk .vink input { width: 22px; height: 22px; accent-color: var(--blad); }
 .omgevingstatus { font-size: 13px; }
 
@@ -180,7 +184,6 @@ details.later > summary h2 { margin: 0; font-size: 17px; text-transform: upperca
 .weektitel { margin: 8px 0 2px; }
 .sync b { color: var(--titel); }
 details.debug { margin-top: 12px; }
-details.debug summary { min-height: 44px; display: flex; align-items: center; cursor: pointer; font-weight: 700; }
 
 /* ---------- breed scherm: gecentreerde telefoonkolom ---------- */
 @media (min-width: 600px) {

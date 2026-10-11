@@ -15,3 +15,5 @@ Thumbs.db
 .env
 .env.*
 secrets.json
+# schermafbeeldingen van tools/test_app.js
+test-uitvoer/

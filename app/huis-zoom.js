@@ -22,11 +22,13 @@
     function pasEff() { const { vw, vh } = maat(), { w, h } = inhoud(); return Math.min(vw / w, vh / h); }
     function minEff() { const p = pasEff(); return p >= 1 ? Math.floor(p) : p; }
     const maxEff = () => Math.max(MAX, Math.ceil(minEff()));
-    // Grenzen voor tx, ty bij deze zoom. Kleiner dan het venster: midden (horizontaal) / midden (verticaal).
+    // Grenzen voor tx, ty bij deze zoom. Kleiner dan het venster: horizontaal in het midden, en verticaal met de
+    // grondlijn op ~70% van de hoogte (lucht erboven, een strook grond eronder), binnen het venster.
     function grenzen(e) {
-      const { vw, vh } = maat(), { w, h } = inhoud(), sw = w * e, sh = h * e;
+      const { vw, vh } = maat(), { w, h, g } = inhoud(), sw = w * e, sh = h * e;
       const gx = sw <= vw ? [(vw - sw) / 2, (vw - sw) / 2] : [vw - sw, 0];
-      const gy = sh <= vh ? [(vh - sh) / 2, (vh - sh) / 2] : [vh - sh, 0];
+      const y = klem(vh * 0.7 - (g || h) * e, 0, vh - sh);
+      const gy = sh <= vh ? [y, y] : [vh - sh, 0];
       return { gx, gy };
     }
     const elastisch = (v, [a, b]) => (v < a ? a - (a - v) * 0.35 : v > b ? b + (v - b) * 0.35 : v);
