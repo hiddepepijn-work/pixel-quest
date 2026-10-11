@@ -206,3 +206,6 @@ details.debug { margin-top: 12px; }
   .knop.tik, .potregel.tik, .petvak.blij .sprite-vak, .petvak.blij .ei { animation: none; transform: none; }
 }
 .potregel.tik { animation: stijg-pot .6s steps(3); }
+
+/* iOS zoomt in op elk tekstveld onder 16 px (ook de breedte- en lengtegraad van de omgevingsbediening). */
+body.app .omgevingsbalk :is(input:not([type=checkbox]):not([type=radio]):not([type=range]), select) { font-size: 16px; }

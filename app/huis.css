@@ -10,7 +10,7 @@ canvas, .huisvenster img { image-rendering: pixelated; image-rendering: crisp-ed
   background: var(--papier); border: 3px solid var(--nacht); padding: 4px 10px;
   display: inline-flex; align-items: center; gap: 6px;
 }
-.knop:hover, .weergaven button:hover { background: #ffe3a3; }
+@media (hover: hover) { .knop:hover, .weergaven button:hover { background: #ffe3a3; } }   /* iOS: geen plakkende hover na een tik */
 .knop.goud, .knop[aria-pressed="true"], .weergaven button[aria-selected="true"] { background: var(--goud); }
 .knop.mini { padding: 2px 8px; font-size: 13px; }
 .knop.groot { padding: 8px 14px; font-size: 16px; }
