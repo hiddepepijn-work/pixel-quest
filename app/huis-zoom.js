@@ -34,7 +34,7 @@
     const elastisch = (v, [a, b]) => (v < a ? a - (a - v) * 0.35 : v > b ? b + (v - b) * 0.35 : v);
     function toon() {
       const s = eff / zr;
-      podium.style.transform = `translate(${Math.round(tx * 100) / 100}px, ${Math.round(ty * 100) / 100}px) scale(${s})`;
+      podium.style.transform = `translate(${Math.round(tx * 1000) / 1000}px, ${Math.round(ty * 1000) / 1000}px) scale(${s})`;
       podium.classList.toggle('verkleind', eff < 1 - 1e-6);
       if (o.opToon) o.opToon({ eff, tx, ty, zr });
     }
@@ -76,6 +76,8 @@
       };
       anim = requestAnimationFrame(stap);
     }
+    // In rust staat de laag op hele schermpixels: een halve pixel verschuiving laat WebKit de laag uitsmeren.
+    function heelPixel() { const d = wortel.devicePixelRatio || 1; tx = Math.round(tx * d) / d; ty = Math.round(ty * d) / d; }
     // Vastklikken: hele zoomstap, terug binnen de grenzen, daarna eventueel opnieuw tekenen op de nieuwe schaal.
     function zetVast(px, py) {
       const { vw, vh } = maat();
@@ -83,7 +85,7 @@
       animeer(doelEff(eff), px, py, () => {
         const nieuw = eff >= 1 ? Math.round(eff) : 1;
         if (nieuw !== zr && o.herteken) { zr = nieuw; o.herteken(zr); }
-        toon(); bewaarStand();
+        heelPixel(); toon(); bewaarStand();
       });
     }
 
@@ -201,6 +203,7 @@
       klemT(true);
       const nieuw = eff >= 1 ? Math.round(eff) : 1;
       if (nieuw !== zr && o.herteken) { zr = nieuw; o.herteken(zr); }
+      if (eff >= 1) heelPixel();
       toon();
     }
     return {
