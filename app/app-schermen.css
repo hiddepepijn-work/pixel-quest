@@ -16,16 +16,6 @@
 .wiekaart b { font: 700 20px var(--pixelfont); color: var(--titel); }
 
 /* ---------- Vandaag ---------- */
-.huis-compact {
-  position: relative; height: 196px; margin: 0 calc(var(--kant) * -1); border-block: 3px solid var(--nacht); cursor: pointer;
-  overflow: hidden; background: var(--titel);
-}
-.huis-compact:focus-visible { outline: 3px solid var(--koraal); outline-offset: -3px; }
-.huis-compact .huisvenster { position: absolute; inset: 0; border: 0; }
-.huis-label {
-  position: relative; z-index: 2; margin: -34px 8px 12px auto; width: max-content; pointer-events: none;
-  font: 700 13px var(--pixelfont); background: var(--creme); border: 2px solid var(--nacht); padding: 2px 8px;
-}
 .vandaag-inhoud > section, .vandaag-inhoud > .kaart { margin-top: 12px; }
 .vandaag-inhoud > .sectiekop { margin-top: 22px; }
 
@@ -58,7 +48,6 @@ details.later > summary h2 { margin: 0; font-size: 17px; text-transform: upperca
   position: absolute; left: 8px; right: 8px; z-index: 12; display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap;
   background: rgba(252, 248, 236, .94); border: 3px solid var(--nacht); padding: 6px 8px;
 }
-.huis-balk.boven { top: calc(var(--veilig-boven) + 8px); }
 .huis-balk.voorbeeld { top: calc(var(--veilig-boven) + 76px); background: #fff4d6; border-color: var(--goud); }
 .huis-balk.voorbeeld small { display: block; font-size: 13px; }
 .huis-balk.onder { bottom: 10px; right: 64px; }
@@ -185,19 +174,9 @@ details.later > summary h2 { margin: 0; font-size: 17px; text-transform: upperca
 .sync b { color: var(--titel); }
 details.debug { margin-top: 12px; }
 
-/* ---------- breed scherm: gecentreerde telefoonkolom ---------- */
-@media (min-width: 600px) {
-  body.app { background: #efe6d3; }
-  .schil { border-inline: 3px solid var(--nacht); box-shadow: 0 0 0 6px var(--rasterlijn); }
-  .itemrooster { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-}
-@media (min-width: 900px) {
-  .schil { max-width: 1100px; }
-  #view-huis .huis-balk.boven { right: auto; min-width: 520px; }
-  .view:not(.vol) > * { max-width: 720px; margin-inline: auto; }
-  .huis-compact { margin-inline: auto; max-width: 720px; border-inline: 3px solid var(--nacht); }
-  .fab { right: calc(50% - 360px); }
-}
+/* ---------- breder menu: vier kolommen kleding ---------- */
+@media (min-width: 600px) { .itemrooster { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .itemrooster { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 /* ---------- minder beweging ---------- */
 @media (prefers-reduced-motion: reduce) {

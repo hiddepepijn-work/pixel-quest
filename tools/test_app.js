@@ -1,5 +1,6 @@
-// Scenariotest van de app in Edge (puppeteer-core), telefoon 402×874 met touch en daarna desktop 1400×900.
-//   node tools/test_app.js [--dist] [--uit map]
+// Scenariotest van de app in Edge (puppeteer-core), telefoon (standaard 390×844) met touch en daarna desktop 1400×900.
+//   node tools/test_app.js [--dist] [--uit map] [--maat 430x932]
+// Huis-eerst: het huis is het startscherm; Vandaag, Quests, Kast, Bouwen, Pets en Meer zitten in het menu.
 // puppeteer-core hoort niet in de repo: installeer het ergens anders en wijs ernaar met PQ_PUPPETEER, bv.
 //   PQ_PUPPETEER=C:/pad/node_modules/puppeteer-core node tools/test_app.js
 // Scenario: eerste start + "Wie ben jij?", taak maken, afronden (feestje, weekdoel en pot stijgen), ongedaan maken,
@@ -13,6 +14,7 @@ const DIST = process.argv.includes('--dist');
 const ROOT = path.resolve(__dirname, '..');
 const PAGINA = 'file:///' + path.join(ROOT, DIST ? 'dist' : 'app', 'index.html').replace(/\\/g, '/');
 const UIT = path.resolve(arg('--uit') || path.join(ROOT, 'test-uitvoer', DIST ? 'dist' : 'app'));
+const [BREED, HOOG] = (arg('--maat') || '390x844').split('x').map(Number);
 const EDGE = process.env.PQ_EDGE || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 fs.mkdirSync(UIT, { recursive: true });
 const wacht = ms => new Promise(r => setTimeout(r, ms));
@@ -25,7 +27,7 @@ function check(naam, waar, extra) {
   const profiel = fs.mkdtempSync(path.join(os.tmpdir(), 'pq-test-'));
   const browser = await puppeteer.launch({ executablePath: EDGE, headless: 'new', userDataDir: profiel, args: ['--allow-file-access-from-files'] });
   const p = await browser.newPage();
-  await p.setViewport({ width: 402, height: 874, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
+  await p.setViewport({ width: BREED, height: HOOG, deviceScaleFactor: 2, isMobile: true, hasTouch: true });
   const fouten = [];
   p.on('pageerror', e => fouten.push('pageerror: ' + e.message));
   p.on('console', m => { if (m.type() === 'error' && !/fonts\.g/.test(m.text())) fouten.push('console: ' + m.text()); });
@@ -43,7 +45,13 @@ function check(naam, waar, extra) {
     if (!h.asElement()) throw new Error(`niet gevonden: ${sel} "${tekst}"`);
     await h.asElement().tap();
   };
-  const tab = async n => { await tik(`.tabbalk [data-tab="${n}"]`); await wacht(700); };
+  const menuOpen = () => R(() => window.PQApp.menuOpen());
+  // tab('huis') sluit het menu; elke andere naam opent het menu (menuknop) en kiest dat tabblad.
+  const tab = async n => {
+    if (n === 'huis') { if (await menuOpen()) { await tik('#menuSluit'); await wacht(450); } return; }
+    if (!(await menuOpen())) { await tik('#menuKnop'); await wacht(450); }
+    await tik(`.menu-tabs [data-tab="${n}"]`); await wacht(600);
+  };
 
   console.log('1. Eerste start en "Wie ben jij?"');
   await p.goto(PAGINA + '?test&geenweer', { waitUntil: 'load' });
@@ -53,16 +61,22 @@ function check(naam, waar, extra) {
   await tik('.wiekaart[aria-label="Ik ben Hidde"]');
   await wacht(1200);
   check('profiel is Hidde', await R(() => window.PQStore.ik() === 'hidde'));
-  check('Vandaag zichtbaar', await R(() => !document.getElementById('view-vandaag').hidden));
+  check('startscherm is het huis, menu dicht', await R(() => !window.PQApp.menuOpen() && !!document.querySelector('#view-huis .huisvenster')));
+  check('HUD met Samen 0 / 600', await R(() => /SAMEN\s*0 \/ 600/.test(document.querySelector('.hud-week').textContent)));
+  const startZoom = await R(() => window.PQHuis.actief().zoom.stand());
+  check('startzoom 2× (Hidde, Tessie en hun kamer, niet piepklein)', Math.abs(startZoom.eff - 2) < 1e-6, startZoom);
   check('voorbeeldtaken geladen', Object.keys((await st()).taken).length >= 10);
-  await foto('02-vandaag');
+  await foto('02-start-huis');
+  await tik('#menuKnop'); await wacht(500);
+  check('menuknop opent het menu op Vandaag', await R(() => window.PQApp.menuOpen() && !document.getElementById('view-vandaag').hidden));
+  await foto('03-menu-vandaag');
 
   console.log('2. Taak maken');
   await tikTekst('#view-vandaag button', '+ Taak');
   await wacht(400);
   await p.type('.sheet input[type=text]', 'Ramen lappen');
   await tikTekst('.sheet .chip', 'Ik');
-  await foto('03-taak-maken');
+  await foto('04-taak-maken');
   await tikTekst('.sheet-voet .knop', 'Op het bord');
   await wacht(500);
   let s = await st();
@@ -74,7 +88,9 @@ function check(naam, waar, extra) {
   await tik(`#view-vandaag [data-taak="${taak.id}"] .gieter`);
   await wacht(150);
   check('feestje (sterretjes) verschijnt', await R(() => !!document.querySelector('.feestlaag .ster')));
-  await foto('04-afgerond-feestje');
+  await wacht(250);
+  check('feestje ook in het huis zelf', await R(() => document.querySelectorAll('#view-huis .signalen .deeltje').length > 0));
+  await foto('05-afvinken-feestje-in-huis');
   const na = await week();
   const inzet = Math.round(taak.minuten * (1 + 0.3 * taak.zwaarte));
   check(`weekdoel +${inzet}`, na.w.totaal === voor.w.totaal + inzet, [voor.w.totaal, na.w.totaal]);
@@ -89,11 +105,33 @@ function check(naam, waar, extra) {
   check('pot terug', terug.pot.saldo === voor.pot.saldo, terug.pot.saldo);
   check('taak weer open', (await st()).taken[taak.id].status === 'open');
 
+  console.log('4b. Snel afvinken in twee tikken: menu → gieter');
+  await tab('huis');
+  const n0 = (await st()).afrondingen.length;
+  await tik('#menuKnop'); await wacht(450);
+  await tik('#view-vandaag .taak .gieter'); await wacht(500);
+  check('twee tikken: één afronding erbij', (await st()).afrondingen.length === n0 + 1);
+  await tikTekst('#melding .knop', 'Ongedaan'); await wacht(300);
+  console.log('4c. Menu sluiten: tik op het huis, omlaag vegen; openen: omhoog vegen');
+  const cdp0 = await p.target().createCDPSession();
+  const veeg = async (x, y0, y1) => {
+    await cdp0.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y: y0, id: 0 }] });
+    for (let i = 1; i <= 8; i++) { await cdp0.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y0 + (y1 - y0) * i / 8, id: 0 }] }); await wacht(16); }
+    await cdp0.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] }); await wacht(500);
+  };
+  await p.touchscreen.tap(Math.round(BREED / 2), 180); await wacht(450);   // in het huis boven het menu
+  check('tik op het huis sluit het menu', !(await menuOpen()));
+  await veeg(Math.round(BREED / 2) + 120, HOOG - 8, HOOG - 220);
+  check('vanaf de onderkant omhoog vegen opent het menu', await menuOpen());
+  const kop = await R(() => { const r = document.querySelector('.menu-kop').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + 8 }; });
+  await veeg(kop.x, kop.y, kop.y + 260);
+  check('omlaag vegen over de kop sluit het menu', !(await menuOpen()));
+
   console.log('5. Claimen');
   await tab('quests');
   await tikTekst('#view-quests .chip', 'Open');
   await wacht(300);
-  await foto('05-quests-open');
+  await foto('06-menu-quests');
   const openId = await R(() => { const li = document.querySelector('#view-quests .taak .actie .knop'); return li && li.closest('.taak').dataset.taak; });
   await tikTekst('#view-quests .taak .actie .knop', 'Ik pak het');
   await wacht(300);
@@ -142,7 +180,9 @@ function check(naam, waar, extra) {
   check('zoom wordt bewaard', zbewaard && zbewaard.eff > 0, zbewaard);
 
   console.log('6b. Bewerken: meubel slepen, lege plek pant');
-  await tikTekst('#view-huis .knop', 'Bewerken');
+  await tik('.hud-tools'); await wacht(400);
+  await foto('08b-huis-gereedschap');
+  await tikTekst('.sheet .knop', 'Bewerken');
   await wacht(600);
   await R(() => window.PQHuis.actief().zoom.naar(330, 160, 2));
   await wacht(200);
@@ -186,34 +226,33 @@ function check(naam, waar, extra) {
   await wacht(500);
   const potVoor = (await week()).pot.saldo;
   check('pot gevuld voor de test', potVoor >= 400, potVoor);
-  await tab('huis');
-  await tikTekst('#view-huis .knop', 'Verbouwen');
-  await wacht(600);
-  await foto('08-verbouwen');
-  await tikTekst('.sheet .knop', 'Kopen (voorstel)');
+  await tab('verbouwen');
+  await foto('09-menu-bouwen');
+  await tikTekst('#view-verbouwen .knop', 'Kopen (voorstel)');
   await wacht(500);
   check('voorstel staat open', (await st()).voorstellen.some(v => v.status === 'open' && v.soort === 'verbouwing'));
-  await foto('09-voorstel');
+  await foto('10-voorstel');
   await tikTekst('.sheet .knop', 'keurt goed (op dit apparaat)');
   await wacht(900);
   s = await st();
   check('huis is niveau 2', s.huis.niveau === 2, s.huis.niveau);
   check('400 munten uit de pot', (await week()).pot.saldo === potVoor - 400);
-  await foto('10-huis-niveau-2');
+  await tab('huis'); await wacht(300);
+  await foto('11-huis-niveau-2');
 
   console.log('8. Kleding kopen met akkoord');
   await tab('kast');
   await wacht(600);
   await tikTekst('#itemRooster .tegel', 'Petje');
   await wacht(300);
-  await foto('11-kast-petje');
+  await foto('12-menu-kast-petje');
   await tikTekst('#itemDetail .knop', 'Kopen');
   await wacht(400);
   await tikTekst('.sheet .knop', 'keurt goed (op dit apparaat)');
   await wacht(700);
   s = await st();
   check('petje in bezit van Hidde', s.kleding.bezit.hidde.petje && s.kleding.bezit.hidde.petje.length === 1, s.kleding.bezit.hidde.petje);
-  await foto('12-kast-gekocht');
+  await foto('13-kast-gekocht');
   console.log('9. Herladen: alles bewaard');
   const logVoor = await R(() => window.PQStore.log().length);
   await p.reload({ waitUntil: 'load' });
@@ -225,10 +264,10 @@ function check(naam, waar, extra) {
   check('petje nog in bezit', !!s.kleding.bezit.hidde.petje);
   check('claim bewaard', s.taken[openId].claim && s.taken[openId].claim.door === 'hidde');
   check('taak "Ramen lappen" bewaard', Object.values(s.taken).some(t => t.titel === 'Ramen lappen'));
-  check('zelfde tabblad na herladen (kast)', await R(() => !document.getElementById('view-kast').hidden));
+  check('na herladen weer op het huis (menu dicht)', await R(() => !window.PQApp.menuOpen()));
 
   console.log('10. Elk tabblad: 0 JS-fouten, geen horizontale scroll');
-  for (const n of ['vandaag', 'quests', 'huis', 'kast', 'meer']) {
+  for (const n of ['huis', 'vandaag', 'quests', 'kast', 'verbouwen', 'collectie', 'meer']) {
     await tab(n);
     await wacht(500);
     const breed = await R(n => { const v = document.getElementById('view-' + n); return { v: v.scrollWidth - v.clientWidth, d: document.documentElement.scrollWidth - innerWidth }; }, n);
@@ -253,7 +292,7 @@ function check(naam, waar, extra) {
   const dFouten = [];
   d.on('pageerror', e => dFouten.push(e.message));
   await d.setViewport({ width: 1400, height: 900 });
-  for (const n of ['vandaag', 'quests', 'huis', 'kast', 'meer']) {
+  for (const n of ['huis', 'vandaag', 'quests', 'kast', 'verbouwen', 'collectie', 'meer']) {
     await d.goto(PAGINA + '?test&geenweer#' + n, { waitUntil: 'load' });
     await wacht(1300);
     await d.evaluate(() => { const t = document.getElementById('pq-test'); if (t) t.style.visibility = 'hidden'; });

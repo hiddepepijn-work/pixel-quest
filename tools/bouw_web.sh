@@ -20,7 +20,7 @@ sed -i 's#\.\./assets/#assets/#g' *.html *.js *.css
 # Controle: geen kapotte scripts, geen paden naar buiten de map, elk script en stijlblad bestaat.
 for f in *.js; do node --check "$f" >/dev/null || { echo "FOUT: syntax in $f" >&2; exit 1; }; done
 if grep -l '\.\./' *.html *.js *.css; then echo "FOUT: nog ../-paden" >&2; exit 1; fi
-[ -f index.html ] && grep -q 'class="tabbalk"' index.html || { echo "FOUT: index.html is niet de app" >&2; exit 1; }
+[ -f index.html ] && grep -q 'id="menu"' index.html || { echo "FOUT: index.html is niet de app" >&2; exit 1; }
 for f in *.html; do
   for s in $(grep -o '\(src\|href\)="[^"#?]*\.\(js\|css\|png\)"' "$f" | sed 's/^[a-z]*="//;s/"$//' | grep -v '^https\?:'); do
     [ -f "$s" ] || { echo "FOUT: $f verwijst naar ontbrekend $s" >&2; exit 1; }

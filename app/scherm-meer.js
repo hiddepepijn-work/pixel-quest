@@ -1,4 +1,4 @@
-// Meer: profiel, voorstellen, de collectie (14 pets), de weekterugblik, instellingen, sync-status, het debugscherm
+// Menu → Meer: profiel, voorstellen, de weekterugblik, instellingen, sync-status, het debugscherm
 // (de oude assetcontrole) en een reset.
 (function (wortel) {
   'use strict';
@@ -16,7 +16,7 @@
         el('p', null, 'Je bent ', el('b', { tekst: U.naam(mij) }), ' op dit apparaat.')),
       el('button.knop.breed', { type: 'button', onclick: async () => {
         if (await U.vraag(`Wisselen naar ${U.naam(ander)}?`, `Dit apparaat doet dan alles als ${U.naam(ander)}. Handig om samen op één telefoon te testen.`, 'Wissel', 'Annuleer')) {
-          S.zetIk(ander); U.meld(`Je bent nu ${U.naam(ander)}.`); wortel.PQApp.ga('meer', { opnieuw: true }); wortel.PQApp.badges();
+          S.zetIk(ander); U.meld(`Je bent nu ${U.naam(ander)}.`); document.dispatchEvent(new CustomEvent('pq-profiel')); wortel.PQApp.ga('meer', { opnieuw: true }); wortel.PQApp.badges();
         } } }, `Ik ben ${U.naam(ander)}`));
   }
   function voorstellen() {
@@ -25,36 +25,6 @@
     return kaart('voorstellen', 'Voorstellen', el('p.noot', { tekst: 'Kopen uit de huispot doen jullie samen.' }), ...open.map(v => V.kaart(v, teken)));
   }
 
-  // ---------- collectie ----------
-  function collectie() {
-    const st = S.staat(), nu = Date.now(), col = R.collectie(st, nu), actief = st.pets.actief, p = R.pet(st, nu);
-    const vakken = col.map(c => {
-      const naam = petNaam(c.id), aan = c.id === actief;
-      const inhoudVak = c.uit ? U.sprite(c.id, 1.1, naam) : U.ei(30, `Ei van ${naam}`);
-      return el('button.petvakje' + (aan ? '.actief' : '') + (c.uit ? '' : '.slot'), { type: 'button', 'aria-label': c.uit ? `${naam}${aan ? ', loopt mee' : ''}` : `${naam}: ei, ${c.stand} van ${c.doel}`,
-        onclick: () => petSheet(c) }, el('span.petbeeld', null, inhoudVak), el('b', { tekst: c.uit ? naam : '???' }),
-        c.uit ? el('small', { tekst: aan ? 'loopt mee' : 'uitgekomen' }) : el('span.mini-balk', null, el('i', { stijl: { width: (c.stand / c.doel * 100) + '%' } })));
-    });
-    return kaart('collectie', 'Collectie',
-      el('p.noot', { tekst: `${col.filter(c => c.uit).length} van ${col.length} uitgekomen. Eieren komen uit op samen-mijlpalen; pets gaan nooit dood.` }),
-      el('div.collectie-raster', null, vakken),
-      el('p.noot', { tekst: p.ei ? `${petNaam(p.id)} is nog een ei.` : `${petNaam(p.id)} loopt mee: ${p.stadium}, ${U.getal(p.xp)} XP.` }));
-  }
-  function petSheet(c) {
-    const naam = petNaam(c.id), st = S.staat();
-    if (!c.uit) {
-      return U.sheet({ titel: 'Ei', inhoud: [el('div.petgroot', null, U.ei(64, 'Ei')),
-        el('p', { tekst: `Komt uit na ${c.tekst}. Nu: ${c.stand} van ${c.doel}.` }),
-        el('div.xpbalk', { role: 'progressbar', 'aria-valuenow': c.stand, 'aria-valuemax': c.doel, 'aria-valuemin': 0 }, el('div.vul', { stijl: { width: (c.stand / c.doel * 100) + '%' } })),
-        el('p.noot', { tekst: 'Taken van allebei tellen mee. Er zijn geen munten of sterren voor nodig.' })] });
-    }
-    const invoer = el('input.invoer', { type: 'text', maxlength: 24, value: st.pets.namen[c.id] || '', placeholder: naam, 'aria-label': 'Naam' });
-    const s = U.sheet({ titel: naam, inhoud: [el('div.petgroot', null, U.sprite(c.id, 2.2, naam)),
-      el('label.veld', null, el('span', { tekst: 'Naam' }), invoer)],
-      knoppen: [el('button.knop.stil', { type: 'button', onclick: () => { const r = S.doe('pet.naam', { id: c.id, naam: invoer.value }); if (!r.ok) U.fout(r.fout); s.sluit(); } }, 'Bewaar naam'),
-        st.pets.actief === c.id ? el('button.knop', { type: 'button', disabled: true }, 'Loopt al mee')
-          : el('button.knop.goud', { type: 'button', onclick: () => { const r = S.doe('pet.actief', { id: c.id }); if (!r.ok) return U.fout(r.fout); U.meld(`${naam} loopt nu mee.`); s.sluit(); } }, 'Laat meelopen')] });
-  }
   // ---------- weekterugblik: de week in woorden en een privé cijfer 1–5 ----------
   const SOORTNAAM = { doen: 'doen', plannen: 'plannen', bijhouden: 'bijhouden' };
   function weekInWoorden(st, w) {
@@ -208,12 +178,12 @@
 
   function teken() {
     if (!inhoud) return;
-    inhoud.replaceChildren(...[profiel(), voorstellen(), collectie(), terugblik(), instellingen(), over()].filter(Boolean));
+    inhoud.replaceChildren(...[profiel(), voorstellen(), terugblik(), instellingen(), over()].filter(Boolean));
   }
   function maak(r) {
     root = r;
     inhoud = el('div.meer-inhoud');
-    root.append(el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Meer' }), el('p.sub', { tekst: 'Collectie, terugblik en instellingen' }))), inhoud);
+    root.append(el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Meer' }), el('p.sub', { tekst: 'Terugblik, instellingen en sync' }))), inhoud);
   }
   wortel.PQApp.scherm('meer', {
     maak,

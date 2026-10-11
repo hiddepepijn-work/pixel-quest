@@ -22,39 +22,20 @@ body.app {
 .getal, .weekdoel .groot, .taak .inzet, .potregel, .stepper output, .inzetvoorbeeld, .prijs, .tabbadge { font-family: var(--tekstfont) !important; font-weight: 800 !important; }
 h1, h2, h3, h4, .pix-font { font-family: var(--pixelfont); color: var(--titel); letter-spacing: .5px; }
 
-/* ---------- schil: views + tabbalk ---------- */
-.schil {
-  position: fixed; inset: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto;
-  max-width: 560px; margin: 0 auto; background: var(--creme);
-}
-/* Statusbalk-strook: zonder deze strook schuift de lijst bij scrollen onder de klok en de batterij van iOS door. */
-.schil::before { content: ''; position: fixed; left: 0; right: 0; top: 0; height: var(--veilig-boven); background: var(--creme); z-index: 11; pointer-events: none; }
+/* ---------- schil: het huis vult het scherm; het menu (app-menu.css) ligt erover ---------- */
+.schil { position: fixed; inset: 0; background: var(--titel); overflow: hidden; }
 .views { position: relative; min-height: 0; margin: 0; padding: 0; max-width: none; width: 100%; }
 .view {
-  position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain; padding: calc(var(--veilig-boven) + 8px) var(--kant) 24px;
-  animation: view-in .22s ease-out;
+  overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior: contain;
+  padding: 6px var(--kant) calc(var(--veilig-onder) + 28px); animation: view-in .2s ease-out;
 }
-.view.vol { padding: 0; overflow: hidden; }
+.menu .view { position: absolute; inset: 0; }
+.view.vol { position: absolute; inset: 0; padding: 0; overflow: hidden; animation: none; }
 @keyframes view-in { from { opacity: 0; transform: translateY(6px); } }
-.tabbalk {
-  display: grid; grid-template-columns: repeat(5, 1fr); background: var(--papier);
-  border-top: 3px solid var(--nacht); padding-bottom: var(--veilig-onder); position: relative; z-index: 10;
-}
-.tabbalk button {
-  min-height: var(--tabbalk); border: 0; background: none; cursor: pointer; display: grid; place-items: center;
-  align-content: center; gap: 2px; padding: 6px 0 4px; font: 600 12px var(--pixelfont); color: var(--nacht); position: relative;
-}
-.tabbalk button[aria-selected="true"] { color: var(--titel); }
-.tabbalk button[aria-selected="true"]::before {
-  content: ''; position: absolute; top: 0; left: 22%; right: 22%; height: 4px; background: var(--goud);
-}
-.tabbalk button:focus-visible { outline: 3px solid var(--koraal); outline-offset: -3px; }
 .tabicoon { width: 28px; height: 28px; display: grid; place-items: center; transition: transform .15s; }
-.tabbalk button[aria-selected="true"] .tabicoon { transform: translateY(-2px) scale(1.08); }
 .tabicoon img { width: 24px; height: auto; image-rendering: pixelated; }
 .tabbadge {
-  position: absolute; top: 6px; left: 56%; min-width: 18px; height: 18px; padding: 0 4px; background: var(--goud);
+  position: absolute; top: 4px; left: 58%; min-width: 18px; height: 18px; padding: 0 4px; background: var(--goud);
   border: 2px solid var(--nacht); font: 700 11px/14px var(--pixelfont); color: var(--titel); text-align: center;
 }
 /* kleine pixelicoontjes in CSS: huis en "meer" (geen character- of pet-art) */
@@ -225,7 +206,7 @@ details.meer-opties > summary { cursor: pointer; min-height: 44px; display: flex
 /* ---------- melding en feestje ---------- */
 .melding {
   position: fixed; left: 50%; transform: translateX(-50%); z-index: 60; width: min(calc(100% - 24px), 520px);
-  bottom: calc(var(--tabbalk) + var(--veilig-onder) + 12px); display: flex; gap: 10px; align-items: center; justify-content: space-between;
+  bottom: calc(var(--veilig-onder) + 84px); display: flex; gap: 10px; align-items: center; justify-content: space-between;
   background: var(--titel); color: var(--creme); padding: 8px 10px 8px 14px; border: 3px solid var(--goud); animation: melding-in .2s ease-out;
 }
 .melding.fout { border-color: var(--koraal); }

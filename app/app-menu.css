@@ -1,0 +1,92 @@
+/* Huis-eerst: het huis vult het scherm, een dunne HUD erboven, onderin de menuknop. Het menu is een paneel óver het
+   huis (telefoon: bottom sheet met tabs; breed scherm: zijpaneel). */
+
+/* ---------- HUD ---------- */
+.hud {
+  position: absolute; top: calc(var(--veilig-boven) + 6px); left: 8px; right: 8px; z-index: 12; max-width: 620px;
+  display: flex; align-items: center; gap: 6px; padding: 3px; background: rgba(252, 248, 236, .9);
+  border: 3px solid var(--nacht); box-shadow: 0 3px 0 rgba(11, 18, 56, .3);
+  -webkit-backdrop-filter: blur(2px); backdrop-filter: blur(2px);
+}
+.hud > button, .hud > .hud-chip {
+  min-height: 44px; border: 0; background: none; padding: 0 4px; display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--nacht);
+}
+.hud > button:focus-visible { outline: 3px solid var(--koraal); outline-offset: 0; }
+.hud-profiel { width: 44px; flex: none; justify-content: center; overflow: hidden; align-items: flex-end !important; background: #d7ecef !important; border: 2px solid var(--nacht) !important; min-height: 40px !important; height: 40px; }
+.hud-profiel.tessie { background: #f4d9dc !important; }
+.hud-week { flex: 1 1 auto; min-width: 0; display: grid !important; grid-template-columns: auto 1fr; align-content: center; gap: 0 6px !important; text-align: left; }
+.hud-week .hud-label { font: 700 11px var(--pixelfont); color: var(--titel); letter-spacing: .5px; }
+.hud-week b { font: 800 15px/1.1 var(--tekstfont); color: var(--titel); text-align: right; white-space: nowrap; }
+.hud-balk { grid-column: 1 / -1; height: 8px; border: 2px solid var(--nacht); background: var(--zacht); position: relative; margin-top: 3px; }
+.hud-balk i { position: absolute; inset: 0 auto 0 0; background: var(--blad); transition: width .6s cubic-bezier(.2, .8, .2, 1); }
+.hud-balk.gehaald i { background: var(--goud); }
+.hud-balk s { position: absolute; left: 80%; top: -2px; bottom: -2px; width: 2px; background: var(--nacht); }
+.hud-chip { flex: none; font: 800 15px var(--tekstfont); color: var(--titel); }
+.hud-chip img { width: 18px; height: auto; image-rendering: pixelated; }
+.hud-pet { flex: none; width: 46px; display: grid !important; justify-items: center; align-content: end; gap: 2px !important; padding: 0 !important; }
+.hud-pet .petmini { height: 30px; display: grid; place-items: end center; overflow: hidden; }
+.hud-pet .mini-balk { width: 40px; height: 6px; border-width: 2px; }
+.hud-pet.blij .petmini { animation: huppel-app .5s steps(3) 2; }
+.hud-tools { flex: none; width: 40px; justify-content: center; font: 700 20px var(--pixelfont) !important; border: 2px solid var(--nacht) !important; min-height: 40px !important; height: 40px; background: var(--papier) !important; }
+.hud .tik, .hud-chip.tik { animation: stijg-pot .6s steps(3); }
+
+/* ---------- onderin het huis: menuknop, + taak, zoom ---------- */
+.menuknop {
+  position: absolute; left: 50%; bottom: calc(var(--veilig-onder) + 12px); transform: translateX(-50%); z-index: 13;
+  min-width: 132px; height: 58px; padding: 0 18px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--goud); border: 3px solid var(--nacht); box-shadow: 0 4px 0 var(--nacht); cursor: pointer;
+  font: 700 18px var(--pixelfont); color: var(--titel); letter-spacing: 1px; touch-action: none;
+}
+.menuknop::before { content: ''; position: absolute; top: -12px; left: 50%; width: 36px; height: 4px; margin-left: -18px; background: rgba(252, 248, 236, .8); border: 1px solid var(--nacht); }
+.menuknop img { width: 30px; height: auto; image-rendering: pixelated; }
+.menuknop:active, .menuknop.tik { transform: translate(-50%, 4px); box-shadow: none; }
+.menuknop:focus-visible { outline: 3px solid var(--koraal); outline-offset: 3px; }
+.menuknop .tabbadge { top: -10px; left: auto; right: -10px; }
+.veegzone { position: absolute; left: 0; right: 0; bottom: 0; height: calc(var(--veilig-onder) + 20px); z-index: 11; touch-action: none; }
+.huis-fab { position: absolute; left: 10px; bottom: calc(var(--veilig-onder) + 16px); z-index: 12; min-height: 48px; }
+#view-huis .zoomknoppen { bottom: calc(var(--veilig-onder) + 12px); }
+#view-huis .huis-balk.onder { bottom: calc(var(--veilig-onder) + 10px); }
+#view-huis .huis-balk.voorbeeld { top: calc(var(--veilig-boven) + 66px); }
+#view-huis.bewerkt :is(.menuknop, .huis-fab, .veegzone) { display: none; }
+
+/* ---------- menu ---------- */
+.menu-achter { position: fixed; inset: 0; z-index: 25; background: rgba(11, 18, 56, .12); }
+.menu {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; margin: 0 auto; max-width: 600px;
+  height: min(70%, calc(100% - var(--veilig-boven) - 150px)); min-height: 360px;
+  display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--creme);
+  border: 3px solid var(--nacht); border-bottom: 0; box-shadow: 0 -5px 0 rgba(11, 18, 56, .2);
+  transform: translateY(105%); visibility: hidden; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s .26s;
+}
+.menu.open { transform: none; visibility: visible; transition: transform .26s cubic-bezier(.2, .8, .2, 1), visibility 0s; }
+.menu.sleept { transition: none; }
+.menu-kop { background: var(--papier); border-bottom: 3px solid var(--nacht); touch-action: none; }
+.menu-greep { width: 48px; height: 5px; background: var(--rasterlijn); border: 1px solid #d9c9ad; margin: 7px auto 2px; }
+.menu-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)) 48px; align-items: stretch; }
+.menu-tabs button {
+  position: relative; min-height: 56px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; align-content: center;
+  gap: 1px; padding: 2px 0 6px; font: 600 11px var(--pixelfont); color: var(--nacht); min-width: 0;
+}
+.menu-tabs button[aria-selected="true"] { color: var(--titel); background: #fff3d2; }
+.menu-tabs button[aria-selected="true"]::after { content: ''; position: absolute; left: 18%; right: 18%; bottom: 0; height: 4px; background: var(--goud); }
+.menu-tabs button[aria-selected="true"] .tabicoon { transform: translateY(-1px) scale(1.08); }
+.menu-tabs button:focus-visible { outline: 3px solid var(--koraal); outline-offset: -3px; }
+.menu-tabs .menu-sluit { font: 700 24px var(--tekstfont); color: var(--titel); border-left: 2px solid var(--rasterlijn); }
+.menu .views { position: relative; min-height: 0; }
+.ic-shirt { width: 24px; height: 20px; background: var(--petrol); clip-path: polygon(30% 0, 40% 8%, 60% 8%, 70% 0, 100% 18%, 88% 42%, 78% 36%, 78% 100%, 22% 100%, 22% 36%, 12% 42%, 0 18%); }
+.ic-hamer { width: 22px; height: 22px; background: var(--eik); clip-path: polygon(0 18%, 64% 18%, 64% 0, 100% 0, 100% 46%, 64% 46%, 64% 30%, 46% 30%, 46% 100%, 28% 100%, 28% 30%, 0 30%); }
+.view .kopregel.klein h1 { font-size: 22px; }
+
+/* ---------- breed scherm: zijpaneel ---------- */
+@media (min-width: 900px) {
+  .menu { left: auto; top: 0; right: 0; width: 440px; max-width: none; height: auto; min-height: 0; margin: 0;
+    border-bottom: 0; border-top: 0; border-right: 0; transform: translateX(105%); box-shadow: -5px 0 0 rgba(11, 18, 56, .2); }
+  .menu-greep { display: none; }
+  .menu-kop { padding-top: 6px; }
+  .menu-achter { background: transparent; right: 440px; }
+  .hud { right: auto; width: min(620px, calc(100% - 16px)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu, .menu.open { transition: visibility 0s; }
+  .hud-pet.blij .petmini, .hud .tik { animation: none; }
+}

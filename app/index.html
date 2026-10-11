@@ -14,6 +14,7 @@
 <link rel="stylesheet" href="huis.css">
 <link rel="stylesheet" href="app.css">
 <link rel="stylesheet" href="app-schermen.css">
+<link rel="stylesheet" href="app-menu.css">
 <script src="../assets/manifest.js"></script>
 <script src="../assets/kleding.js"></script>
 <script src="../assets/kast.js"></script>
@@ -22,11 +23,25 @@
 </head>
 <body class="app">
 <div class="schil">
-  <main class="views">
-    <section class="view" id="view-vandaag" aria-label="Vandaag"></section>
-    <section class="view" id="view-quests" aria-label="Quests" hidden></section>
-    <section class="view vol" id="view-huis" aria-label="Ons huis" hidden></section>
-    <section class="view" id="view-kast" aria-label="Kledingkast" hidden>
+  <section class="view vol" id="view-huis" aria-label="Ons huis"></section>
+  <div class="menu-achter" id="menuAchter" hidden></div>
+  <div class="menu" id="menu" role="dialog" aria-label="Menu" hidden>
+    <div class="menu-kop">
+      <div class="menu-greep" aria-hidden="true"></div>
+      <nav class="menu-tabs" role="tablist" aria-label="Menu">
+      <button type="button" role="tab" data-tab="vandaag" aria-controls="view-vandaag" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/ster.png" alt=""></span>Vandaag<span class="tabbadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="quests" aria-controls="view-quests" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/klembord.png" alt=""></span>Quests<span class="tabbadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="kast" aria-controls="view-kast" aria-selected="false" tabindex="-1"><span class="tabicoon"><span class="ic-shirt"></span></span>Kast<span class="tabbadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="verbouwen" aria-controls="view-verbouwen" aria-selected="false" tabindex="-1"><span class="tabicoon"><span class="ic-hamer"></span></span>Bouwen<span class="tabbadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="collectie" aria-controls="view-collectie" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/hart.png" alt=""></span>Pets<span class="tabbadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="meer" aria-controls="view-meer" aria-selected="false" tabindex="-1"><span class="tabicoon"><span class="ic-meer"></span></span>Meer<span class="tabbadge" hidden></span></button>
+        <button type="button" class="menu-sluit" id="menuSluit" aria-label="Menu sluiten">×</button>
+      </nav>
+    </div>
+    <main class="views">
+      <section class="view" id="view-vandaag" role="tabpanel" aria-label="Vandaag" hidden></section>
+      <section class="view" id="view-quests" role="tabpanel" aria-label="Quests" hidden></section>
+    <section class="view" id="view-kast" role="tabpanel" aria-label="Kast" hidden>
       <div class="kast-podium kaart">
         <div class="kast-spiegel bg-creme" id="spiegel"><canvas id="preview" width="64" height="112" aria-label="Character met look"></canvas></div>
         <div class="kast-zij">
@@ -113,15 +128,11 @@
         </div>
       </details>
     </section>
-    <section class="view" id="view-meer" aria-label="Meer" hidden></section>
-  </main>
-  <nav class="tabbalk" role="tablist" aria-label="Schermen">
-    <button type="button" role="tab" data-tab="vandaag" aria-controls="view-vandaag"><span class="tabicoon"><img src="../assets/items/bron/ster.png" alt=""></span>Vandaag</button>
-    <button type="button" role="tab" data-tab="quests" aria-controls="view-quests"><span class="tabicoon"><img src="../assets/items/bron/klembord.png" alt=""></span>Quests<span class="tabbadge" hidden></span></button>
-    <button type="button" role="tab" data-tab="huis" aria-controls="view-huis"><span class="tabicoon"><span class="ic-huis"></span></span>Huis</button>
-    <button type="button" role="tab" data-tab="kast" aria-controls="view-kast"><span class="tabicoon"><img src="../assets/items/bron/rugzak.png" alt=""></span>Kast</button>
-    <button type="button" role="tab" data-tab="meer" aria-controls="view-meer"><span class="tabicoon"><span class="ic-meer"></span></span>Meer<span class="tabbadge" hidden></span></button>
-  </nav>
+      <section class="view" id="view-verbouwen" role="tabpanel" aria-label="Verbouwen" hidden></section>
+      <section class="view" id="view-collectie" role="tabpanel" aria-label="Pets" hidden></section>
+      <section class="view" id="view-meer" role="tabpanel" aria-label="Meer" hidden></section>
+    </main>
+  </div>
 </div>
 <div class="melding" id="melding" role="status" aria-live="polite" hidden></div>
 
@@ -154,6 +165,8 @@
 <script src="scherm-quests.js"></script>
 <script src="scherm-huis.js"></script>
 <script src="scherm-kast.js"></script>
+<script src="scherm-verbouwen.js"></script>
+<script src="scherm-collectie.js"></script>
 <script src="scherm-meer.js"></script>
 <script src="kledingkast.js"></script>
 </body>

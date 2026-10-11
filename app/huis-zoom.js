@@ -214,6 +214,19 @@
       in: () => { const { vw, vh } = maat(); animeer(eff < 1 ? 1 : Math.min(maxEff(), Math.round(eff) + 1), vw / 2, vh / 2, () => zetVast()); },
       uit: () => { const { vw, vh } = maat(); animeer(eff > 1 ? Math.max(minEff(), Math.round(eff) - 1) : minEff(), vw / 2, vh / 2, () => zetVast()); },
       pas: () => { const { vw, vh } = maat(); animeer(minEff(), vw / 2, vh / 2, () => zetVast()); },
+      // Zacht pannen (geen zoom) zodat scènepunt (cx, cy) op schermpunt (midden, y) komt.
+      glijNaar(cx, cy, y) {
+        const { vw } = maat(), van = { x: tx, y: ty };
+        tx = vw / 2 - cx * eff; ty = (y != null ? y : maat().vh / 2) - cy * eff; klemT(true);
+        const naar = { x: tx, y: ty }; tx = van.x; ty = van.y;
+        cancelAnimationFrame(anim);
+        if (rustig()) { tx = naar.x; ty = naar.y; heelPixel(); toon(); return; }
+        const t0 = performance.now();
+        const stap = t => { const p = Math.min(1, (t - t0) / 280), k = 1 - Math.pow(1 - p, 3);
+          tx = van.x + (naar.x - van.x) * k; ty = van.y + (naar.y - van.y) * k; if (p >= 1) heelPixel(); toon();
+          if (p < 1) anim = requestAnimationFrame(stap); };
+        anim = requestAnimationFrame(stap);
+      },
       naar: (cx, cy, e) => { const { vw, vh } = maat(); eff = e || eff; tx = vw / 2 - cx * eff; ty = vh / 2 - cy * eff; klemT(true); toon(); },
       herbereken: () => { if (eff < minEff()) eff = minEff(); klemT(true); toon(); },
       bezig: () => gebaar || !!ptrs.size,

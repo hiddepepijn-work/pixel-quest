@@ -544,7 +544,8 @@
     function focusPunt(vh, eff) {
       const geo = scene.geo, ps = H.bewoners.map(b => bewonerPlek(b, geo));
       const cx = ps.reduce((s, p) => s + p.k.x + p.x, 0) / ps.length, k = ps[0].k;
-      return compact ? { cx, cy: k.vloerY + 14 - vh / 2 / eff } : { cx, cy: k.vloerY - 50 };
+      // Volledig scherm: het midden van hun kamer (vloer tot plafond), zodat Hidde, Tessie en de kamer in beeld zijn.
+      return compact ? { cx, cy: k.vloerY + 14 - vh / 2 / eff } : { cx, cy: k.y + k.h * 0.55 };
     }
     function begin() {
       begonnen = true;
@@ -566,6 +567,8 @@
     // ---------- publiek ----------
     const api = {
       teken, tekenLicht, tekenSignalen, feestje, naarDoos, uitDoos, herstel, zoom, element: venster,
+      // Schuif het huis zacht zodat de plek van een taak op schermhoogte y staat (bv. boven een open menu).
+      kijkNaar(plek, y) { const b = plekBox(plek); if (b) zoom.glijNaar(b.x + b.b / 2, b.y, y); },
       scene: sceneInfo,
       pauze() {
         if (actief !== api) return;
