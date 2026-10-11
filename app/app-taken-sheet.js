@@ -57,7 +57,7 @@
     if (!t.prive && wie !== ander() && !t.verzoek_aan) knoppen.push(el('button.knop', { type: 'button', onclick: () => { if (T.doe('taak.verzoek', { id }, `Gevraagd aan ${U.naam(ander())}. Nee zeggen mag.`)) s.sluit(); } }, `Kun jij, ${U.naam(ander())}?`));
     const voet = [el('button.knop.stil', { type: 'button', onclick: () => { s.sluit(); bewerk(id); } }, 'Bewerken'),
       el('button.knop.goud', { type: 'button', onclick: () => { s.sluit(); T.afronden(id, document.querySelector(`[data-taak="${CSS.escape(id)}"] .gieter`)); } },
-        el('img', { src: U.ASSETS + 'items/bron/gieter.png', alt: '', stijl: { width: '22px' } }), 'Gedaan')];
+        el('img', { src: U.ASSETS + 'items/bron/' + R.icoonVan(t) + '.png', alt: '', stijl: { width: '22px' } }), 'Gedaan')];
     const s = U.sheet({ titel: t.titel, inhoud: [...regels, knoppen.length ? el('div.knoprij.tussen', null, knoppen) : null,
       el('button.knop.mini.stil.verwijder', { type: 'button', onclick: async () => {
         if (await U.vraag('Taak verwijderen?', `"${t.titel}" verdwijnt van de lijst. Wat al gedaan is, blijft meetellen.`, 'Verwijder', 'Laat staan', true)) {
@@ -87,7 +87,7 @@
   }
   function bewerk(id, voor) {
     const st = S.staat(), oud = id ? st.taken[id] : null, mij = ik();
-    const d = Object.assign({ titel: '', minuten: 15, zwaarte: 0, eigenaar: null, interval: null, soort_werk: 'doen', prive: false, plek: null, deadline: null, tijdslot: null },
+    const d = Object.assign({ titel: '', minuten: 15, zwaarte: 0, eigenaar: null, interval: null, soort_werk: 'doen', prive: false, plek: null, deadline: null, tijdslot: null, icoon: null },
       oud ? JSON.parse(JSON.stringify(oud)) : {}, voor || {});
     let wieKeuze = oud ? (oud.eigenaar === mij ? 'ik' : oud.eigenaar === 'samen' ? 'samen' : oud.eigenaar ? 'ander' : 'prikbord') : (voor && voor.wie) || 'prikbord';
     let wanneer = d.tijdslot ? 'tijdslot' : d.deadline ? 'deadline' : 'geen';
@@ -108,17 +108,25 @@
     datum.hidden = wanneer !== 'deadline'; tijd.hidden = wanneer !== 'tijdslot';
     const wanneerG = keuzeGroep('Wanneer?', [['geen', 'Geen'], ['deadline', 'Vóór…'], ['tijdslot', 'Op…']], wanneer, v => { wanneer = v; datum.hidden = v !== 'deadline'; tijd.hidden = v !== 'tijdslot'; });
     wanneerG.append(datum, tijd);
-    const soort = keuzeGroep('Soort werk', [['doen', 'Doen'], ['plannen', 'Plannen'], ['bijhouden', 'Bijhouden']], d.soort_werk, v => { d.soort_werk = v; });
+    // Icoon: "Vanzelf" kiest uit soort werk en titel (R.icoonVan); anders een van de bestaande items.
+    const autoImg = el('img.itemicoon', { alt: '', stijl: { width: '22px' } });
+    const toonAuto = () => { autoImg.src = U.ASSETS + 'items/bron/' + R.icoonVan(Object.assign({}, d, { icoon: null })) + '.png'; };
+    const soort = keuzeGroep('Soort werk', [['doen', 'Doen'], ['plannen', 'Plannen'], ['bijhouden', 'Bijhouden']], d.soort_werk, v => { d.soort_werk = v; toonAuto(); });
+    const icoonG = keuzeGroep('Icoon', [[null, el('span.icoonkeuze', null, autoImg, 'Vanzelf')],
+      ...R.ICONEN.map(n => [n, el('img.itemicoon', { src: U.ASSETS + 'items/bron/' + n + '.png', alt: n, stijl: { width: '24px' } })])], d.icoon || null, v => { d.icoon = v; });
+    icoonG.classList.add('iconen');
+    titel.addEventListener('input', toonAuto);
+    toonAuto();
     const plekSel = el('select', { 'aria-label': 'Plek in huis' }, el('option', { value: '', tekst: 'Nergens in het bijzonder' }),
       plekken().map(p => el('option', { value: p.waarde, tekst: p.tekst })));
     plekSel.value = d.plek ? (d.plek.meubel ? 'meubel:' + d.plek.meubel : 'kamer:' + d.plek.kamer) : '';
     const prive = el('input', { type: 'checkbox', checked: !!d.prive, onchange: () => { d.prive = prive.checked; toonInzet(); } });
     const meer = el('details.meer-opties', { open: !!(oud || (voor && voor.titel)) }, el('summary', { tekst: 'Meer: tijd, zwaarte, plek in huis' }),
-      minuten, zwaarte, soort, el('label.veld', null, el('span', { tekst: 'Waar in huis?' }), plekSel),
+      minuten, zwaarte, soort, icoonG, el('label.veld', null, el('span', { tekst: 'Waar in huis?' }), plekSel),
       el('label.schakel', null, prive, el('span', { tekst: 'Privé: alleen voor mij, telt nergens mee' })));
     toonInzet();
     const opslaan = () => {
-      const data = { titel: titel.value, minuten: d.minuten, zwaarte: d.zwaarte, interval: d.interval, soort_werk: d.soort_werk, prive: d.prive,
+      const data = { titel: titel.value, minuten: d.minuten, zwaarte: d.zwaarte, interval: d.interval, soort_werk: d.soort_werk, prive: d.prive, icoon: d.icoon || null,
         eigenaar: wieKeuze === 'ik' ? mij : wieKeuze === 'samen' ? 'samen' : wieKeuze === 'ander' && oud && oud.eigenaar === ander() ? ander() : null,
         deadline: wanneer === 'deadline' ? (datum.value || null) : null, tijdslot: wanneer === 'tijdslot' ? (tijd.value || null) : null,
         plek: plekSel.value ? { [plekSel.value.split(':')[0]]: plekSel.value.split(':').slice(1).join(':') } : null };

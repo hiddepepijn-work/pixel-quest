@@ -8,7 +8,7 @@
   const ander = p => (p === 'hidde' ? 'tessie' : 'hidde');
   const naam = p => ({ hidde: 'Hidde', tessie: 'Tessie' }[p] || p);
   const taakVan = (st, id) => st.taken[id] || fout('Deze taak bestaat niet meer.');
-  const VELDEN = ['titel', 'minuten', 'zwaarte', 'eigenaar', 'interval', 'deadline', 'tijdslot', 'plek', 'soort_werk', 'prive', 'notitie', 'categorie'];
+  const VELDEN = ['titel', 'minuten', 'zwaarte', 'eigenaar', 'interval', 'deadline', 'tijdslot', 'plek', 'soort_werk', 'prive', 'notitie', 'categorie', 'icoon'];
 
   function schoonTaak(d) {
     const t = {};
@@ -19,6 +19,7 @@
     if ('interval' in t) t.interval = t.interval ? Math.max(1, Math.min(365, Math.round(+t.interval))) : null;
     if ('eigenaar' in t && ![null, 'hidde', 'tessie', 'samen'].includes(t.eigenaar)) fout('Onbekende eigenaar.');
     if ('soort_werk' in t && !['doen', 'plannen', 'bijhouden'].includes(t.soort_werk)) t.soort_werk = 'doen';
+    if ('icoon' in t && !R.ICONEN.includes(t.icoon)) t.icoon = null;   // null = automatisch uit soort en titel
     return t;
   }
 

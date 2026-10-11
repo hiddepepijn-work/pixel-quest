@@ -59,7 +59,7 @@
     opties = opties || {};
     const t = x.t;
     const gieter = el('button.gieter', { type: 'button', 'aria-label': `${t.titel} afvinken`, onclick: e => { U.tik(gieter); afronden(t.id, gieter, li); e.stopPropagation(); } },
-      el('img', { src: U.ASSETS + 'items/bron/gieter.png', alt: '' }));
+      el('img', { src: U.ASSETS + 'items/bron/' + R.icoonVan(t) + '.png', alt: '' }));
     const meta = el('span.meta', null, wieLabel(x), standEl(x), t.voorbeeld ? el('span.label.voorbeeld', { tekst: 'voorbeeld' }) : null,
       t.verzoek_aan ? el('span.label.goud', { tekst: t.verzoek_aan === ik() ? 'vraag aan jou' : 'gevraagd' }) : null);
     const open = el('button.open-knop', { type: 'button', onclick: () => wortel.PQTaken.detail(t.id), 'aria-label': `${t.titel}, details` },

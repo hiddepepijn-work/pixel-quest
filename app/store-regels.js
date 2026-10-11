@@ -69,6 +69,21 @@
   ];
   const categorieVan = t => t.categorie || (CATEGORIE.find(([, re]) => re.test(t.titel || '')) || [null])[0];
 
+  // ---------- icoon van een taak: een bestaand item uit assets/items (eigen keuze, anders uit soort en titel) ----------
+  const ICONEN = ['gieter', 'bezem', 'klembord', 'plant', 'rugzak', 'ster', 'hart', 'munt'];
+  const SCHOON = /schoon|poets|lappen|dweil|soppen|stof|afwas|vaat|badkamer|wc\b|toilet|douche|opruim|ruim .* op|afval|container|vuilnis|kliko|glasbak|verschon/i;
+  function icoonVan(t) {
+    if (ICONEN.includes(t.icoon)) return t.icoon;
+    const titel = t.titel || '', cat = categorieVan(t);
+    if (/cadeau|verjaardag|date\b|bloemen|verrass/i.test(titel)) return 'hart';
+    if (t.soort_werk === 'plannen' || t.soort_werk === 'bijhouden' || /administratie|agenda|plannen|regelen/i.test(titel)) return 'klembord';
+    if (cat === 'planten' || /water geven/i.test(titel)) return 'gieter';
+    if (cat === 'boodschappen' || /winkel|markt|apotheek/i.test(titel)) return 'rugzak';
+    if (SCHOON.test(titel) || ['afwas', 'badkamer', 'opruimen', 'afval'].includes(cat)) return 'bezem';
+    if (cat === 'buiten') return 'plant';
+    return 'ster';
+  }
+
   // ---------- taken: wie, claims, zichtbaarheid ----------
   const isSamen = t => t.eigenaar === 'samen';
   // Een claim geldt tot het eind van de volgende dag of tot de deadline (§6).
@@ -88,7 +103,7 @@
 
   wortel.PQRegels = Object.assign(wortel.PQRegels || {}, {
     P, DAG, STANDEN, inzetVan, dagSleutel, uitSleutel, weekVan, weekStart, weekPlus, dagenVanWeek, weekNummer, maandVan,
-    klok, klokTekst, categorieVan, isSamen, claimTot, eigenaarNu, zichtbaarVoor, actief,
+    klok, klokTekst, categorieVan, ICONEN, icoonVan, isSamen, claimTot, eigenaarNu, zichtbaarVoor, actief,
   });
   if (typeof module !== 'undefined' && module.exports) module.exports = wortel.PQRegels;
 })(typeof window !== 'undefined' ? window : globalThis);

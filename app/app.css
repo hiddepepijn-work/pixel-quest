@@ -84,6 +84,7 @@ h1, h2, h3, h4, .pix-font { font-family: var(--pixelfont); color: var(--titel); 
 .knop.gevaar { background: var(--koraal); color: #fff; }
 .knop.stil { box-shadow: none; border-color: var(--rasterlijn); background: var(--papier2); }
 .knop.mini { min-height: 36px; padding: 4px 10px; font-size: 14px; box-shadow: 0 2px 0 var(--nacht); }
+.knop.mini.stil { box-shadow: none; }
 .knop.breed { width: 100%; }
 .knop:disabled { opacity: .45; cursor: default; transform: none; box-shadow: var(--schaduw); }
 .knop:focus-visible, .chip:focus-visible, .rond:focus-visible { outline: 3px solid var(--koraal); outline-offset: 2px; }
@@ -188,6 +189,8 @@ fieldset.veld { border: 0; padding: 0; margin: 10px 0; min-width: 0; }
 .invoer:focus, .app select:focus, .app textarea:focus { outline: 3px solid var(--goud); outline-offset: 0; }
 .keuzes { display: flex; flex-wrap: wrap; gap: 6px; }
 .keuzes .chip { flex: 1 1 auto; }
+.iconen .keuzes .chip { flex: 0 0 auto; min-width: 48px; padding: 4px 8px; display: inline-grid; place-items: center; }
+.icoonkeuze { display: inline-flex; align-items: center; gap: 6px; }
 .rijtwee { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .schakel { display: flex; align-items: center; gap: 10px; min-height: 44px; cursor: pointer; }
 .schakel input { width: 22px; height: 22px; accent-color: var(--blad); flex: none; }
