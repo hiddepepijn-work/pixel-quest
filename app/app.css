@@ -27,6 +27,8 @@ h1, h2, h3, h4, .pix-font { font-family: var(--pixelfont); color: var(--titel); 
   position: fixed; inset: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto;
   max-width: 560px; margin: 0 auto; background: var(--creme);
 }
+/* Statusbalk-strook: zonder deze strook schuift de lijst bij scrollen onder de klok en de batterij van iOS door. */
+.schil::before { content: ''; position: fixed; left: 0; right: 0; top: 0; height: var(--veilig-boven); background: var(--creme); z-index: 11; pointer-events: none; }
 .views { position: relative; min-height: 0; margin: 0; padding: 0; max-width: none; width: 100%; }
 .view {
   position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; -webkit-overflow-scrolling: touch;

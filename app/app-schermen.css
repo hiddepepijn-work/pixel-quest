@@ -209,3 +209,6 @@ details.debug { margin-top: 12px; }
 
 /* iOS zoomt in op elk tekstveld onder 16 px (ook de breedte- en lengtegraad van de omgevingsbediening). */
 body.app .omgevingsbalk :is(input:not([type=checkbox]):not([type=radio]):not([type=range]), select) { font-size: 16px; }
+/* Meer: een datumveld heeft een brede minimale inhoud; zonder min-width: 0 werd elke kaart breder dan het scherm. */
+.meer-inhoud > *, .rijtwee > * { min-width: 0; }
+.rijtwee input[type=date] { width: 100%; min-width: 0; }

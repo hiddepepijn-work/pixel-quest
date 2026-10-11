@@ -53,6 +53,8 @@
     bewerkKnop.disabled = info.voorbeeld;
     balkOnder.hidden = !info.bewerken || info.voorbeeld;
     voorbeeldBalk.hidden = !info.voorbeeld;
+    // Onder de bovenbalk, hoe hoog die ook is (op een smalle telefoon lopen de knoppen over twee regels).
+    if (info.voorbeeld) voorbeeldBalk.style.top = (balkBoven.offsetTop + balkBoven.offsetHeight + 6) + 'px';
     if (info.voorbeeld) {
       const n = info.getoond, hv = H().niveaus.find(x => x.niveau === n), volgende = n === info.niveau + 1;
       const doosNamen = info.doos.map(d => d.naam.toLowerCase());
