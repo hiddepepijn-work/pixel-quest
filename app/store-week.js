@@ -37,7 +37,10 @@
     for (let i = 0; w <= nuW && i < 600; i++, w = R.weekPlus(w, 1)) {
       const norm = normVoor(st, w), totaal = totaalVan(st, w), open = w === nuW;
       const rec = { week: w, norm, totaal, open, gehaald: false, bevroren: norm === 0, rustweek: (st.rustweken || []).includes(w) };
+      // De week waarin de app begon, is maar half gespeeld: niet gehaald kost dan geen rustweek en breekt niets.
+      const aanloop = st.start != null && w === R.weekVan(st.start) && st.start > R.weekStart(w) + 864e5 / 2;
       if (!rec.bevroren && totaal >= P.drempel * norm) { rec.gehaald = true; streak++; gehaaldTotaal++; }
+      else if (aanloop && !open) rec.aanloop = true;
       else if (!rec.bevroren && !open) {
         if (!rustGebruikt[R.maandVan(w)]) { rustGebruikt[R.maandVan(w)] = true; rec.rustweek = true; }
         else streak = 0;

@@ -54,6 +54,10 @@ check('de ander keurt goed: in bezit', S.doe('voorstel.akkoord', { id: v.id }, {
   try { globalThis.PQOpdrachten.VOER.rustweek(rs, { data: {}, tijd: op26 }); } catch (e) { fout = e.message; }
   check('rustweek: aankondigen geweigerd, streak blijft 2', fout && R.weken(rs, op26).streak === 2, { fout, streak: R.weken(rs, op26).streak });
   check('rustweek: november wel vrij', R.rustweekVrij(rs, R.weekVan(t0 + 28 * DAG), t0 + 28 * DAG));
+  // Begonnen op zondag: die halve week kost geen rustweek (anders is de oktober-rustweek op dag 1 al weg).
+  const zo = { start: t0 + 6 * DAG, taken: {}, afrondingen: [], rustweken: [], afwezig: [], weekdoel: [], voorstellen: [] };
+  const wz = R.weken(zo, t0 + 8 * DAG).lijst[0];
+  check('aanloopweek: geen rustweek gebruikt, oktober nog vrij', !wz.rustweek && wz.aanloop && R.rustweekVrij(zo, R.weekVan(t0 + 8 * DAG), t0 + 8 * DAG), wz);
 }
 console.log(mis ? `${mis} fout` : 'alles goed');
 process.exit(mis ? 1 : 0);
