@@ -145,7 +145,7 @@
       lijst.length ? el('ul.doos', null, lijst) : null);
     const rust = el('div.veld', null, el('span', { tekst: 'Rustweek' }),
       el('p.noot', { tekst: 'Eén per kalendermaand. Haal je een week niet, dan zet de app hem vanzelf in. Je kunt hem ook vooraf aankondigen.' }),
-      R.rustweekVrij(st, w) ? el('button.knop.mini', { type: 'button', onclick: async () => { if (await U.vraag('Rustweek nemen?', 'Deze week telt dan niet en breekt niets. Het is je rustweek van deze maand.', 'Neem rustweek', 'Toch niet') && T.doe('rustweek', { week: w }, 'Rustweek. Doe rustig aan.')) teken(); } }, 'Deze week is een rustweek')
+      R.rustweekVrij(st, w, nu) ? el('button.knop.mini', { type: 'button', onclick: async () => { if (await U.vraag('Rustweek nemen?', 'Deze week telt dan niet en breekt niets. Het is je rustweek van deze maand.', 'Neem rustweek', 'Toch niet') && T.doe('rustweek', { week: w }, 'Rustweek. Doe rustig aan.')) teken(); } }, 'Deze week is een rustweek')
         : el('p.noot', { tekst: 'De rustweek van deze maand is al gebruikt.' }));
     const omgeving = el('div.omgevingsbalk.balk');
     wortel.PQ_OMGEVINGHUIS.bediening(omgeving);

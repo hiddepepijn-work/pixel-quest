@@ -90,7 +90,8 @@
     'afwezig.weg'(st, o) { st.afwezig = st.afwezig.filter(a => a.id !== o.data.id); },
     'rustweek'(st, o) {
       const w = o.data.week || R.weekVan(o.tijd);
-      if (!R.rustweekVrij(st, w)) fout('Deze maand is de rustweek al gebruikt.');
+      if (w < R.weekVan(o.tijd)) fout('Een rustweek kondig je vooraf aan, niet achteraf.');
+      if (!R.rustweekVrij(st, w, o.tijd)) fout('Deze maand is de rustweek al gebruikt.');
       st.rustweken.push(w);
     },
     'terugblik'(st, o) {

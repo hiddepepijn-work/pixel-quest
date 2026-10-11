@@ -48,9 +48,13 @@
     }
     return { lijst, nu: lijst[lijst.length - 1], streak, record, gehaald: gehaaldTotaal };
   }
-  function rustweekVrij(st, w) {
+  // Is de rustweek van de maand van w nog vrij? Aangekondigd telt, en (met nu) ook een rustweek die een gesloten,
+  // niet-gehaalde week die maand al automatisch gebruikte; anders zou een aankondiging achteraf de streak breken.
+  function rustweekVrij(st, w, nu) {
     const maand = R.maandVan(w);
-    return !(st.rustweken || []).some(r => R.maandVan(r) === maand);
+    if ((st.rustweken || []).some(r => R.maandVan(r) === maand)) return false;
+    if (nu == null) return true;
+    return !weken(st, nu).lijst.some(r => !r.open && r.rustweek && R.maandVan(r.week) === maand);
   }
 
   // ---------- huispot (§10): 0,5 munt per inzet, per week hooguit tot de norm ----------

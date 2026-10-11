@@ -41,5 +41,19 @@ const v = S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'hidde', item
 check('voorstel kleding', v.ok, v);
 check('zelf goedkeuren mag niet', !S.doe('voorstel.akkoord', { id: v.id }).ok);
 check('de ander keurt goed: in bezit', S.doe('voorstel.akkoord', { id: v.id }, { namens: 'tessie' }).ok && !!S.staat().kleding.bezit.hidde.beanie);
+// Rustweek: één per kalendermaand, ook als een gemiste week hem al automatisch gebruikte (puntensysteem §8).
+{
+  const DAG = 864e5, t0 = new Date(2026, 9, 5, 12).getTime();   // ma 5 okt 2026
+  const rs = { start: t0, taken: {}, afrondingen: [], rustweken: [], afwezig: [], weekdoel: [], voorstellen: [] };
+  const af = (dagNa, inzet) => rs.afrondingen.push({ inzet, op: t0 + dagNa * DAG, week: R.weekVan(t0 + dagNa * DAG) });
+  af(1, 500); af(15, 500);                       // week 5 okt gehaald, 12 okt gemist (auto-rustweek), 19 okt gehaald
+  const op26 = t0 + 21 * DAG;                     // ma 26 okt
+  check('rustweek: gemiste week gebruikt de oktober-rustweek, streak 2', R.weken(rs, op26).streak === 2, R.weken(rs, op26).streak);
+  check('rustweek: in oktober niet meer vrij', !R.rustweekVrij(rs, R.weekVan(op26), op26));
+  let fout = null;
+  try { globalThis.PQOpdrachten.VOER.rustweek(rs, { data: {}, tijd: op26 }); } catch (e) { fout = e.message; }
+  check('rustweek: aankondigen geweigerd, streak blijft 2', fout && R.weken(rs, op26).streak === 2, { fout, streak: R.weken(rs, op26).streak });
+  check('rustweek: november wel vrij', R.rustweekVrij(rs, R.weekVan(t0 + 28 * DAG), t0 + 28 * DAG));
+}
 console.log(mis ? `${mis} fout` : 'alles goed');
 process.exit(mis ? 1 : 0);
