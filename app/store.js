@@ -46,18 +46,26 @@
     st.kleding = Object.assign({ bezit: { hidde: {}, tessie: {} }, looks: { hidde: null, tessie: null } }, isObj(st.kleding) ? st.kleding : {});
     if (!isObj(st.kleding.bezit)) st.kleding.bezit = { hidde: {}, tessie: {} };
     if (!isObj(st.kleding.looks)) st.kleding.looks = { hidde: null, tessie: null };
+    for (const f of ['hidde', 'tessie']) if (!isObj(st.kleding.bezit[f])) st.kleding.bezit[f] = {};
+    st.winkel = isObj(st.winkel) ? st.winkel : {};
+    if (!Array.isArray(st.winkel.drops)) st.winkel.drops = [];
     const HM = wortel.PQ_HUISMODEL;
     const huisOk = isObj(st.huis) && st.huis.versie === 3 && Array.isArray(st.huis.inrichting) && Array.isArray(st.huis.doos);
     if (HM && !huisOk) { try { st.huis = HM.normaliseer(isObj(st.huis) ? st.huis : null); } catch (e) { st.huis = HM.normaliseer(null); } }
+    afgeleid(st);
     return st;
   }
+  // De winkel leidt de startkast en vrijgekomen stel-sets af uit de kast-data (winkel-drops.js), na elke opdracht.
+  const afgeleid = st => { if (wortel.PQWinkel && wortel.PQWinkel.afgeleid) wortel.PQWinkel.afgeleid(st); return st; };
   const geldigeOp = op => isObj(op) && typeof op.id === 'string' && typeof op.soort === 'string' && isObj(op.data);
 
   // ---------- opbouwen ----------
   function pas(st, op) {
     const f = VOER[op.soort];
     if (!f) throw new Error('Deze app-versie kent de opdracht "' + op.soort + '" niet.');
-    return f(st, op);
+    const uit = f(st, op);
+    afgeleid(st);
+    return uit;
   }
   function bouw() {
     staat = vulAan(kloon(basis));

@@ -29,7 +29,7 @@
   function kledingStart() {
     const bezit = { hidde: {}, tessie: {} }, K = wortel.PQ_KAST;
     for (const it of (K && K.items) || []) {
-      if (!it.startkast) continue;
+      if (!it.startkast || it.status !== 'klaar') continue;   // wat nog op art wacht (pyjama) komt later vanzelf (winkel-drops.js afgeleid)
       for (const f of it.lichaam) bezit[f][it.id] = [it.kleuren[0]];
     }
     return { bezit, looks: { hidde: null, tessie: null } };
