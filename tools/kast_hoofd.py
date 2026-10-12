@@ -153,6 +153,24 @@ BARET = [
     '....oooooooooooooooooo....',
 ]
 
+# Tessie: bollere baret die schuin naar achteren (rechts) zakt; smallere band op het hoofd.
+BARET_T = [
+    '...........oo.............',
+    '..........oaao............',
+    '......oooooooooooo........',
+    '....oochhhcbbbbbbbooo.....',
+    '...ochhccbbbbbbbbbbbaoo...',
+    '..ochccbbbbbbbbbbbbbbbaoo.',
+    '.ocbcbbbbbbbbbbbbbbbbbbbao',
+    '.ocbbbbbbbbbbbbbbbbbbbbbao',
+    '.obbbbbbbbbbbbbbbbbbbbbaao',
+    '..oabbbbbbbbbbbbbbbbbbaaoo',
+    '...ooabbbbbbbbbbbbbbaaoo..',
+    '....oaaaaaaaaaaaaaaaaao...',
+    '....ocbcbcbcbcbcbcbcbco...',
+    '.....oooooooooooooooooo...',
+]
+
 CLIP = ['.oooooo.', 'ohhcbbbo', 'ocbbbbao', '.oooooo.']
 
 
@@ -192,8 +210,8 @@ def baret(fid):
     if fid == 'hidde':
         teken(lg, BARET, 22, 20, 'bordeaux')
         return knip_boven(lg, 22, 47, 30, zijmarge=3, y_zij=27)
-    teken(lg, BARET, 16, 29, 'bordeaux')
-    return knip_boven(lg, 17, 42, 39, zijmarge=6, y_zij=36)
+    teken(lg, BARET_T, 16, 28, 'bordeaux')
+    return knip_boven(lg, 19, 41, 41, zijmarge=6, y_zij=37)
 
 
 def haarclip(fid):

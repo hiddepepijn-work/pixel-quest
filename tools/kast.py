@@ -43,6 +43,7 @@ def item(id, naam, slot, lichaam, prijs, kleuren, herkomst, set_id=None, tags=()
 
 
 U, N, W = 'uitgesneden', 'nieuw getekend', 'wacht_op_art'
+NH = 'nieuw getekend (incl. huid)'   # tekent ook blote huid (benen, buik, enkels) in de tinten van het figuur
 CATALOGUS = [
     # --- hoofd ---
     item('petje', 'Petje', 'hoofd', BEIDE, 30, ['petrol', 'bordeaux', 'nacht', 'goud'], N, 'zomerdag', ['zomer']),
@@ -59,71 +60,74 @@ CATALOGUS = [
     # --- boven ---
     item('tshirt_basis', 'T-shirt', 'boven', BEIDE, 30, ['origineel', 'petrol', 'bordeaux', 'mos', 'creme'], U,
          'basis', startkast=True, zone='shirt'),
-    item('longsleeve', 'Longsleeve', 'boven', BEIDE, 40, ['creme', 'nacht', 'mos', 'lavendel'], W),
-    item('trui', 'Trui', 'boven', BEIDE, 50, ['koffie', 'mos', 'bordeaux', 'creme'], W, tags=['warm']),
-    item('hoodie_basic', 'Hoodie', 'boven', BEIDE, 45, ['nacht', 'petrol', 'bordeaux', 'creme'], W,
+    item('longsleeve', 'Longsleeve', 'boven', BEIDE, 40, ['creme', 'nacht', 'mos', 'lavendel'], N, 'studie'),
+    item('trui', 'Trui', 'boven', BEIDE, 50, ['koffie', 'mos', 'bordeaux', 'creme'], N, tags=['warm']),
+    item('hoodie_basic', 'Hoodie', 'boven', BEIDE, 45, ['nacht', 'petrol', 'bordeaux', 'creme'], N,
          'chill_zondag', ['warm', 'huis']),
-    item('overhemd', 'Overhemd', 'boven', BEIDE, 50, ['creme', 'petrol', 'lavendel', 'blad'], W),
-    item('crop_top', 'Crop top', 'boven', TESSIE, 35, ['creme', 'koraal', 'lavendel', 'nacht'], W, tags=['zomer']),
-    item('blouse', 'Blouse', 'boven', TESSIE, 45, ['creme', 'lavendel', 'abrikoos', 'petrol'], W, 'parijs'),
-    item('cardigan', 'Cardigan', 'boven', TESSIE, 50, ['creme', 'mos', 'bordeaux', 'lavendel'], W, tags=['warm']),
+    item('overhemd', 'Overhemd', 'boven', BEIDE, 50, ['creme', 'petrol', 'lavendel', 'blad'], N, 'kantoor',
+         ['kantoor']),
+    item('crop_top', 'Crop top', 'boven', TESSIE, 35, ['creme', 'koraal', 'lavendel', 'nacht'], NH, 'zomerdag',
+         ['zomer']),
+    item('blouse', 'Blouse', 'boven', TESSIE, 45, ['creme', 'lavendel', 'blad', 'petrol'], N, 'parijs'),
+    item('cardigan', 'Cardigan', 'boven', TESSIE, 50, ['creme', 'mos', 'bordeaux', 'lavendel'], N, tags=['warm']),
     # --- jas (overlay over romp en armen) ---
-    item('spijkerjas', 'Spijkerjas', 'jas', BEIDE, 70, ['petrol', 'nacht', 'creme', 'koffie'], N),
+    item('spijkerjas', 'Spijkerjas', 'jas', BEIDE, 70, ['petrol', 'nacht', 'creme', 'koffie'], N, 'kantoor', ['lente']),
     item('puffer', 'Puffer', 'jas', BEIDE, 90, ['petrol', 'nacht', 'koraal', 'lavendel', 'creme'], N,
          'winterwandeling', ['warm', 'sneeuw']),
     item('regenjas', 'Regenjas', 'jas', BEIDE, 75, ['goud', 'koraal', 'petrol', 'mos'], N, 'regendag', ['regen']),
-    item('teddyjas', 'Teddyjas', 'jas', TESSIE, 85, ['creme', 'hazelnoot', 'abrikoos', 'lavendel'], N,
-         tags=['warm']),
+    item('teddyjas', 'Teddyjas', 'jas', TESSIE, 85, ['creme', 'hazelnoot', 'mos', 'lavendel'], N, 'herfstdag',
+         ['warm']),
     # --- onder ---
     item('broek_basis', 'Broek', 'onder', BEIDE, 30, ['origineel', 'nacht', 'koffie', 'petrol', 'mos'], U, 'basis',
          startkast=True, zone='broek'),
-    item('jeans', 'Jeans', 'onder', BEIDE, 45, ['petrol', 'nacht', 'creme', 'titel'], W),
-    item('joggingbroek', 'Joggingbroek', 'onder', BEIDE, 40, ['nacht', 'creme', 'mos', 'lavendel'], W,
+    item('jeans', 'Jeans', 'onder', BEIDE, 45, ['petrol', 'nacht', 'creme', 'titel'], N, 'kantoor'),
+    item('joggingbroek', 'Joggingbroek', 'onder', BEIDE, 40, ['nacht', 'creme', 'mos', 'lavendel'], N,
          'chill_zondag', ['huis']),
-    item('korte_broek', 'Korte broek', 'onder', BEIDE, 35, ['creme', 'petrol', 'mos', 'koraal'], W, 'zomerdag',
+    item('korte_broek', 'Korte broek', 'onder', BEIDE, 35, ['creme', 'petrol', 'mos', 'koraal'], NH, 'zomerdag',
          ['zomer']),
-    item('rok', 'Rok', 'onder', TESSIE, 40, ['bordeaux', 'nacht', 'mos', 'lavendel'], W, 'parijs'),
-    item('legging', 'Legging', 'onder', TESSIE, 30, ['titel', 'bordeaux', 'mos', 'lavendel'], W),
-    item('wijde_broek', 'Wijde broek', 'onder', TESSIE, 50, ['creme', 'bordeaux', 'petrol', 'koffie'], W),
+    item('rok', 'Rok', 'onder', TESSIE, 40, ['bordeaux', 'nacht', 'mos', 'lavendel'], NH, 'parijs', ['zomer']),
+    item('legging', 'Legging', 'onder', TESSIE, 30, ['titel', 'bordeaux', 'mos', 'lavendel'], N),
+    item('wijde_broek', 'Wijde broek', 'onder', TESSIE, 50, ['creme', 'bordeaux', 'petrol', 'koffie'], N, 'herfstdag'),
     # --- heel lichaam (vervangt boven en onder) ---
-    item('pyjama', 'Pyjama', 'heel_lichaam', BEIDE, 60, ['lavendel', 'petrol', 'koraal', 'creme'], W, 'slaap',
+    item('pyjama', 'Pyjama', 'heel_lichaam', BEIDE, 60, ['lavendel', 'petrol', 'koraal', 'creme'], N, None,
          ['nacht', 'huis'], startkast=True),
-    item('onesie', 'Onesie', 'heel_lichaam', BEIDE, 80, ['hazelnoot', 'mos', 'lavendel', 'creme'], W, 'slaap',
+    item('onesie', 'Onesie', 'heel_lichaam', BEIDE, 80, ['hazelnoot', 'mos', 'lavendel', 'creme'], N, None,
          ['nacht', 'huis', 'warm']),
-    item('schort', 'Schort', 'heel_lichaam', BEIDE, 50, ['creme', 'koraal', 'petrol', 'mos'], W, tags=['keuken']),
-    item('jurk', 'Jurk', 'heel_lichaam', TESSIE, 75, ['bordeaux', 'lavendel', 'creme', 'blad'], W),
-    item('overall', 'Overall', 'heel_lichaam', TESSIE, 80, ['petrol', 'creme', 'mos', 'koffie'], W),
+    item('schort', 'Schort', 'heel_lichaam', BEIDE, 50, ['creme', 'koraal', 'petrol', 'mos'], N, tags=['keuken', 'huis']),
+    item('jurk', 'Jurk', 'heel_lichaam', TESSIE, 75, ['bordeaux', 'lavendel', 'creme', 'blad'], NH, tags=['zomer']),
+    item('overall', 'Overall', 'heel_lichaam', TESSIE, 80, ['petrol', 'creme', 'mos', 'koffie'], N),
     # --- schoenen ---
     item('sneakers_basis', 'Sneakers', 'schoenen', BEIDE, 30, ['origineel', 'nacht', 'koraal', 'lavendel'], U,
          'basis', startkast=True, zone='schoenen'),
-    item('laarzen', 'Laarzen', 'schoenen', BEIDE, 40, ['koffie', 'nacht', 'mos', 'goud'], W, 'regendag',
+    item('laarzen', 'Laarzen', 'schoenen', BEIDE, 40, ['koffie', 'nacht', 'mos', 'goud'], N, 'regendag',
          ['regen', 'warm']),
-    item('sloffen', 'Sloffen', 'schoenen', BEIDE, 20, ['creme', 'lavendel', 'koraal', 'nacht'], W, 'chill_zondag',
+    item('sloffen', 'Sloffen', 'schoenen', BEIDE, 20, ['creme', 'lavendel', 'koraal', 'nacht'], NH, 'chill_zondag',
          ['huis', 'nacht']),
-    item('ballerinas', "Ballerina's", 'schoenen', TESSIE, 30, ['bordeaux', 'nacht', 'creme', 'koraal'], W, 'parijs'),
-    item('enkellaarsjes', 'Enkellaarsjes', 'schoenen', TESSIE, 40, ['koffie', 'nacht', 'eik', 'bordeaux'], W,
-         tags=['warm']),
+    item('ballerinas', "Ballerina's", 'schoenen', TESSIE, 30, ['bordeaux', 'nacht', 'creme', 'koraal'], NH, 'parijs'),
+    item('enkellaarsjes', 'Enkellaarsjes', 'schoenen', TESSIE, 40, ['koffie', 'nacht', 'eik', 'bordeaux'], N,
+         'herfstdag', ['warm']),
     # --- accessoire ---
     item('bril', 'Ronde bril', 'accessoire', BEIDE, 30, ['koffie', 'titel', 'goud', 'koraal'], N, 'studie'),
-    item('tas', 'Schoudertas', 'accessoire', BEIDE, 35, ['eik', 'koffie', 'mos', 'bordeaux'], N, 'studie'),
+    item('tas', 'Schoudertas', 'accessoire', BEIDE, 35, ['eik', 'koffie', 'mos', 'bordeaux'], N),
     item('sjaal', 'Sjaal', 'accessoire', BEIDE, 25, ['bordeaux', 'mos', 'goud', 'nacht', 'creme'], N,
          'winterwandeling', ['warm']),
-    item('handschoenen', 'Handschoenen', 'accessoire', BEIDE, 20, ['petrol', 'koraal', 'mos', 'creme'], N,
-         'winterwandeling', ['warm']),
+    item('handschoenen', 'Handschoenen', 'accessoire', BEIDE, 20, ['petrol', 'koraal', 'mos', 'creme'], N, None,
+         ['warm']),
     item('ketting_basis', 'Kettinkje', 'accessoire', TESSIE, 30, ['origineel', 'creme', 'koraal', 'lavendel'], U,
          startkast=True, zone='accessoire', zone_tot_y=66, onder_jas=True),
-    item('oorbellen', 'Oorbellen', 'accessoire', TESSIE, 25, ['goud', 'creme', 'koraal'], N),
+    item('oorbellen', 'Oorbellen', 'accessoire', TESSIE, 25, ['goud', 'creme', 'koraal'], N, 'herfstdag'),
 ]
 
 SETS = [
     {'id': 'basis', 'naam': 'Basis', 'items': ['tshirt_basis', 'broek_basis', 'sneakers_basis']},
-    {'id': 'winterwandeling', 'naam': 'Winterwandeling', 'items': ['puffer', 'beanie', 'sjaal', 'handschoenen']},
+    {'id': 'winterwandeling', 'naam': 'Winterwandeling', 'items': ['puffer', 'beanie', 'sjaal']},
     {'id': 'regendag', 'naam': 'Regendag', 'items': ['regenjas', 'bucket_hat', 'laarzen']},
     {'id': 'chill_zondag', 'naam': 'Chill zondag', 'items': ['hoodie_basic', 'joggingbroek', 'sloffen']},
+    {'id': 'kantoor', 'naam': 'Kantoor', 'items': ['overhemd', 'jeans', 'spijkerjas']},
+    {'id': 'zomerdag', 'naam': 'Zomer', 'items': ['petje', 'korte_broek', 'crop_top']},
     {'id': 'parijs', 'naam': 'Parijs', 'items': ['baret', 'blouse', 'rok', 'ballerinas']},
-    {'id': 'studie', 'naam': 'Studiedag', 'items': ['bril', 'koptelefoon', 'tas']},
-    {'id': 'zomerdag', 'naam': 'Zomerdag', 'items': ['petje', 'korte_broek']},
-    {'id': 'slaap', 'naam': 'Slaapkamer', 'items': ['pyjama', 'onesie']},
+    {'id': 'herfstdag', 'naam': 'Herfstdag', 'items': ['teddyjas', 'wijde_broek', 'enkellaarsjes', 'oorbellen']},
+    {'id': 'studie', 'naam': 'Studiedag', 'items': ['bril', 'koptelefoon', 'longsleeve']},
 ]
 
 
@@ -141,8 +145,12 @@ from kast_teken import lichaam, TONEN, toon_stop  # noqa: E402
 from kast_hoofd import HOOFD  # noqa: E402
 from kast_acc import ACC  # noqa: E402
 from kast_jas import JAS  # noqa: E402
+from kast_boven import BOVEN  # noqa: E402
+from kast_onder import ONDER  # noqa: E402
+from kast_schoen import SCHOEN  # noqa: E402
+from kast_heel import HEEL  # noqa: E402
 
-TEKENAARS = {**HOOFD, **ACC, **JAS}
+TEKENAARS = {**HOOFD, **ACC, **JAS, **BOVEN, **ONDER, **SCHOEN, **HEEL}
 KORT = {'hidde': 'h', 'tessie': 't'}
 UITMAP = K.UIT / 'kast'
 
@@ -186,7 +194,7 @@ def maak_sprites(kleding):
         if it['status'] != 'klaar':
             continue
         it['modus'] = 'luminantie' if it['herkomst'] == U else 'toon'
-        for k in ('maskers', 'knip', 'bron', 'stats'):
+        for k in ('maskers', 'knip', 'bron', 'stats', 'wis', 'huid'):
             it[k] = {}
         for fid in it['lichaam']:
             naam = f"{it['id']}_{KORT[fid]}"
@@ -208,11 +216,22 @@ def maak_sprites(kleding):
                     beelden[it['knip'][fid]] = kp
                 if getattr(lg, 'boven_haar', True) is False:
                     it['onder_haar'] = True
+                if getattr(lg, 'over_kleding', False):
+                    it['over_kleding'] = True
+                wis = getattr(lg, 'wis_masker', None)
+                if wis is not None and wis.any():
+                    wm = (wis * 255).astype(np.uint8)
+                    it['wis'][fid] = png(UITMAP / 'native' / f'{naam}_w.png', wm)
+                    beelden[it['wis'][fid]] = wm
+                huid = getattr(lg, 'huid', None)
+                if huid is not None and huid[..., 3].any():
+                    it['huid'][fid] = png(UITMAP / 'native' / f'{naam}_s.png', huid)
+                    beelden[it['huid'][fid]] = huid
             it['sprites'][fid] = png(UITMAP / 'native' / f'{naam}.png', rgba)
             it['maskers'][fid] = png(UITMAP / 'native' / f'{naam}_m.png', m)
             beelden[it['sprites'][fid]] = rgba
             beelden[it['maskers'][fid]] = m
-        for k in ('knip', 'bron', 'stats'):
+        for k in ('knip', 'bron', 'stats', 'wis', 'huid'):
             if not it[k]:
                 del it[k]
     return beelden
@@ -249,7 +268,8 @@ def samenstel(fid, look):
         it = per_id.get(keuze.get('item'))
         if it and it['status'] == 'klaar' and fid in it['sprites']:
             lagen[slot] = it
-    if 'heel_lichaam' in lagen:
+    over = 'heel_lichaam' in lagen and lagen['heel_lichaam'].get('over_kleding', False)
+    if 'heel_lichaam' in lagen and not over:
         lagen.pop('boven', None)
         lagen.pop('onder', None)
     knip = np.zeros(z.shape, bool)
@@ -257,9 +277,19 @@ def samenstel(fid, look):
         if it.get('knip', {}).get(fid):
             knip |= np.asarray(Image.open(K.UIT / it['knip'][fid])) > 0
     weg = knip & np.isin(z, [K.Z['haar'], K.Z['lijn']])
+    wis = np.zeros(z.shape, bool)
+    for it in lagen.values():
+        if it.get('wis', {}).get(fid):
+            wis |= np.asarray(Image.open(K.UIT / it['wis'][fid])) > 0
     basis = sp.copy()
-    basis[weg] = 0
+    basis[weg | wis] = 0
     doek = basis.copy()
+    for laag in LAAGVOLGORDE:              # huid-onderlagen (blote benen, buik) direct boven het lichaam
+        it = lagen.get(laag)
+        if it and it.get('huid', {}).get(fid):
+            h = np.asarray(Image.open(K.UIT / it['huid'][fid]).convert('RGBA'))
+            a = h[..., 3] > 0
+            doek[a] = h[a]
 
     def leg(it):
         rgba = np.asarray(Image.open(K.UIT / it['sprites'][fid]).convert('RGBA'))
@@ -267,6 +297,8 @@ def samenstel(fid, look):
         kleur = next(v.get('kleur') for s, v in look.items() if v.get('item') == it['id'])
         r = verkleur_item(it, fid, rgba, m, kleur)
         a = r[..., 3] > 0
+        if it.get('modus') == 'luminantie':   # uitgesneden = kopie van het lichaam: valt ook onder wis
+            a &= ~wis
         doek[a] = r[a]
 
     acc = lagen.get('accessoire')
@@ -274,7 +306,7 @@ def samenstel(fid, look):
         if laag == 'haar':
             if acc and acc.get('onder_haar'):
                 leg(acc)
-            hl = haarlaag(z) & ~weg
+            hl = haarlaag(z) & ~weg & (basis[..., 3] > 0)
             doek[hl] = basis[hl]
         elif laag == 'jas':
             if acc and acc.get('onder_jas'):
@@ -284,8 +316,14 @@ def samenstel(fid, look):
         elif laag == 'accessoire':
             if acc and not acc.get('onder_haar') and not acc.get('onder_jas'):
                 leg(acc)
-        elif laag in lagen:
-            leg(lagen[laag])
+        elif laag == 'heel_lichaam':
+            if 'heel_lichaam' in lagen and not over:
+                leg(lagen['heel_lichaam'])
+        else:
+            if laag in lagen:
+                leg(lagen[laag])
+            if laag == 'boven' and over:
+                leg(lagen['heel_lichaam'])
     return doek
 
 
@@ -293,11 +331,16 @@ def samenstel(fid, look):
 CONTROLE = {'hidde': {'hoofd': {'item': 'beanie', 'kleur': 'mos'},
                       'boven': {'item': 'tshirt_basis', 'kleur': 'petrol'},
                       'jas': {'item': 'regenjas', 'kleur': 'koraal'},
+                      'onder': {'item': 'korte_broek', 'kleur': 'petrol'},
+                      'schoenen': {'item': 'sloffen', 'kleur': 'lavendel'},
                       'accessoire': {'item': 'sjaal', 'kleur': 'goud'}},
             'tessie': {'hoofd': {'item': 'baret', 'kleur': 'nacht'},
-                       'boven': {'item': 'tshirt_basis', 'kleur': 'lavendel'},
-                       'onder': {'item': 'broek_basis', 'kleur': 'nacht'},
+                       'boven': {'item': 'crop_top', 'kleur': 'lavendel'},
+                       'onder': {'item': 'rok', 'kleur': 'mos'},
+                       'schoenen': {'item': 'ballerinas', 'kleur': 'nacht'},
                        'accessoire': {'item': 'ketting_basis', 'kleur': 'creme'}}}
+# De controle raakt alle laagregels: knip (muts), wis + uitgesneden item eronder (T-shirt onder de
+# regenjas), huid-onderlagen (benen, buik, enkels), onder_haar (sjaal) en onder_jas (ketting).
 
 
 # ---------------------------------------------------------------------------
@@ -339,7 +382,20 @@ def debugblad(pad, rijen, crop=(14, 110), schaal=3):
     K.compositie([np.concatenate(hoog, 0)], schaal=schaal).save(pad)
 
 
+def controleer_sets():
+    """Elk set-item bestaat en wijst terug naar zijn set; 3-4 items, samen draagbaar (verschillende slots)."""
+    per = {i['id']: i for i in CATALOGUS}
+    for st in SETS:
+        assert 3 <= len(st['items']) <= 4, st['id']
+        assert len({per[i]['slot'] for i in st['items']}) == len(st['items']), st['id']
+        for i in st['items']:
+            assert per[i]['set_id'] == st['id'], (i, st['id'])
+    for it in CATALOGUS:
+        assert it['set_id'] is None or any(it['id'] in st['items'] for st in SETS), it['id']
+
+
 def main():
+    controleer_sets()
     kleding = json.loads((K.UIT / 'kleding.json').read_text('utf-8'))
     beelden = maak_sprites(kleding)
     klaar = [i for i in CATALOGUS if i['status'] == 'klaar']
