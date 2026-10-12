@@ -173,7 +173,7 @@ def hoodie_basic(fid):
     capuchon(kl, fid)
     koorden(kl, fid)
     g = GEO[fid]
-    kl.pixels(HART, g['midden'] + (1 if fid == 'hidde' else -6), g['hals'] + (6 if fid == 'hidde' else 5))
+    kl.pixels(HART, g['midden'] + (1 if fid == 'hidde' else -3), g['hals'] + (6 if fid == 'hidde' else 5))
     return kl.laag()
 
 
@@ -189,14 +189,25 @@ def overhemd(fid):
         kl.zet(mx + 1, y, 'c')
         if (y - h) % 4 == 2:
             kl.zet(mx + 1, y, 'k')
-    if fid == 'hidde':
-        kl.pixels(['hhc.....chh', '.hhc...chh.', '..hc...ch..'], mx - 5, h - 1, alleen_op=False)
-        kl.pixels(['aaaa', 'cbba', 'cbba', 'aaaa'], mx - 7, h + 6)
+    kraag(kl, fid)
+    if fid == 'hidde':                               # borstzakje links op de borst
+        kl.pixels(['aaaaa', 'cbbba', 'cbbba', '.aaa.'], mx - 7, h + 6)
     else:
-        kl.pixels(['hhc....chh', '.hc...ch.', '..c...c..'], mx - 5, h - 1, alleen_op=False)
-        kl.pixels(['aaa', 'cba', 'aaa'], mx + 3, h + 4)
-    plooien(kl, fid)
+        kl.pixels(['aaaa', 'cbba', '.aa.'], mx + 3, h + 5)
+    plooien(kl, fid, romp=False)
     return kl.laag()
+
+
+def kraag(kl, fid, toon='h'):
+    """Puntkraag: twee punten die naar het midden wijzen, met een eigen rand."""
+    g = GEO[fid]
+    mx, h = g['midden'], g['hals']
+    if fid == 'hidde':
+        flappen = ([(24, 49), (28, 50), (31, 54), (29, 54), (24, 51)], [(40, 49), (36, 50), (33, 54), (35, 54), (40, 51)])
+    else:
+        flappen = ([(21, 57), (25, 58), (28, 61), (26, 61), (21, 59)], [(35, 57), (31, 58), (29, 61), (31, 61), (35, 59)])
+    for pts in flappen:
+        kl.stuk(veelhoek(pts), naad='o', toon=toon, glans=False)
 
 
 

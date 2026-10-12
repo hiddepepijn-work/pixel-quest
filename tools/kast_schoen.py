@@ -39,9 +39,18 @@ def voet(v, top=None, neus=2, hak=0):
     return veelhoek(pts)
 
 
-def schacht(v, y0, extra=1):
-    e0, e1 = v['enkel']
-    return veelhoek([(e0 - extra, y0), (e1 + extra, y0), (e1 + extra, v['top'] + 1), (e0 - extra, v['top'] + 1)])
+def schacht(v, y0, extra=1, fid=None, i=0):
+    """Schacht van y0 tot de voet. Met fid volgt hij het (schuine) been uit kast_onder, 1 px ruimer."""
+    if fid is None:
+        e0, e1 = v['enkel']
+        return veelhoek([(e0 - extra, y0), (e1 + extra, y0), (e1 + extra, v['top'] + 1), (e0 - extra, v['top'] + 1)])
+    from scipy import ndimage as ndi
+    from kast_onder import GEO as GO
+    m = veelhoek(GO[fid]['been'][i])
+    m = ndi.binary_dilation(m, np.array([[0, 0, 0], [1, 1, 1], [0, 0, 0]], bool), iterations=extra)
+    m[:y0] = False
+    m[v['top'] + 2:] = False
+    return m
 
 
 def zool(kl, v, c='z', rijen=1):
@@ -60,12 +69,11 @@ def laarzen(fid):
     """Laarzen tot halverwege de kuit: omgeslagen rand, stevige zool en hak."""
     kl = Kleed(fid, 'koffie', {'z': '#2a2026'}, slot='schoenen')
     kl.wis = wis_schoenen(fid)
-    for v in VOETEN[fid]:
-        kl.stuk(schacht(v, 89), schaduw=1)
+    for i, v in enumerate(VOETEN[fid]):
+        kl.stuk(schacht(v, 89, fid=fid, i=i), schaduw=1)
         kl.stuk(voet(v, neus=2), naad='a', schaduw=1)
-        e0, e1 = v['enkel']
-        kl.rij(90, 'c', e0 - 1, e1 + 1)
-        kl.rij(91, 'a', e0 - 1, e1 + 1)
+        kl.rij(90, 'c')
+        kl.rij(91, 'a')
         zool(kl, v, rijen=1)
         hiel = v['x'][1] - 2 if v['teen'] == 'l' else v['x'][0] + 1
         kl.zet(hiel, ZOOL - 1, 'z')
@@ -74,21 +82,28 @@ def laarzen(fid):
 
 
 def sloffen(fid):
-    """Pluizige sloffen: lage ronde neus, een dikke pluizen kraag en een zachte zool."""
+    """Pluizige sloffen: een bolle neus die hoger is dan de hiel, een pluizen rand langs de instap
+    en een zachte zool."""
     kl = Kleed(fid, 'creme', slot='schoenen')
     kl.wis = wis_schoenen(fid)
-    enkels(kl, fid, ZOOL - 3)
+    enkels(kl, fid, ZOOL - 2)
     for v in VOETEN[fid]:
         x0, x1 = v['x']
-        e0, e1 = v['enkel']
-        kl.stuk(voet(v, top=ZOOL - 4, neus=3), schaduw=1)
-        kl.rij(ZOOL - 3, 'h', e0 - 1, e1 + 1)          # pluizen kraag rond de enkel
-        for x in range(e0 - 1, e1 + 2):
-            if x % 3 == 0:
-                kl.zet(x, ZOOL - 3, 'c')
-        nx = x0 + 2 if v['teen'] == 'l' else x1 - 3     # pompon op de neus
-        kl.pixels(['hc', 'ca'], nx, ZOOL - 3)
-        zool(kl, v, 'a')
+        if v['teen'] == 'l':
+            pts = [(x0, ZOOL - 1), (x0, ZOOL - 3), (x0 + 2, ZOOL - 5), (x0 + 6, ZOOL - 5), (x0 + 8, ZOOL - 3),
+                   (x1, ZOOL - 3), (x1, ZOOL), (x0 + 1, ZOOL)]
+            rand = range(x0 + 8, x1)
+        else:
+            pts = [(x1, ZOOL - 1), (x1, ZOOL - 3), (x1 - 2, ZOOL - 5), (x1 - 6, ZOOL - 5), (x1 - 8, ZOOL - 3),
+                   (x0, ZOOL - 3), (x0, ZOOL), (x1 - 1, ZOOL)]
+            rand = range(x0 + 1, x1 - 7)
+        kl.stuk(veelhoek(pts), schaduw=1)
+        for x in rand:                                   # pluizen rand langs de instap
+            kl.zet(x, ZOOL - 3, 'h', alleen_op=False)
+            kl.stukken[ZOOL - 3, x] = True
+            if (x + fid.__len__()) % 3 == 0:
+                kl.pluis.append((x, ZOOL - 4, 'c'))
+        kl.rij(ZOOL - 1, 'a', x0, x1)
     return kl.laag()
 
 

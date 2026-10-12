@@ -170,32 +170,34 @@ def legging(fid):
     g = GEO[fid]
     kl = Kleed(fid, 'titel', slot='onder')
     kl.wis = wis_broek(fid)
-    kl.stuk(veelhoek([(22, 71), (37, 71), (38, 78), (38, 84), (30, 84), (29, 82), (28, 84), (20, 84),
-                      (20, 78)]), schaduw=1)
-    for pts in g['been']:
-        x = [p[0] for p in pts]
-        kl.stuk(veelhoek([(p[0] + (-1 if p[0] == min(x) else 0), p[1]) for p in pts]), naad='a')
+    for pts in g['been']:                                 # benen 1 px voller dan het blote been
+        c = sum(p[0] for p in pts) / len(pts)
+        vol = [(p[0] - 1 if p[0] < c else p[0], p[1]) for p in pts]
+        kl.stuk(veelhoek(vol + [(vol[1][0], 78), (vol[0][0], 78)]), schaduw=1)
+    kl.stuk(veelhoek([(22, 71), (37, 71), (38, 77), (37, 81), (30, 82), (29, 81), (28, 82), (21, 81), (20, 77)]),
+            naad=None, schaduw=1)
+    kl.lijn([(29, 79), (29, 83)], 'a')
     kl.rib(71, 72)
-    for kx in (22, 33):                                   # glanslijn voor op het been
-        kl.lijn([(kx, 85), (kx, 98)], 'c')
-        kl.zet(kx, 90, 'h')
+    for kx in (22, 33):                                   # glans op dij en knie
+        kl.lijn([(kx, 84), (kx, 88)], 'c')
         kl.zet(kx, 91, 'h')
+        kl.zet(kx, 92, 'c')
     return kl.laag()
 
 
 def wijde_broek(fid):
     """Wijde broek met hoge band en persplooien, ruimer dan het origineel."""
     alleen_tessie(fid)
-    kl = broek_basis(fid, 'creme', [[(18, 81), (29, 81), (28, 103), (13, 103)],
-                                    [(30, 81), (41, 81), (44, 103), (30, 103)]], vast={'k': 'koffie'})
+    kl = broek_basis(fid, 'creme', [[(18, 81), (29, 81), (28, 102), (14, 102)],
+                                    [(30, 81), (41, 81), (43, 102), (30, 102)]], vast={'k': 'koffie'})
     kl.rij(72, 'c')
     kl.rij(73, 'b')
     kl.rij(74, 'a')
     kl.zet(29, 73, 'k')
     gulp(kl, fid)
     for xa, xb in ((24, 21), (35, 37)):                   # persplooi
-        kl.lijn([(xa, 76), (xb, 102)], 'a', licht='c')
-    kl.rij(102, 'a')
+        kl.lijn([(xa, 76), (xb, 101)], 'a', licht='c')
+    kl.rij(101, 'a')
     return kl.laag()
 
 

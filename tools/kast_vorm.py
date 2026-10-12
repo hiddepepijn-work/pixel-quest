@@ -58,6 +58,14 @@ def haarlaag(z):
     return haar | (ndi.binary_dilation(haar, ACHT) & (z == Z['lijn']))
 
 
+def halo(fid):
+    """Lichte randpixels van het haar (halo tegen de lichte achtergrond van het blad). Op kleding
+    ogen ze als witte spikkels, dus onder een kledingstuk mogen ze weg."""
+    sp, z = lichaam(fid)
+    L = K.U.luminantie(sp[..., :3].astype(float))
+    return (z == Z['lijn']) & (L > 140) & haarlaag(z)
+
+
 def beschermd(fid):
     """Pixels die een kledingstuk nooit tekent of wist: handen (+ hun outline), hoofd en haar."""
     sp, z = lichaam(fid)
@@ -66,7 +74,7 @@ def beschermd(fid):
     hoofd = np.zeros((H, W), bool)
     hoofd[:{'hidde': 48, 'tessie': 57}[fid]] = True
     hoofd &= sp[..., 3] > 0
-    return hand | hand_lijn | hoofd | haarlaag(z) | (z == Z['detail'])
+    return hand | hand_lijn | hoofd | (haarlaag(z) & ~halo(fid)) | (z == Z['detail'])
 
 
 def wis_zones(fid, zones, armen=False, extra=None, behoud=(), vanaf=0):
@@ -114,9 +122,10 @@ class Kleed:
         self.wis = np.zeros((H, W), bool)
         self.huid = np.full((H, W), '', object)
         self.over_kleding = False
+        self.pluis = []          # (x, y, toon) buiten de outline, na het afronden (teddyrand)
 
     # --- stukken ---
-    def stuk(self, m, naad='o', licht=True, toon='b', schaduw=1, glans=True):
+    def stuk(self, m, naad='o', licht=True, toon='b', schaduw=1, glans=True, kolom=True):
         """Vul masker m. naad = toon van de rand waar dit stuk over een eerder stuk ligt.
         Licht van linksboven: lichte binnenrand links en boven, schaduw rechts (schaduw px) en onder."""
         m = m.copy()
@@ -129,7 +138,7 @@ class Kleed:
                     for k in range(1, schaduw + 1):
                         if len(xs) >= 3 + 2 * k:
                             t[y, xs.max() - k] = 'a'
-            for x in range(W):
+            for x in range(W if kolom else 0):
                 ys = np.nonzero(m[:, x])[0]
                 if len(ys) >= 4:
                     t[ys.max() - 1, x] = 'a'
@@ -217,6 +226,9 @@ class Kleed:
         rand = self.stukken & ~ndi.binary_erosion(self.stukken, VIER, border_value=0)
         self.t[rand] = 'L'                       # vaste donkere outline, zoals die van het lichaam
         self.vast.setdefault('L', OUTLINE)
+        for x, y, c in self.pluis:
+            if 0 <= x < W and 0 <= y < H and self.t[y, x] == '':
+                self.t[y, x] = c
         bes = beschermd(self.fid)
         self.t[bes] = ''
         self.huid[bes] = ''
@@ -231,7 +243,7 @@ class Kleed:
         # Eén cel extra over lege native cellen: in native verandert er niets, maar op de bronversie
         # vallen zo ook de bronpixels van de oude outline weg die net over de celgrens liggen.
         sp, _ = lichaam(self.fid)
-        wis = self.wis & ~bes
+        wis = (self.wis | halo(self.fid) & ndi.binary_dilation(self.stukken, ACHT)) & ~bes
         wis |= ndi.binary_dilation(wis, ACHT) & (sp[..., 3] == 0) & ~ndi.binary_dilation(bes, ACHT)
         lg.wis_masker = wis
         tint = huidtinten(self.fid)

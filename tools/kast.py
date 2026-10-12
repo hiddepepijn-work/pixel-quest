@@ -60,39 +60,41 @@ CATALOGUS = [
     # --- boven ---
     item('tshirt_basis', 'T-shirt', 'boven', BEIDE, 30, ['origineel', 'petrol', 'bordeaux', 'mos', 'creme'], U,
          'basis', startkast=True, zone='shirt'),
-    item('longsleeve', 'Longsleeve', 'boven', BEIDE, 40, ['creme', 'nacht', 'mos', 'lavendel'], N),
+    item('longsleeve', 'Longsleeve', 'boven', BEIDE, 40, ['creme', 'nacht', 'mos', 'lavendel'], N, 'studie'),
     item('trui', 'Trui', 'boven', BEIDE, 50, ['koffie', 'mos', 'bordeaux', 'creme'], N, tags=['warm']),
     item('hoodie_basic', 'Hoodie', 'boven', BEIDE, 45, ['nacht', 'petrol', 'bordeaux', 'creme'], N,
          'chill_zondag', ['warm', 'huis']),
-    item('overhemd', 'Overhemd', 'boven', BEIDE, 50, ['creme', 'petrol', 'lavendel', 'blad'], N),
-    item('crop_top', 'Crop top', 'boven', TESSIE, 35, ['creme', 'koraal', 'lavendel', 'nacht'], NH, tags=['zomer']),
+    item('overhemd', 'Overhemd', 'boven', BEIDE, 50, ['creme', 'petrol', 'lavendel', 'blad'], N, 'kantoor',
+         ['kantoor']),
+    item('crop_top', 'Crop top', 'boven', TESSIE, 35, ['creme', 'koraal', 'lavendel', 'nacht'], NH, 'zomerdag',
+         ['zomer']),
     item('blouse', 'Blouse', 'boven', TESSIE, 45, ['creme', 'lavendel', 'abrikoos', 'petrol'], N, 'parijs'),
     item('cardigan', 'Cardigan', 'boven', TESSIE, 50, ['creme', 'mos', 'bordeaux', 'lavendel'], N, tags=['warm']),
     # --- jas (overlay over romp en armen) ---
-    item('spijkerjas', 'Spijkerjas', 'jas', BEIDE, 70, ['petrol', 'nacht', 'creme', 'koffie'], N),
+    item('spijkerjas', 'Spijkerjas', 'jas', BEIDE, 70, ['petrol', 'nacht', 'creme', 'koffie'], N, 'kantoor', ['lente']),
     item('puffer', 'Puffer', 'jas', BEIDE, 90, ['petrol', 'nacht', 'koraal', 'lavendel', 'creme'], N,
          'winterwandeling', ['warm', 'sneeuw']),
     item('regenjas', 'Regenjas', 'jas', BEIDE, 75, ['goud', 'koraal', 'petrol', 'mos'], N, 'regendag', ['regen']),
-    item('teddyjas', 'Teddyjas', 'jas', TESSIE, 85, ['creme', 'hazelnoot', 'abrikoos', 'lavendel'], N,
-         tags=['warm']),
+    item('teddyjas', 'Teddyjas', 'jas', TESSIE, 85, ['creme', 'hazelnoot', 'abrikoos', 'lavendel'], N, 'herfstdag',
+         ['warm']),
     # --- onder ---
     item('broek_basis', 'Broek', 'onder', BEIDE, 30, ['origineel', 'nacht', 'koffie', 'petrol', 'mos'], U, 'basis',
          startkast=True, zone='broek'),
-    item('jeans', 'Jeans', 'onder', BEIDE, 45, ['petrol', 'nacht', 'creme', 'titel'], N),
+    item('jeans', 'Jeans', 'onder', BEIDE, 45, ['petrol', 'nacht', 'creme', 'titel'], N, 'kantoor'),
     item('joggingbroek', 'Joggingbroek', 'onder', BEIDE, 40, ['nacht', 'creme', 'mos', 'lavendel'], N,
          'chill_zondag', ['huis']),
     item('korte_broek', 'Korte broek', 'onder', BEIDE, 35, ['creme', 'petrol', 'mos', 'koraal'], NH, 'zomerdag',
          ['zomer']),
-    item('rok', 'Rok', 'onder', TESSIE, 40, ['bordeaux', 'nacht', 'mos', 'lavendel'], NH, 'parijs'),
+    item('rok', 'Rok', 'onder', TESSIE, 40, ['bordeaux', 'nacht', 'mos', 'lavendel'], NH, 'parijs', ['zomer']),
     item('legging', 'Legging', 'onder', TESSIE, 30, ['titel', 'bordeaux', 'mos', 'lavendel'], N),
-    item('wijde_broek', 'Wijde broek', 'onder', TESSIE, 50, ['creme', 'bordeaux', 'petrol', 'koffie'], N),
+    item('wijde_broek', 'Wijde broek', 'onder', TESSIE, 50, ['creme', 'bordeaux', 'petrol', 'koffie'], N, 'herfstdag'),
     # --- heel lichaam (vervangt boven en onder) ---
-    item('pyjama', 'Pyjama', 'heel_lichaam', BEIDE, 60, ['lavendel', 'petrol', 'koraal', 'creme'], N, 'slaap',
+    item('pyjama', 'Pyjama', 'heel_lichaam', BEIDE, 60, ['lavendel', 'petrol', 'koraal', 'creme'], N, None,
          ['nacht', 'huis'], startkast=True),
-    item('onesie', 'Onesie', 'heel_lichaam', BEIDE, 80, ['hazelnoot', 'mos', 'lavendel', 'creme'], N, 'slaap',
+    item('onesie', 'Onesie', 'heel_lichaam', BEIDE, 80, ['hazelnoot', 'mos', 'lavendel', 'creme'], N, None,
          ['nacht', 'huis', 'warm']),
-    item('schort', 'Schort', 'heel_lichaam', BEIDE, 50, ['creme', 'koraal', 'petrol', 'mos'], N, tags=['keuken']),
-    item('jurk', 'Jurk', 'heel_lichaam', TESSIE, 75, ['bordeaux', 'lavendel', 'creme', 'blad'], NH),
+    item('schort', 'Schort', 'heel_lichaam', BEIDE, 50, ['creme', 'koraal', 'petrol', 'mos'], N, tags=['keuken', 'huis']),
+    item('jurk', 'Jurk', 'heel_lichaam', TESSIE, 75, ['bordeaux', 'lavendel', 'creme', 'blad'], NH, tags=['zomer']),
     item('overall', 'Overall', 'heel_lichaam', TESSIE, 80, ['petrol', 'creme', 'mos', 'koffie'], N),
     # --- schoenen ---
     item('sneakers_basis', 'Sneakers', 'schoenen', BEIDE, 30, ['origineel', 'nacht', 'koraal', 'lavendel'], U,
@@ -103,28 +105,29 @@ CATALOGUS = [
          ['huis', 'nacht']),
     item('ballerinas', "Ballerina's", 'schoenen', TESSIE, 30, ['bordeaux', 'nacht', 'creme', 'koraal'], NH, 'parijs'),
     item('enkellaarsjes', 'Enkellaarsjes', 'schoenen', TESSIE, 40, ['koffie', 'nacht', 'eik', 'bordeaux'], N,
-         tags=['warm']),
+         'herfstdag', ['warm']),
     # --- accessoire ---
     item('bril', 'Ronde bril', 'accessoire', BEIDE, 30, ['koffie', 'titel', 'goud', 'koraal'], N, 'studie'),
-    item('tas', 'Schoudertas', 'accessoire', BEIDE, 35, ['eik', 'koffie', 'mos', 'bordeaux'], N, 'studie'),
+    item('tas', 'Schoudertas', 'accessoire', BEIDE, 35, ['eik', 'koffie', 'mos', 'bordeaux'], N),
     item('sjaal', 'Sjaal', 'accessoire', BEIDE, 25, ['bordeaux', 'mos', 'goud', 'nacht', 'creme'], N,
          'winterwandeling', ['warm']),
-    item('handschoenen', 'Handschoenen', 'accessoire', BEIDE, 20, ['petrol', 'koraal', 'mos', 'creme'], N,
-         'winterwandeling', ['warm']),
+    item('handschoenen', 'Handschoenen', 'accessoire', BEIDE, 20, ['petrol', 'koraal', 'mos', 'creme'], N, None,
+         ['warm']),
     item('ketting_basis', 'Kettinkje', 'accessoire', TESSIE, 30, ['origineel', 'creme', 'koraal', 'lavendel'], U,
          startkast=True, zone='accessoire', zone_tot_y=66, onder_jas=True),
-    item('oorbellen', 'Oorbellen', 'accessoire', TESSIE, 25, ['goud', 'creme', 'koraal'], N),
+    item('oorbellen', 'Oorbellen', 'accessoire', TESSIE, 25, ['goud', 'creme', 'koraal'], N, 'herfstdag'),
 ]
 
 SETS = [
     {'id': 'basis', 'naam': 'Basis', 'items': ['tshirt_basis', 'broek_basis', 'sneakers_basis']},
-    {'id': 'winterwandeling', 'naam': 'Winterwandeling', 'items': ['puffer', 'beanie', 'sjaal', 'handschoenen']},
+    {'id': 'winterwandeling', 'naam': 'Winterwandeling', 'items': ['puffer', 'beanie', 'sjaal']},
     {'id': 'regendag', 'naam': 'Regendag', 'items': ['regenjas', 'bucket_hat', 'laarzen']},
     {'id': 'chill_zondag', 'naam': 'Chill zondag', 'items': ['hoodie_basic', 'joggingbroek', 'sloffen']},
+    {'id': 'kantoor', 'naam': 'Kantoor', 'items': ['overhemd', 'jeans', 'spijkerjas']},
+    {'id': 'zomerdag', 'naam': 'Zomer', 'items': ['petje', 'korte_broek', 'crop_top']},
     {'id': 'parijs', 'naam': 'Parijs', 'items': ['baret', 'blouse', 'rok', 'ballerinas']},
-    {'id': 'studie', 'naam': 'Studiedag', 'items': ['bril', 'koptelefoon', 'tas']},
-    {'id': 'zomerdag', 'naam': 'Zomerdag', 'items': ['petje', 'korte_broek']},
-    {'id': 'slaap', 'naam': 'Slaapkamer', 'items': ['pyjama', 'onesie']},
+    {'id': 'herfstdag', 'naam': 'Herfstdag', 'items': ['teddyjas', 'wijde_broek', 'enkellaarsjes', 'oorbellen']},
+    {'id': 'studie', 'naam': 'Studiedag', 'items': ['bril', 'koptelefoon', 'longsleeve']},
 ]
 
 
@@ -379,7 +382,20 @@ def debugblad(pad, rijen, crop=(14, 110), schaal=3):
     K.compositie([np.concatenate(hoog, 0)], schaal=schaal).save(pad)
 
 
+def controleer_sets():
+    """Elk set-item bestaat en wijst terug naar zijn set; 3-4 items, samen draagbaar (verschillende slots)."""
+    per = {i['id']: i for i in CATALOGUS}
+    for st in SETS:
+        assert 3 <= len(st['items']) <= 4, st['id']
+        assert len({per[i]['slot'] for i in st['items']}) == len(st['items']), st['id']
+        for i in st['items']:
+            assert per[i]['set_id'] == st['id'], (i, st['id'])
+    for it in CATALOGUS:
+        assert it['set_id'] is None or any(it['id'] in st['items'] for st in SETS), it['id']
+
+
 def main():
+    controleer_sets()
     kleding = json.loads((K.UIT / 'kleding.json').read_text('utf-8'))
     beelden = maak_sprites(kleding)
     klaar = [i for i in CATALOGUS if i['status'] == 'klaar']

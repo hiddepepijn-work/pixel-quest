@@ -13,27 +13,29 @@ def wis_alles(fid, armen=True):
     return wis_zones(fid, ['shirt'], armen=armen) | wis_broek(fid)
 
 
-def pijpen(kl, fid, ruim=1, boord=False):
+def pijpen(kl, fid, ruim=1, kolom=True):
     g = GO[fid]
-    kl.stuk(veelhoek(g['heup']), schaduw=1)
-    for (a, b, c, d), k in zip(g['recht'], (-1, 1)):
-        kl.stuk(veelhoek([(a[0] - ruim, a[1]), (b[0] + ruim, b[1]), (c[0] + ruim, c[1]), (d[0] - ruim, d[1])]),
-                naad='a', schaduw=1)
+    kl.stuk(veelhoek(g['heup']), schaduw=1, kolom=kolom)
+    for (a, b, c, d), k in zip(g['recht'], (-1, 1)):    # alleen naar buiten ruimer
+        l, r = (ruim, 0) if k < 0 else (0, ruim)
+        kl.stuk(veelhoek([(a[0] - l, a[1]), (b[0] + r, b[1]), (c[0] + r, c[1]), (d[0] - l, d[1])]),
+                naad='a' if kolom else None, schaduw=1, kolom=kolom)
     return g['zoom']
 
 
-def bovenstuk(kl, fid, lang, breder=1):
-    kl.stuk(romp(fid, lang, breder))
+def bovenstuk(kl, fid, lang, breder=1, naad='o'):
+    kl.stuk(romp(fid, lang, breder), naad=naad, kolom=naad is not None)
     ml, mr = mouwen(fid, breder=breder)
     kl.stuk(ml)
     kl.stuk(mr)
     kl.mouw = ml | mr
 
 
-def stipjes(kl, y0, y1, stap=4):
+def stipjes(kl, y0, y1, stap=5):
+    """Verspreide sterretjes-stipjes (elke 3e rij, verspringend)."""
     for y in range(y0, y1):
         for x in range(64):
-            if (x + 2 * y) % stap == 0 and y % 2 == 0 and kl.t[y, x] == 'b':
+            if y % 3 == 0 and (x + (y // 3) * 2) % stap == 0 and kl.t[y, x] == 'b':
                 kl.t[y, x] = 'h'
 
 
@@ -64,9 +66,10 @@ def onesie(fid):
     """Onesie uit één stuk: rits van hals tot kruis, capuchon met oortjes, boorden."""
     kl = Kleed(fid, 'hazelnoot', {'k': 'creme'}, slot='heel_lichaam')
     kl.wis = wis_alles(fid)
-    zoom = pijpen(kl, fid, ruim=1)
+    zoom = pijpen(kl, fid, ruim=1, kolom=False)
     kl.rib(zoom - 2, zoom)
-    bovenstuk(kl, fid, lang=8, breder=1)
+    kl.lijn([(GO[fid]['midden'], GO[fid]['kruis'] - 1), (GO[fid]['midden'], GO[fid]['kruis'] + 3)], 'a')
+    bovenstuk(kl, fid, lang=8, breder=1, naad=None)
     manchet(kl, fid, 2, rib=True)
     capuchon(kl, fid)
     g = GB[fid]

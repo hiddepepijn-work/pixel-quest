@@ -56,7 +56,8 @@ TAS = [
     '.oooooooo.',
 ]
 
-OORBEL = ['.o.', 'obo', 'oho', '.o.']
+# Oorhangertje: knopje in het oor, kettinkje, een glanzende druppel die onder de krul uitkomt.
+OORBEL = ['.o.', 'oho', '.o.', '.a.', 'oco', 'chb', 'cbb', 'obo']
 
 
 def bril(fid):
@@ -87,7 +88,7 @@ def tas(fid):
 def oorbellen(fid):
     lg = Laag()
     if fid == 'tessie':
-        teken(lg, OORBEL, 36, 51, 'goud')
+        teken(lg, OORBEL, 37, 50, 'goud')
     return lg
 
 

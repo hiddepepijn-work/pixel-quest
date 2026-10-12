@@ -100,7 +100,7 @@ def regenjas(fid):
     g = GEO[fid]
     mx, h = g['midden'], g['hals']
     staande_kraag(kl, fid, hoog=2)
-    sluiting(kl, fid, h + 2, kl.zoom - 1, knoop='k', stap=6, dubbel=True)
+    sluiting(kl, fid, h + 2, kl.zoom - 1, knoop='k', stap=5)
     kl.lijn([(mx - 8, kl.zoom - 7), (mx - 4, kl.zoom - 7)], 'a')    # zakken met klep
     kl.lijn([(mx + 4, kl.zoom - 7), (mx + 8, kl.zoom - 7)], 'a')
     manchet(kl, fid, 1)
@@ -116,20 +116,30 @@ def teddyjas(fid):
     if fid != 'tessie':
         raise KeyError(fid)
     kl = jas(fid, 'creme', lang=8, breder=3, vast={'k': 'koffie'})
-    rand = kl.stukken.copy()
-    for y, x in zip(*np.nonzero(rand)):                  # golvende teddyrand
-        if (x + y) % 3 == 0:
-            for dx, dy in ((-1, 0), (1, 0), (0, 1)):
-                if 0 <= x + dx < 64 and not rand[y + dy, x + dx] and y + dy > GEO[fid]['hals'] + 3:
-                    kl.stukken[y + dy, x + dx] = True
-                    kl.t[y + dy, x + dx] = 'b'
-                    break
-    tegel = ['hcb', 'cba', 'baa']
-    for y, x in zip(*np.nonzero(kl.stukken)):
-        tx, ty = (x + (y // 3) % 2) % 3, y % 3
-        if kl.t[y, x] in ('b', 'c', 'a', 'h'):
-            kl.t[y, x] = tegel[ty][tx]
-    staande_kraag(kl, fid, hoog=2, toon='h')
+    # teddy: ronde lusjes van 3x2 (licht boven, schaduw onder) in een baksteenverband, met
+    # wat variatie zodat het geen raster of stippels wordt
+    # teddy: zacht pluche. Lage ruis in basis en licht (2x2 plukjes, verspringend), de schaduwkant
+    # blijft donkerder, en pluisjes net buiten de outline maken de rand zacht. Geen stippels.
+    rng = np.random.default_rng(7)
+    ruis = rng.random((60, 40))
+    oud = kl.t.copy()
+    binnen = kl.stukken & np.isin(oud, ['a', 'b', 'c', 'h'])
+    for y, x in zip(*np.nonzero(binnen)):
+        v = ruis[y // 2, (x + (y // 2) % 2) // 2]
+        if oud[y, x] == 'a':
+            kl.t[y, x] = 'b' if v > 0.75 else 'a'
+        else:
+            kl.t[y, x] = 'c' if v > 0.45 else 'b'
+    rand = kl.stukken & ~np.roll(kl.stukken, 1, 1) | kl.stukken & ~np.roll(kl.stukken, -1, 1)
+    for y, x in zip(*np.nonzero(rand)):
+        if y > GEO[fid]['hals'] + 2 and (x * 7 + y * 3) % 5 == 0:
+            dx = -1 if not kl.stukken[y, x - 1] else 1
+            kl.pluis.append((x + dx, y, 'a'))
+    onder = max(np.nonzero(kl.stukken.any(1))[0])
+    for x in np.nonzero(kl.stukken[onder])[0][::3]:
+        kl.pluis.append((int(x), onder + 1, 'a'))
+    staande_kraag(kl, fid, hoog=3, toon='h')
+    kl.lijn(GEO[fid]['halslijn'], 'c')
     manchet(kl, fid, 2)
     sluiting(kl, fid, GEO[fid]['hals'] + 2, kl.zoom - 2, c='a', knoop='k', stap=5)
     return kl.laag()

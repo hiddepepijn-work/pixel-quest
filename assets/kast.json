@@ -77,8 +77,7 @@
    "items": [
     "puffer",
     "beanie",
-    "sjaal",
-    "handschoenen"
+    "sjaal"
    ]
   },
   {
@@ -100,6 +99,24 @@
    ]
   },
   {
+   "id": "kantoor",
+   "naam": "Kantoor",
+   "items": [
+    "overhemd",
+    "jeans",
+    "spijkerjas"
+   ]
+  },
+  {
+   "id": "zomerdag",
+   "naam": "Zomer",
+   "items": [
+    "petje",
+    "korte_broek",
+    "crop_top"
+   ]
+  },
+  {
    "id": "parijs",
    "naam": "Parijs",
    "items": [
@@ -110,28 +127,22 @@
    ]
   },
   {
+   "id": "herfstdag",
+   "naam": "Herfstdag",
+   "items": [
+    "teddyjas",
+    "wijde_broek",
+    "enkellaarsjes",
+    "oorbellen"
+   ]
+  },
+  {
    "id": "studie",
    "naam": "Studiedag",
    "items": [
     "bril",
     "koptelefoon",
-    "tas"
-   ]
-  },
-  {
-   "id": "zomerdag",
-   "naam": "Zomerdag",
-   "items": [
-    "petje",
-    "korte_broek"
-   ]
-  },
-  {
-   "id": "slaap",
-   "naam": "Slaapkamer",
-   "items": [
-    "pyjama",
-    "onesie"
+    "longsleeve"
    ]
   }
  ],
@@ -506,7 +517,7 @@
     "lavendel"
    ],
    "prijs": 40,
-   "set_id": null,
+   "set_id": "studie",
    "tags": [],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
@@ -613,8 +624,10 @@
     "blad"
    ],
    "prijs": 50,
-   "set_id": null,
-   "tags": [],
+   "set_id": "kantoor",
+   "tags": [
+    "kantoor"
+   ],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
    "status": "klaar",
@@ -645,7 +658,7 @@
     "nacht"
    ],
    "prijs": 35,
-   "set_id": null,
+   "set_id": "zomerdag",
    "tags": [
     "zomer"
    ],
@@ -744,8 +757,10 @@
     "koffie"
    ],
    "prijs": 70,
-   "set_id": null,
-   "tags": [],
+   "set_id": "kantoor",
+   "tags": [
+    "lente"
+   ],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
    "status": "klaar",
@@ -850,7 +865,7 @@
     "lavendel"
    ],
    "prijs": 85,
-   "set_id": null,
+   "set_id": "herfstdag",
    "tags": [
     "warm"
    ],
@@ -949,7 +964,7 @@
     "titel"
    ],
    "prijs": 45,
-   "set_id": null,
+   "set_id": "kantoor",
    "tags": [],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
@@ -1058,7 +1073,9 @@
    ],
    "prijs": 40,
    "set_id": "parijs",
-   "tags": [],
+   "tags": [
+    "zomer"
+   ],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend (incl. huid)",
    "status": "klaar",
@@ -1120,7 +1137,7 @@
     "koffie"
    ],
    "prijs": 50,
-   "set_id": null,
+   "set_id": "herfstdag",
    "tags": [],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
@@ -1152,7 +1169,7 @@
     "creme"
    ],
    "prijs": 60,
-   "set_id": "slaap",
+   "set_id": null,
    "tags": [
     "nacht",
     "huis"
@@ -1190,7 +1207,7 @@
     "creme"
    ],
    "prijs": 80,
-   "set_id": "slaap",
+   "set_id": null,
    "tags": [
     "nacht",
     "huis",
@@ -1230,7 +1247,8 @@
    "prijs": 50,
    "set_id": null,
    "tags": [
-    "keuken"
+    "keuken",
+    "huis"
    ],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
@@ -1239,6 +1257,9 @@
    "maskers": {
     "hidde": "kast/native/schort_h_m.png",
     "tessie": "kast/native/schort_t_m.png"
+   },
+   "wis": {
+    "tessie": "kast/native/schort_t_w.png"
    },
    "over_kleding": true
   },
@@ -1260,7 +1281,9 @@
    ],
    "prijs": 75,
    "set_id": null,
-   "tags": [],
+   "tags": [
+    "zomer"
+   ],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend (incl. huid)",
    "status": "klaar",
@@ -1497,7 +1520,7 @@
     "bordeaux"
    ],
    "prijs": 40,
-   "set_id": null,
+   "set_id": "herfstdag",
    "tags": [
     "warm"
    ],
@@ -1561,7 +1584,7 @@
     "bordeaux"
    ],
    "prijs": 35,
-   "set_id": "studie",
+   "set_id": null,
    "tags": [],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
@@ -1626,7 +1649,7 @@
     "creme"
    ],
    "prijs": 20,
-   "set_id": "winterwandeling",
+   "set_id": null,
    "tags": [
     "warm"
    ],
@@ -1704,7 +1727,7 @@
     "koraal"
    ],
    "prijs": 25,
-   "set_id": null,
+   "set_id": "herfstdag",
    "tags": [],
    "zeldzaamheid": "gewoon",
    "herkomst": "nieuw getekend",
