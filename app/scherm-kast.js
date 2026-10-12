@@ -1,6 +1,6 @@
 // Kast: de kledingkast als scherm (kledingkast.js draait op de markup in index.html). Looks van Hidde en Tessie,
-// slots, items, kleuren, stel-outfits, eigen outfits en de pixel-editor. Kopen gaat uit de huispot, als voorstel
-// dat de ander goedkeurt (PQKastKoop hieronder; kledingkast.js roept die aan).
+// slots, items, kleuren, stel-outfits, eigen outfits en de pixel-editor. Kopen gebeurt in de winkel (Menu → Winkel):
+// de koopknop van de kast opent daar het item (PQKastKoop hieronder; kledingkast.js roept die aan).
 (function (wortel) {
   'use strict';
   const R = wortel.PQRegels, S = wortel.PQStore, U = wortel.PQUI, V = wortel.PQVoorstel, { el } = U;
@@ -8,7 +8,8 @@
 
   wortel.PQKastKoop = {
     open: (fid, item, kleur) => V.open('kleding', d => d.fid === fid && d.item === item && d.kleur === kleur),
-    koop(fid, it, kleur) { V.nieuw('kleding', { fid, item: it.id, kleur }); },
+    koop(fid, it, kleur) { if (wortel.PQWinkelSheet) wortel.PQWinkelSheet.kleding(fid, it.id, kleur); else V.nieuw('kleding', { fid, item: it.id, kleur }); },
+    prijs: (fid, it, kleur) => (wortel.PQWinkel ? wortel.PQWinkel.kledingPrijs(S.staat(), fid, it, kleur) : it.prijs),
     saldo: () => R.pot(S.staat(), Date.now()).saldo,
   };
   function kopTeken() {
@@ -24,7 +25,7 @@
     root = r;
     potEl = el('span.potregel', { title: 'De gedeelde huispot' });
     openEl = el('div.voorstellen', { hidden: true, 'aria-label': 'Open voorstellen' });
-    const kop = el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Kast' }), el('p.sub', { tekst: 'Jullie looks. Kopen doen jullie samen.' })), potEl);
+    const kop = el('header.kopregel', null, el('div', null, el('h1', { tekst: 'Kast' }), el('p.sub', { tekst: 'Jullie looks. Nieuwe kleding koop je in de Winkel.' })), potEl);
     root.prepend(kop, openEl);
     // Na een goedgekeurde aankoop: bezit opnieuw uit de store.
     document.addEventListener('pq-gekocht', e => { if (e.detail.soort === 'kleding' && wortel.PQ_KLEDINGKAST) wortel.PQ_KLEDINGKAST.herlaad(); kopTeken(); });
@@ -34,8 +35,8 @@
     toon() { kopTeken(); if (wortel.PQ_KLEDINGKAST) wortel.PQ_KLEDINGKAST.alles(); },
     ververs(op) {
       kopTeken();
-      if (op && /^voorstel|^reset|^sync/.test(op.soort) && wortel.PQ_KLEDINGKAST) wortel.PQ_KLEDINGKAST.herlaad();
+      if (op && /^voorstel|^reset|^sync|^drop/.test(op.soort) && wortel.PQ_KLEDINGKAST) wortel.PQ_KLEDINGKAST.herlaad();
     },
-    verouderd(op) { if (op && /^(voorstel|reset|sync)/.test(op.soort) && wortel.PQ_KLEDINGKAST) wortel.PQ_KLEDINGKAST.herlaad(); },
+    verouderd(op) { if (op && /^(voorstel|reset|sync|drop)/.test(op.soort) && wortel.PQ_KLEDINGKAST) wortel.PQ_KLEDINGKAST.herlaad(); },
   });
 })(window);

@@ -167,14 +167,42 @@
       const kk = b.kamers.map(t => geo.kamers.find(x => x.type === t)).find(Boolean) || geo.kamers.find(x => !x.buiten);
       return { k: kk, x: Math.min(Math.max(b.x, 16), kk.b - 16) };
     }
+    // Set dragen = een kleine glinstering (winkel, puur cosmetisch): een paar pixelsterretjes rond de bewoner, één keer
+    // getekend in twee standen. Het gedrag wisselt de stand hooguit één keer per ~0,9 s (alleen zichtbaarheid, geen
+    // tekenwerk); bij minder beweging staat hij stil. (ox, oy) = het voetanker in het element, in schermpx.
+    function glans(fid, a, ox, oy) {
+      const P = window.PQWinkel, setNaam = P && P.glinster && P.glinster(lookNu(fid), fid);
+      if (!setNaam) return null;
+      const hoog = Math.round(a.figuur.bron[1] / a.bronpx_per_artpixel), B = 60, Hh = hoog + 10;
+      const ster = (ctx, x, y, groot) => {
+        const r = groot ? 2 : 1;
+        HT.rect(ctx, x - r, y, 2 * r + 1, 1, 'goud.3'); HT.rect(ctx, x, y - r, 1, 2 * r + 1, 'goud.3'); HT.rect(ctx, x, y, 1, 1, 'creme.4');
+      };
+      const doek = sterren => { const c = el('canvas'); c.width = B; c.height = Hh; const ctx = c.getContext('2d'); for (const s of sterren) ster(ctx, ...s); return c; };
+      const vak = el('div', 'glans');
+      vak.setAttribute('aria-hidden', 'true'); vak.title = `Draagt de set ${setNaam}`;
+      Object.assign(vak.style, { position: 'absolute', left: px(ox - (B / 2) * Z), top: px(oy - Hh * Z), width: px(B * Z), height: px(Hh * Z), pointerEvents: 'none', zIndex: 1 });
+      const A1 = doek([[8, 10, true], [52, 4, false], [55, Math.round(hoog * 0.5), true], [4, Math.round(hoog * 0.62), false]]);
+      const A2 = doek([[11, 4, false], [49, 12, true], [5, Math.round(hoog * 0.42), true], [56, Math.round(hoog * 0.7), false]]);
+      for (const c of [A1, A2]) Object.assign(c.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', imageRendering: 'pixelated' });
+      A2.style.visibility = 'hidden';
+      vak.append(A1, A2);
+      vak.wissel = () => { const b2 = A2.style.visibility === 'hidden'; A2.style.visibility = b2 ? '' : 'hidden'; A1.style.visibility = b2 ? 'hidden' : ''; };
+      if (window.PQ_TEST) window.PQ_TEST.info['glans_' + fid] = setNaam;
+      return vak;
+    }
     function tekenBewoners(geo) {
+      if (window.PQ_TEST) for (const b of H.bewoners) delete window.PQ_TEST.info['glans_' + b.id];
       for (const b of H.bewoners) {
         const a = asset(b.id), sc = Z / a.bronpx_per_artpixel;
         if (animatie()) {
           try {
             const fig = el('canvas'), plek = bewonerPlek(b, geo);
             tekenBewoner(fig, b.id);
-            laag.appendChild(G.mens({ id: b.id, a, frames: A.mens(b.id, fig), k: plek.k, x: plek.x }));
+            const loper = G.mens({ id: b.id, a, frames: A.mens(b.id, fig), k: plek.k, x: plek.x });
+            const gl = glans(b.id, a, 0, 0);
+            if (gl) { loper.appendChild(gl); loper._glans = gl; }
+            laag.appendChild(loper);
             continue;
           } catch (err) { if (window.PQ_TEST) window.PQ_TEST.fouten.push('loopcyclus: ' + err.message); }
         }
@@ -188,6 +216,8 @@
         c.setAttribute('aria-label', a.naam);
         tekenBewoner(c, b.id);
         e.appendChild(c);
+        const gl = glans(b.id, a, ax * sc, ay * sc);
+        if (gl) e.appendChild(gl);
         if (bewerken && !scene.voorbeeld) {
           const g = el('div', 'greep');
           g.style.left = px((ax - fw / 2) * sc); g.style.top = px((ay - fh) * sc);
@@ -459,18 +489,28 @@
     function uitDoos(id) {
       const d = staat.doos.find(x => x.id === id);
       if (!d) return;
-      const def = H.meubels[d.soort];
+      const def = H.meubels[d.soort], m = HM.maat(d.soort);
       for (const t of def.hoort || []) {
         for (const k of scene.geo.kamers.filter(x => x.type === t)) {
-          const pos = HM.plaats(k, d.soort, 0, 0, staat.inrichting);
+          // Midden in de kamer beginnen; iets aan de muur op ooghoogte (~1,25 m), niet op de vloer.
+          const pos = HM.plaats(k, d.soort, (k.b - m.b) / 2, def.op === 'muur' ? 56 : 0, staat.inrichting);
           if (!pos) continue;
           staat.doos = staat.doos.filter(x => x !== d);
           staat.inrichting.push({ id: d.id, soort: d.soort, kamer: k.id, x: pos.x, y: pos.y });
           bewaar(); teken();
-          return meld(`${def.naam} staat nu in ${k.naam.toLowerCase()}.`);
+          meld(`${def.naam} staat nu in ${k.naam.toLowerCase()}.`);
+          return true;
         }
       }
       meld(`${def.naam} past nergens. Maak eerst ruimte.`);
+      return false;
+    }
+    // Gekozen meubel markeren en focussen (na "Plaatsen" vanuit de winkel).
+    function kiesUit(soort, id) {
+      if (!bewerken) return;
+      kies(soort, id);
+      const e = laag.querySelector(`.meubel[data-id="${CSS.escape(id)}"]`);
+      if (e) { e.focus({ preventScroll: true }); e.classList.add('gekozen'); }   // eerst focus: die kiest opnieuw en wist de markering
     }
     function naarDoos() {
       if (!gekozen || gekozen.soort !== 'meubel') return;
@@ -484,7 +524,10 @@
     }
     function herstel() {
       const r = HM.startInrichting(HM.bouw(HM.niveauVan(staat.niveau)));
-      Object.assign(staat, { inrichting: r.inrichting, doos: r.doos, posities: {} });
+      // Wat jullie in de winkel kochten, hoort niet bij de startindeling: dat gaat in de doos, niet weg.
+      const bekend = new Set([...r.inrichting, ...r.doos].map(i => i.id));
+      const gekocht = [...staat.inrichting, ...staat.doos].filter(i => !bekend.has(i.id)).map(i => ({ id: i.id, soort: i.soort }));
+      Object.assign(staat, { inrichting: r.inrichting, doos: r.doos.concat(gekocht), posities: {} });
       bewaar(); teken();
     }
     // ---------- alles tekenen ----------
@@ -676,7 +719,7 @@
 
     // ---------- publiek ----------
     const api = {
-      teken, tekenLicht, tekenSignalen, feestje, naarDoos, uitDoos, herstel, zoom, element: venster,
+      teken, tekenLicht, tekenSignalen, feestje, naarDoos, uitDoos, herstel, zoom, element: venster, kies: kiesUit,
       // Schuif het huis zacht zodat de plek van een taak op schermhoogte y staat (bv. boven een open menu).
       kijkNaar(plek, y, x) { const b = plekBox(plek); if (b) zoom.glijNaar(b.x + b.b / 2, b.y, y, x); },
       scene: sceneInfo,

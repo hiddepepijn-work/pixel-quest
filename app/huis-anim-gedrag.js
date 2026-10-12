@@ -166,6 +166,8 @@ window.PQ_HUISGEDRAG = (function (H, HM, BW) {
   }
   function stapMens(a, dt, t) {
     const F = a.fr, V = BW.mensen.snelheid, y = vloerVan(a.vd);
+    // Set-glinstering (huis.js glans): om de ~0,9 s de andere stand tonen; alleen zichtbaarheid, geen tekenwerk.
+    if (a.e._glans && (a.glansT = (a.glansT || 0) + dt) > 0.9) { a.glansT = 0; a.e._glans.wissel(); }
     if (a.toestand === 'lopen') {
       const rest = Math.abs(a.doel - a.x);
       a.tLoop += dt;

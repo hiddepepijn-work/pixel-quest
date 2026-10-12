@@ -25,7 +25,7 @@
       el('button.rond', { type: 'button', 'aria-label': 'Inzoomen', onclick: () => huis.zoom.in() }, '+'),
       el('button.rond', { type: 'button', 'aria-label': 'Uitzoomen', onclick: () => huis.zoom.uit() }, '−'),
       el('button.rond.pas', { type: 'button', 'aria-label': 'Alles in beeld', onclick: () => huis.zoom.pas() }, el('span.ic-pas', { 'aria-hidden': 'true' })));
-    const menuKnop = el('button.menuknop', { id: 'menuKnop', type: 'button', 'aria-label': 'Menu openen: taken van vandaag, quests, kast, bouwen, pets en meer', 'aria-expanded': 'false', 'aria-controls': 'menu' },
+    const menuKnop = el('button.menuknop', { id: 'menuKnop', type: 'button', 'aria-label': 'Menu openen: taken van vandaag, quests, kast, winkel, bouwen, pets en meer', 'aria-expanded': 'false', 'aria-controls': 'menu' },
       el('img', { src: U.ASSETS + 'items/bron/rugzak.png', alt: '' }), 'Menu', el('span.tabbadge', { hidden: true }));
     const fab = el('button.knop.huis-fab', { type: 'button', onclick: () => T.bewerk(), 'aria-label': 'Nieuwe taak' }, '+ Taak');
     root.append(vak, hud, voorbeeldBalk, balkOnder, zoomKnoppen, el('div.veegzone', { 'aria-hidden': 'true' }), fab, menuKnop);
@@ -159,8 +159,18 @@
         volgende ? el('button.knop.mini.goud', { type: 'button', onclick: () => V.nieuw('verbouwing', { niveau: n }) }, 'Kopen') : null));
   }
 
+  // Na een aankoop in de winkel: menu dicht, bewerkmodus aan, het meubel uit de doos neerzetten, kiezen en in beeld.
+  function plaats(id) {
+    if (huis.bekijkt && huis.bekijkt()) huis.bekijk(null);
+    bewerk(true);
+    setTimeout(() => {
+      if (!huis.uitDoos(id)) return;
+      huis.kies('meubel', id);
+      huis.kijkNaar({ meubel: id }, innerHeight * 0.45);
+    }, 320);
+  }
   wortel.PQHuisScherm = {
-    huis: () => huis, info: () => laatsteInfo, bewerk, doos, instellingen, gereedschap,
+    huis: () => huis, info: () => laatsteInfo, bewerk, doos, instellingen, gereedschap, plaats,
     // Voorbeeld van een niveau: het menu dicht en het hele (nieuwe) huis in beeld, niet alleen de lucht.
     bekijk(n) { wortel.PQApp.ga('huis'); huis.bekijk(n); setTimeout(() => huis.zoom.pas(), 320); },
   };

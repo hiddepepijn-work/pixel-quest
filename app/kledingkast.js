@@ -238,13 +238,15 @@
       const sws = document.createElement('div');
       sws.className = 'swatches';
       const actief = pas && pas.item === it.id ? pas.kleur : aan ? gedragen.kleur : null;
-      for (const k of it.kleuren) {
+      // Ook zeldzame kleuren uit een drop (winkel): die staan niet in it.kleuren, maar wel in je bezit.
+      const zeldzaam = (bezit[fid][it.id] || []).filter(k => !it.kleuren.includes(k) && D.rampen[k]);
+      for (const k of it.kleuren.concat(zeldzaam)) {
         const b = document.createElement('button');
-        b.className = 'sw' + (heeftKleur(fid, it.id, k) ? '' : ' slot');
+        b.className = 'sw' + (heeftKleur(fid, it.id, k) ? '' : ' slot') + (zeldzaam.includes(k) ? ' zeldzaam' : '');
         b.title = k + (heeftKleur(fid, it.id, k) ? '' : ' (niet in bezit)');
         b.setAttribute('aria-label', `${it.naam}: ${k}`);
         b.setAttribute('aria-pressed', String(actief === k));
-        b.innerHTML = k === 'origineel' ? '' : [...D.rampen[k].stops].reverse().map(c => `<i style="background:${c}"></i>`).join('');
+        b.innerHTML = k === 'origineel' || !D.rampen[k] ? '' : [...D.rampen[k].stops].reverse().map(c => `<i style="background:${c}"></i>`).join('');
         if (k === 'origineel') { b.classList.add('orig'); b.textContent = 'O'; }
         b.disabled = !kan;
         b.onclick = () => {
@@ -262,10 +264,12 @@
     if (kan && !aan && heeftItem(fid, it.id)) knoppen.append(knop('Aantrekken', () => kiesItem(it)));
     if (aan && it.herkomst !== 'uitgesneden') knoppen.append(knop('Uittrekken', () => { trekUit(fid, it.slot); alles(); }));
     if (S && window.PQKastKoop && it.soort !== 'pixels' && kleur && kan && !heeftKleur(fid, it.id, kleur)) {
+      // Kopen gebeurt in de winkel (Menu → Winkel): de knop opent daar het item, met passen, kleuren en prijs.
       const open = window.PQKastKoop.open(fid, it.id, kleur);
-      const tekort = window.PQKastKoop.saldo ? it.prijs - window.PQKastKoop.saldo() : 0;   // zoals bij Verbouwen: vooraf zeggen
-      const k = knop(open ? 'Voorstel staat open' : tekort > 0 ? `Nog ${tekort} sparen (${it.prijs})` : `Kopen: ${it.prijs} munten`, () => window.PQKastKoop.koop(fid, it, kleur));
-      k.classList.add('goud'); k.disabled = !!open || tekort > 0;
+      const prijs = window.PQKastKoop.prijs ? window.PQKastKoop.prijs(fid, it, kleur) : it.prijs;
+      const tekort = window.PQKastKoop.saldo ? prijs - window.PQKastKoop.saldo() : 0;   // zoals bij Verbouwen: vooraf zeggen
+      const k = knop(open ? 'Voorstel staat open' : tekort > 0 ? `Nog ${tekort} sparen (${prijs}) · winkel` : `Kopen: ${prijs} munten`, () => window.PQKastKoop.koop(fid, it, kleur));
+      k.classList.add('goud'); k.disabled = !!open;
       knoppen.append(k);
     } else if (!S && it.soort !== 'pixels' && kleur && !heeftKleur(fid, it.id, kleur)) {
       knoppen.append(knop(`Test: ${kleur} in bezit zetten`, () => {

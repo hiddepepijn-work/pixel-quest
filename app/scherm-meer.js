@@ -24,6 +24,23 @@
     if (!open.length) return null;
     return kaart('voorstellen', 'Voorstellen', el('p.noot', { tekst: 'Kopen uit de huispot doen jullie samen.' }), ...open.map(v => V.kaart(v, teken)));
   }
+  // ---------- aankoopgeschiedenis: alles wat uit de huispot ging, plus de gratis drops ----------
+  function aankopen() {
+    const st = S.staat(), P = wortel.PQWinkel;
+    if (!P) return null;
+    const dag = ms => new Date(ms).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' });
+    const rijen = [
+      ...P.aankopen(st).map(v => ({ op: v.akkoord_op || v.op, el: el('li', null, el('span', null, el('b', { tekst: v.naam }),
+        el('small', { tekst: `${dag(v.akkoord_op || v.op)} · ${U.naam(v.door)} stelde voor, ${U.naam(v.akkoord_door)} keurde goed` })), el('span.prijslabel', null, U.munt(14), '−' + U.getal(v.prijs))) })),
+      ...P.drops(st).map(d => ({ op: d.op, el: el('li', null, el('span', null, el('b', { tekst: d.soort === 'stelset' ? 'Stel-set (drop)' : `${P.kleurNaam(d.kleur)} (drop)` }),
+        el('small', { tekst: `${dag(d.op)} · ${d.tekst}` })), el('span.label.goud', { tekst: 'gratis' })) })),
+    ].sort((a, b) => b.op - a.op);
+    const uit = P.aankopen(st).reduce((s, v) => s + v.prijs, 0);
+    const lijst = rijen.length ? el('ul.aankopen', null, rijen.slice(0, 8).map(r => r.el)) : el('p.noot', { tekst: 'Nog niets gekocht. Alles wat uit de huispot gaat, staat hier.' });
+    const meer = rijen.length > 8 ? el('details', null, el('summary', { tekst: `Toon alle ${rijen.length}` }), el('ul.aankopen', null, rijen.slice(8).map(r => r.el))) : null;
+    return kaart('aankopen', 'Aankopen', el('p.noot', { tekst: `Samen uitgegeven: ${U.getal(uit)} munten.` }), lijst, meer,
+      el('button.knop.mini', { type: 'button', onclick: () => wortel.PQApp.ga('winkel') }, 'Naar de winkel'));
+  }
 
   // ---------- weekterugblik: de week in woorden en een privé cijfer 1–5 ----------
   const SOORTNAAM = { doen: 'doen', plannen: 'plannen', bijhouden: 'bijhouden' };
@@ -178,7 +195,7 @@
 
   function teken() {
     if (!inhoud) return;
-    inhoud.replaceChildren(...[profiel(), voorstellen(), terugblik(), instellingen(), over()].filter(Boolean));
+    inhoud.replaceChildren(...[profiel(), voorstellen(), terugblik(), aankopen(), instellingen(), over()].filter(Boolean));
   }
   function maak(r) {
     root = r;

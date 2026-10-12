@@ -75,7 +75,7 @@
 .menu.sleept { transition: none; }
 .menu-kop { background: var(--papier); border-bottom: 3px solid var(--nacht); touch-action: none; }
 .menu-greep { width: 48px; height: 5px; background: var(--rasterlijn); border: 1px solid #d9c9ad; margin: 7px auto 2px; }
-.menu-tabs { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)) 48px; align-items: stretch; }
+.menu-tabs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)) 44px; align-items: stretch; }
 .menu-tabs button {
   position: relative; min-height: 56px; border: 0; background: none; cursor: pointer; display: grid; place-items: center; align-content: center;
   gap: 1px; padding: 2px 0 6px; font: 600 11px var(--pixelfont); color: var(--nacht); min-width: 0;

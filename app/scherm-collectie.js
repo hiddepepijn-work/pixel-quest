@@ -39,7 +39,14 @@
           : el('button.knop.goud', { type: 'button', onclick: () => { const r = S.doe('pet.actief', { id: c.id }); if (!r.ok) return U.fout(r.fout); U.meld(`${naam} loopt nu mee.`); s.sluit(); } }, 'Laat meelopen')] });
   }
 
-  function teken() { if (inhoud) inhoud.replaceChildren(collectie()); }
+  // De plek in de collectie voor drops: zeldzame kleuren en stel-sets (winkel-zeldzaam.js).
+  function zeldzaam() {
+    const Z = wortel.PQWinkelZeldzaam;
+    if (!Z) return null;
+    return kaart('zeldzaam', 'Zeldzame kleuren', el('p.noot', { tekst: 'Drops bij samen-mijlpalen en streaks: niet te koop, altijd voor jullie allebei.' }),
+      Z.dropsLijst(S.staat()), el('button.knop.mini', { type: 'button', onclick: () => wortel.PQApp.ga('winkel', { afd: 'zeldzaam', naar: true }) }, 'Stel-sets en volgende drops'));
+  }
+  function teken() { if (inhoud) inhoud.replaceChildren(...[collectie(), zeldzaam()].filter(Boolean)); }
   function maak(r) {
     root = r;
     inhoud = el('div.meer-inhoud');

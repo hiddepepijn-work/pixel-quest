@@ -8,7 +8,7 @@ bash ../bouw_web.sh >/dev/null || exit 1
 node ../test_regels.js | tail -1
 fout=0
 for t in "flows1.js" "flows1.js 430 932" "flows2.js" "flows3.js" "gebaren.js" "gebaren.js 430 932" "signalen.js" "signalen.js 430 932" \
-         "robuust.js" "perf.js" "klein.js" "tour.js" "tour.js 430 932" "zoom.js" "zoom.js 430 932"; do
+         "robuust.js" "perf.js" "klein.js" "tour.js" "tour.js 430 932" "zoom.js" "zoom.js 430 932" \n         "winkel.js" "winkel.js 430 932"; do
   uit=$(node $t 2>&1)
   echo "$t: $(echo "$uit" | grep -E '^\{"ok"|CRASH' | tail -1)"
   echo "$uit" | grep '✗' && fout=1

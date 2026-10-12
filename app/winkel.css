@@ -1,0 +1,115 @@
+/* Winkel (scherm-winkel.js, winkel-*.js): pixelstijl zoals de rest, telefoon-eerst (390/430), tikvlakken >= 44 px.
+   Geen eindeloze animaties: alleen het bestaande feestje en de indruk-animatie bij een tik. */
+.figuurbeeld, .uitsnede, .meubelbeeld { image-rendering: pixelated; image-rendering: crisp-edges; display: block; }
+
+/* ---------- kop ---------- */
+.potknop { border: 3px solid var(--nacht); background: var(--papier); min-height: 44px; padding: 0 10px; cursor: pointer; box-shadow: 0 2px 0 var(--nacht); }
+.potknop:active { transform: translateY(2px); box-shadow: none; }
+.winkel-leeg { margin: 0 0 8px; display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 3px dashed var(--rasterlijn); background: var(--papier2); }
+.winkel-leeg p { margin: 0; font-size: 14px; line-height: 1.3; }
+.winkel-leeg .knop { flex: none; }
+.winkel-kop .kopregel { min-height: 48px; margin-bottom: 4px; }
+.wie { align-items: center; gap: 4px; }
+.wie-label { font: 700 12px var(--pixelfont); color: var(--titel); text-transform: uppercase; margin-right: 2px; }
+.winkelbalk { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 4px 8px; }
+.winkelbalk .chips { padding-bottom: 4px; }
+.winkelbalk .chip { min-height: 44px; padding: 4px 10px; font-size: 14px; }
+.chip.filter[aria-pressed="true"] { background: var(--blad); color: #fff; }
+.afdelingen { position: sticky; top: -6px; z-index: 3; background: var(--creme); margin: 0 calc(-1 * var(--kant)); padding: 6px var(--kant) 8px; border-bottom: 3px solid var(--rasterlijn); }
+.afdelingen .chip { min-height: 44px; padding: 4px 11px; font-size: 15px; }
+/* Er zijn meer afdelingen dan er op 390 px passen: de rand vervaagt als hint dat je kunt vegen. */
+.afdelingen { -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent); }
+.afdelingen.eind { -webkit-mask-image: none; mask-image: none; }
+.slotchips .chip { min-height: 44px; padding: 4px 10px; font-size: 14px; }
+.weekregel { margin-top: 8px; }
+
+/* ---------- secties en raster ---------- */
+.winkelsectie .sectiekop { margin-top: 14px; }
+.sectiesub { font-size: 12px; opacity: .75; text-align: right; }
+.wraster { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: 8px; }
+.wtegel {
+  position: relative; display: grid; grid-template-rows: 76px auto auto auto; justify-items: center; align-content: start; gap: 3px;
+  min-width: 0; padding: 6px 4px 8px; background: var(--papier2); border: 3px solid var(--rasterlijn);
+  color: inherit; font: inherit; text-align: center; cursor: pointer; box-shadow: 0 2px 0 var(--rasterlijn);
+}
+.wtegel:active { transform: translateY(2px); box-shadow: none; }
+.wtegel:focus-visible, .setkaart:focus-visible { outline: 3px solid var(--koraal); outline-offset: 2px; }
+.wtegel.aan { border-color: var(--goud); }
+.wbeeld { position: relative; width: 100%; height: 76px; display: grid; place-items: end center; background: var(--zacht); border-bottom: 2px solid var(--rasterlijn); overflow: hidden; }
+.wbeeld canvas { max-width: 100%; max-height: 72px; }
+.wtegel b { font: 700 13px/1.15 var(--pixelfont); color: var(--titel); overflow-wrap: anywhere; }
+.wtegel small { font-size: 11px; line-height: 1.2; opacity: .85; }
+.wstatus { margin-top: 2px; }
+.wtag { position: absolute; top: 2px; left: 2px; font: 700 9px/1.3 var(--pixelfont); text-transform: uppercase; padding: 0 3px; border: 1px dashed var(--nacht); background: rgba(252, 248, 236, .85); color: var(--nacht); opacity: .75; }
+.wtegel.uit .wbeeld { opacity: .5; filter: grayscale(.4); }
+.wtegel.uit .prijslabel { background: var(--zacht); }
+
+/* ---------- prijs ---------- */
+.prijslabel { display: inline-flex; align-items: center; gap: 3px; padding: 0 6px; min-height: 22px; background: #fff4d6; border: 2px solid var(--nacht); font: 800 14px var(--tekstfont); color: var(--titel); white-space: nowrap; }
+.prijslabel img { width: 14px; }
+.prijslabel.los { background: var(--papier2); border-color: var(--rasterlijn); font-size: 13px; }
+.setprijs { display: inline-flex; gap: 6px; align-items: center; }
+.setprijs s { font: 700 13px var(--tekstfont); opacity: .6; }
+.prijsregel { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin: 6px 0; font-size: 15px; }
+.vraagt { font-weight: 700; color: #8a3a22; background: #fde3d8; border: 2px solid var(--koraal); padding: 4px 8px; }
+
+/* ---------- sets ---------- */
+.setlijst-kaarten { display: grid; gap: 8px; }
+.setkaart {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; width: 100%; text-align: left;
+  padding: 8px; background: var(--papier2); border: 3px solid var(--nacht); color: inherit; font: inherit; cursor: pointer; box-shadow: 0 3px 0 var(--nacht);
+}
+button.setkaart:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--nacht); }
+.setkaart.uit .duo { opacity: .6; }
+.setkaart.stel { cursor: default; border-color: var(--lavendel); box-shadow: 0 3px 0 var(--lavendel); }
+.setkaart.op-slot .duo { filter: grayscale(.8) brightness(1.05); opacity: .55; }
+.duo { display: flex; align-items: end; gap: 2px; background: var(--zacht); border: 2px solid var(--rasterlijn); padding: 4px 4px 0; }
+.setinfo { display: grid; gap: 3px; justify-items: start; min-width: 0; }
+.setinfo b { font: 700 16px var(--pixelfont); color: var(--titel); }
+.setinfo small { font-size: 12px; opacity: .85; }
+.setinfo .korting { color: var(--blad); opacity: 1; font-weight: 700; }
+.voorwaarde { display: grid; gap: 4px; width: 100%; }
+.mini-balk.breed { width: 100%; }
+.setlijst { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 4px; }
+.setlijst li { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: var(--papier2); border: 2px solid var(--rasterlijn); padding: 6px 8px; min-height: 40px; }
+
+/* ---------- paspop (passen, stel-look) ---------- */
+.paspop-houder { display: grid; gap: 6px; }
+.paspop { display: flex; justify-content: center; align-items: end; gap: 14px; padding: 10px 8px 0; background: linear-gradient(var(--zacht) 0 82%, var(--rasterlijn) 82%); border: 3px solid var(--rasterlijn); }
+.pasfiguur { margin: 0; display: grid; justify-items: center; gap: 2px; }
+.pasfiguur figcaption { font: 700 12px var(--pixelfont); color: var(--titel); padding-bottom: 4px; }
+.paskeuze { justify-content: center; }
+.paskeuze .chip { min-height: 44px; font-size: 14px; }
+.kleurkop { margin-top: 10px; font-weight: 700; }
+.koopinfo { margin-top: 4px; }
+.sheet-voet > .knoprij { flex: 1; }
+.linkknop { background: none; border: 0; padding: 0 2px; min-height: 44px; color: var(--petrol); font: 700 15px var(--tekstfont); text-decoration: underline; cursor: pointer; }
+.meubelvak { display: grid; place-items: end center; min-height: 80px; padding: 10px; background: linear-gradient(var(--zacht) 0 86%, var(--rasterlijn) 86%); border: 3px solid var(--rasterlijn); }
+.meubelvak.groot { min-height: 150px; }
+.doosregel { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 0 8px; }
+.doosregel .noot { margin: 0; }
+.doosregel .knop { flex: none; min-height: 44px; }
+
+/* ---------- kleurstalen ---------- */
+.sw { position: relative; }
+.sheet .swatches .sw, .winkel-inhoud .sw { width: 44px; height: 44px; }
+.sw-vink { position: absolute; right: 1px; bottom: 1px; width: 14px; height: 14px; display: grid; place-items: center; background: var(--blad); color: #fff; font: 700 10px/1 var(--tekstfont); border: 1px solid var(--nacht); }
+.sw.zeldzaam::before { content: '✦'; position: absolute; top: -1px; left: 1px; z-index: 1; font: 700 11px/1 var(--tekstfont); color: #fff; text-shadow: 1px 1px 0 var(--nacht); }
+.zeldzaam-rij .sw { cursor: default; }
+
+/* ---------- zeldzaam en drops ---------- */
+.volgendelijst, .droplijst { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 6px; }
+.volgendelijst li { display: grid; gap: 4px; background: var(--papier2); border: 2px solid var(--rasterlijn); padding: 6px 8px; }
+.droplijst li { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 10px; background: var(--papier2); border: 2px solid var(--rasterlijn); padding: 6px 8px; }
+.droplijst .dropwie { display: block; }
+.droplijst .sw { cursor: default; }
+
+/* ---------- gekocht ---------- */
+.gekocht { position: relative; display: grid; place-items: center; }
+.gekocht-ster { position: absolute; top: 4px; right: 12%; font: 700 28px var(--pixelfont); color: var(--goud); text-shadow: 2px 2px 0 var(--nacht); }
+
+/* ---------- aankoopgeschiedenis (Meer) ---------- */
+.aankopen { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.aankopen li { display: flex; justify-content: space-between; align-items: center; gap: 8px; background: var(--papier2); border: 2px solid var(--rasterlijn); padding: 6px 8px; }
+.aankopen small { display: block; opacity: .75; }
+@media (prefers-reduced-motion: reduce) { .wtegel:active, button.setkaart:active, .potknop:active { transform: none; } }

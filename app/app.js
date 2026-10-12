@@ -1,5 +1,5 @@
 // Pixel Quest: de app-schil, huis-eerst. Het huis (scherm 'huis') is altijd het startscherm en vult het scherm.
-// Het menu ligt erover, met de tabs Vandaag, Quests, Kast, Verbouwen, Pets (collectie) en Meer. Openen: de menuknop
+// Het menu ligt erover, met de tabs Vandaag, Quests, Kast, Winkel, Verbouwen, Pets (collectie) en Meer. Openen: de menuknop
 // onderin of vanaf de onderkant omhoog vegen. Sluiten: omlaag vegen, de sluitknop, Escape of een tik op het huis.
 // Een scherm registreert zich met PQApp.scherm(naam, { maak(el), toon(), verberg(), ververs(opdracht) }).
 // PQApp.ga('quests') opent het menu op dat tabblad; PQApp.ga('huis') sluit het menu.
@@ -8,7 +8,7 @@
   'use strict';
   const S = wortel.PQStore, U = wortel.PQUI, { el } = U;
   S.laad();
-  const MENU = ['vandaag', 'quests', 'kast', 'verbouwen', 'collectie', 'meer'];
+  const MENU = ['vandaag', 'quests', 'kast', 'winkel', 'verbouwen', 'collectie', 'meer'];
   const NAMEN = ['huis', ...MENU];
   const schermen = {}, gemaakt = new Set();
   let tab = null, open = false, gestart = false, wacht = null;

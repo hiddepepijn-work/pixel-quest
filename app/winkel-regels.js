@@ -91,10 +91,10 @@
   const verkoopbareSets = () => sets().filter(s => !isStartSet(s) && FIDS.some(f => setDelen(s, f).compleet));
 
   // Uitgelicht: elke week een set en 3 losse items, deterministisch op het weeknummer.
-  function uitgelicht(w) {
+  function uitgelicht(w, fid) {
     const vs = verkoopbareSets(), i = weekIndex(w);
     const set = vs.length ? vs[((i % vs.length) + vs.length) % vs.length] : null;
-    const pool = geschud(klaar().filter(it => !alleStartIds().includes(it.id) && !(set && set.items.includes(it.id))), 'uitgelicht:' + w);
+    const pool = geschud(klaar().filter(it => !alleStartIds().includes(it.id) && !(set && set.items.includes(it.id)) && (!fid || voor(it, fid))), 'uitgelicht:' + w + (fid || ''));
     const gekozen = [], slots = new Set();
     for (const it of pool) { if (gekozen.length >= W().rotatie.uitgelichtItems) break; if (!slots.has(it.slot)) { gekozen.push(it); slots.add(it.slot); } }
     return { week: w, nummer: R().weekNummer(w), set, items: gekozen, kleuren: rotatie(w) };
@@ -125,6 +125,15 @@
     }
     return { niveau: null };
   }
+  // Is er nu een vrije plek in een passende kamer (zoals 'Zet neer' uit de verhuisdoos)? Het starthuisje is vol:
+  // een vloermeubel past dan pas na wat ruimte maken of een verbouwing. Kopen mag wel (hij wacht in de doos).
+  const geoCache = new Map();
+  function meubelPlek(st, soort) {
+    const hoort = (H().meubels[soort] || {}).hoort || [], n = st.huis.niveau;
+    if (!geoCache.has(n)) geoCache.set(n, HM().bouw(HM().niveauVan(n)));
+    const geo = geoCache.get(n);
+    return geo.kamers.some(k => hoort.includes(k.type) && !!HM().plaats(k, soort, (k.b - HM().maat(soort).b) / 2, 56, st.huis.inrichting));
+  }
   const meubelAantal = (st, soort) => [...st.huis.inrichting, ...st.huis.doos].filter(i => i.soort === soort).length;
   function nieuwMeubelId(st, soort) {
     const pre = soort + '-w', n = [...st.huis.inrichting, ...st.huis.doos].filter(i => String(i.id).startsWith(pre)).map(i => +String(i.id).slice(pre.length) || 0);
@@ -134,6 +143,6 @@
   wortel.PQWinkel = Object.assign(wortel.PQWinkel || {}, {
     FIDS, hash, rng, geschud, items, item, klaar, voor, bezitVan, heeftItem, heeftKleur, isZeldzaam, kleurNaam, startkast,
     kledingPrijs, weekIndex, rotatie, kleurTeKoop, sets, isStartSet, setDelen, setInfo, verkoopbareSets, uitgelicht,
-    meubels, meubel, meubelVraagt, meubelAantal, nieuwMeubelId,
+    meubels, meubel, meubelVraagt, meubelPlek, meubelAantal, nieuwMeubelId,
   });
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -15,10 +15,12 @@
 <link rel="stylesheet" href="app.css">
 <link rel="stylesheet" href="app-schermen.css">
 <link rel="stylesheet" href="app-menu.css">
+<link rel="stylesheet" href="winkel.css">
 <script src="../assets/manifest.js"></script>
 <script src="../assets/kleding.js"></script>
 <script src="../assets/kast.js"></script>
 <script src="../assets/huis.js"></script>
+<script src="winkel-data.js"></script>
 <script src="../assets/beweging.js"></script>
 </head>
 <body class="app">
@@ -32,6 +34,7 @@
       <button type="button" role="tab" data-tab="vandaag" aria-controls="view-vandaag" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/ster.png" alt=""></span>Vandaag<span class="tabbadge" hidden></span></button>
       <button type="button" role="tab" data-tab="quests" aria-controls="view-quests" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/klembord.png" alt=""></span>Quests<span class="tabbadge" hidden></span></button>
       <button type="button" role="tab" data-tab="kast" aria-controls="view-kast" aria-selected="false" tabindex="-1"><span class="tabicoon"><span class="ic-shirt"></span></span>Kast<span class="tabbadge" hidden></span></button>
+      <button type="button" role="tab" data-tab="winkel" aria-controls="view-winkel" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/munt.png" alt=""></span>Winkel<span class="tabbadge" hidden></span></button>
       <button type="button" role="tab" data-tab="verbouwen" aria-controls="view-verbouwen" aria-selected="false" tabindex="-1"><span class="tabicoon"><span class="ic-hamer"></span></span>Bouwen<span class="tabbadge" hidden></span></button>
       <button type="button" role="tab" data-tab="collectie" aria-controls="view-collectie" aria-selected="false" tabindex="-1"><span class="tabicoon"><img src="../assets/items/bron/hart.png" alt=""></span>Pets<span class="tabbadge" hidden></span></button>
       <button type="button" role="tab" data-tab="meer" aria-controls="view-meer" aria-selected="false" tabindex="-1"><span class="tabicoon"><span class="ic-meer"></span></span>Meer<span class="tabbadge" hidden></span></button>
@@ -128,6 +131,7 @@
         </div>
       </details>
     </section>
+      <section class="view" id="view-winkel" role="tabpanel" aria-label="Winkel" hidden></section>
       <section class="view" id="view-verbouwen" role="tabpanel" aria-label="Verbouwen" hidden></section>
       <section class="view" id="view-collectie" role="tabpanel" aria-label="Pets" hidden></section>
       <section class="view" id="view-meer" role="tabpanel" aria-label="Meer" hidden></section>
@@ -153,6 +157,8 @@
 <script src="huis.js"></script>
 <script src="store-regels.js"></script>
 <script src="store-week.js"></script>
+<script src="winkel-regels.js"></script>
+<script src="winkel-drops.js"></script>
 <script src="store-opdrachten.js"></script>
 <script src="store-winkel.js"></script>
 <script src="store-start.js"></script>
@@ -166,6 +172,12 @@
 <script src="scherm-quests.js"></script>
 <script src="scherm-huis.js"></script>
 <script src="scherm-kast.js"></script>
+<script src="winkel-ui.js"></script>
+<script src="winkel-sheet.js"></script>
+<script src="winkel-feest.js"></script>
+<script src="winkel-afdelingen.js"></script>
+<script src="winkel-zeldzaam.js"></script>
+<script src="scherm-winkel.js"></script>
 <script src="scherm-verbouwen.js"></script>
 <script src="scherm-collectie.js"></script>
 <script src="scherm-meer.js"></script>
