@@ -47,6 +47,9 @@ async function start(opties) {
   const args = ['--allow-file-access-from-files'];
   if (opties.offline) args.push('--host-resolver-rules=MAP fonts.googleapis.com 127.0.0.1:9,MAP fonts.gstatic.com 127.0.0.1:9');
   const browser = await puppeteer.launch({ executablePath: EDGE, headless: 'new', userDataDir: profiel, args });
+  // Elk profiel is ~40 MB: na afloop opruimen, anders loopt de schijf vol (honderden runs).
+  const sluit = browser.close.bind(browser);
+  browser.close = async () => { await sluit(); try { fs.rmSync(profiel, { recursive: true, force: true }); } catch (e) { /* bezet: laat staan */ } };
   const p = await browser.newPage();
   await p.setViewport({ width: opties.w || 390, height: opties.h || 844, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const fouten = [];

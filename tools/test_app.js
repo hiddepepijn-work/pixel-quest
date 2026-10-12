@@ -248,10 +248,14 @@ function check(naam, waar, extra) {
   await tikTekst('#itemRooster .tegel', 'Petje');
   await wacht(300);
   await foto('12-menu-kast-petje');
-  await tikTekst('#itemDetail .knop', 'Kopen');
-  await wacht(400);
+  await tikTekst('#itemDetail .knop', 'Kopen');   // de kast opent het item in de winkel (passen, kleuren, prijs)
+  await wacht(500);
+  await tikTekst('.sheet-voet .knop', 'Kopen');
+  await wacht(600);
   await tikTekst('.sheet .knop', 'keurt goed (op dit apparaat)');
   await wacht(700);
+  await R(() => window.PQUI.sluitAlles());        // het feestje "Gekocht!" met Aantrekken
+  await wacht(300);
   s = await st();
   check('petje in bezit van Hidde', s.kleding.bezit.hidde.petje && s.kleding.bezit.hidde.petje.length === 1, s.kleding.bezit.hidde.petje);
   await foto('13-kast-gekocht');
@@ -269,7 +273,7 @@ function check(naam, waar, extra) {
   check('na herladen weer op het huis (menu dicht)', await R(() => !window.PQApp.menuOpen()));
 
   console.log('10. Elk tabblad: 0 JS-fouten, geen horizontale scroll');
-  for (const n of ['huis', 'vandaag', 'quests', 'kast', 'verbouwen', 'collectie', 'meer']) {
+  for (const n of ['huis', 'vandaag', 'quests', 'kast', 'winkel', 'verbouwen', 'collectie', 'meer']) {
     await tab(n);
     await wacht(500);
     const breed = await R(n => { const v = document.getElementById('view-' + n); return { v: v.scrollWidth - v.clientWidth, d: document.documentElement.scrollWidth - innerWidth }; }, n);
@@ -294,7 +298,7 @@ function check(naam, waar, extra) {
   const dFouten = [];
   d.on('pageerror', e => dFouten.push(e.message));
   await d.setViewport({ width: 1400, height: 900 });
-  for (const n of ['huis', 'vandaag', 'quests', 'kast', 'verbouwen', 'collectie', 'meer']) {
+  for (const n of ['huis', 'vandaag', 'quests', 'kast', 'winkel', 'verbouwen', 'collectie', 'meer']) {
     await d.goto(PAGINA + '?test&geenweer#' + n, { waitUntil: 'load' });
     await wacht(1300);
     await d.evaluate(() => { const t = document.getElementById('pq-test'); if (t) t.style.visibility = 'hidden'; });

@@ -1,6 +1,6 @@
 # Pixel Quest – app-UI
 
-11 okt 2026, branch `app-ui`. De losse prototypepagina's zijn één app geworden: `app/index.html`, telefoon-eerst (390–430 px). **Huis-eerst, zoals een game:** het huis is het startscherm en vult het hele scherm; een dunne HUD ligt erboven en onderin opent de menuknop het menu **Vandaag · Quests · Kast · Bouwen · Pets · Meer** óver het huis. Geen bundler: gewone scripts, werkt via `file://`, op de VPS en in Capacitor. Spelregels volgens [puntensysteem.md](puntensysteem.md) v2; schermen volgens [app-ontwerp.md](app-ontwerp.md) v2.
+11 okt 2026, branch `app-ui`. De losse prototypepagina's zijn één app geworden: `app/index.html`, telefoon-eerst (390–430 px). **Huis-eerst, zoals een game:** het huis is het startscherm en vult het hele scherm; een dunne HUD ligt erboven en onderin opent de menuknop het menu **Vandaag · Quests · Kast · Winkel · Bouwen · Pets · Meer** óver het huis. Geen bundler: gewone scripts, werkt via `file://`, op de VPS en in Capacitor. Spelregels volgens [puntensysteem.md](puntensysteem.md) v2; schermen volgens [app-ontwerp.md](app-ontwerp.md) v2.
 
 ## Openen, bouwen, testen
 
@@ -19,7 +19,8 @@
 | **Vandaag** (menu) | Eerst *Gevraagd aan jou*, *Jouw quests*, *Samen* en *Op het prikbord* (met "Ik pak het"), dan *Deze week* (X / Y, streak, huispot) en het pet (of ei) met groeibalk en een recent bedankje. Afvinken met de knop links (een icoon per soort taak, zelf te kiezen): feestje, 10 s "Ongedaan maken". |
 | **Quests** (menu) | Filters Mijn, Open, Samen, Alles (met aantallen). Groepen *Nu*, *Deze week*, *Later* (ingeklapt) en *Gedaan deze week* (bedanken met ♥). Tik op een taak: details met afvinken, claimen/overnemen, loslaten, "Kun jij, Tessie?", bewerken, verwijderen, laatst gedaan. "+ Taak": bottom sheet met sjablonen, wie, herhalen, wanneer, minuten, zwaarte, soort werk, plek in huis, icoon en privé. |
 | **Bouwen** (menu) | Huis-gereedschap (meubels verplaatsen, verhuisdoos, weer en weergave), de huispot, de *volgende verbouwing* bovenaan (kopen als voorstel, of "Nog N sparen") en daarna alle niveaus. *Bekijk in huis* sluit het menu en toont dat niveau als voorbeeld, met het hele huis in beeld. |
-| **Kast** (menu) | De kledingkast compact: preview van Hidde of Tessie, de look per slot, slottabs, itemtegels, kleuren, stel-outfits, eigen outfits, de pixel-editor en weergave. Kopen: "Kopen: N munten" maakt een voorstel uit de huispot; de ander keurt goed. |
+| **Kast** (menu) | De kledingkast compact: preview van Hidde of Tessie, de look per slot, slottabs, itemtegels, kleuren, stel-outfits, eigen outfits, de pixel-editor en weergave. De koopknop opent het item in de Winkel. |
+| **Winkel** (menu) | Alles wat geld kost op één plek: Uitgelicht (wisselt per week), Kleding, Sets, Meubels en decor, Zeldzaam (drops en stel-sets) en Bouwen. Passen op je eigen figuur en als stel, kopen als voorstel met akkoord, daarna Aantrekken of Plaatsen. Zie [winkel.md](winkel.md). |
 | **Pets** (menu) | De collectie van 14 pets: uitgekomen of ei met voortgang; tik = naam geven of laten meelopen (dan loopt hij in het huis en staat hij in de HUD). |
 | **Meer** (menu) | Profiel (wisselen), open voorstellen, de weekterugblik (week in woorden, privé cijfer 1–5 met trots/dwars, samen onthullen, gespreksvraag bij ≥ 2 verschil, tekst daarna gewist), instellingen (weekdoel, ziek/afwezig, rustweek, plaats en licht, voorbeeldtaken verwijderen), *Over en sync*, debug (assetcontrole, losse pagina's, testweken) en een reset. |
 
@@ -41,6 +42,7 @@ Alles zonder `alert`, `confirm` of `prompt`: bevestigen gaat via een eigen sheet
 | `app/app-voorstel.js` | Kopen als voorstel, goedkeuren (ook "namens de ander op dit apparaat") |
 | `app/scherm-huis.js` | Het startscherm: huis, HUD, menuknop, + Taak, zoomknoppen, gereedschap, feestje in huis, het huis laten meeschuiven met het menu |
 | `app/scherm-*.js` | Menutabs: Vandaag, Quests, Kast, Bouwen (`scherm-verbouwen.js`), Pets (`scherm-collectie.js`), Meer |
+| `app/winkel-*.js`, `app/scherm-winkel.js`, `app/winkel.css` | De winkel: data, regels (`PQWinkel`), afdelingen, koop-sheets, drops ([winkel.md](winkel.md)) |
 | `app/huis.js`, `app/huis-zoom.js` | Het huis als component (`PQHuis.mount`) en zoomen/pannen (`PQZoom`) |
 | `app/kledingkast.js` | Ongewijzigde kast-logica, met in de app looks en bezit uit de store |
 | `app/assets.html` (+ `preview.js`), `huis.html` (+ `huis-los.js`), `kledingkast.html`, `huis-filmstrip.html` | Debugpagina's, bereikbaar onder Meer |

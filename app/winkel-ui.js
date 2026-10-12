@@ -12,7 +12,8 @@
   // De look met een paar items erbij: lijst van { item, kleur }.
   function metItems(fid, extra) {
     const look = lookVan(fid);
-    for (const e of extra || []) { const it = P.item(e.item); if (it && F().draagbaar(it, fid)) look[it.slot] = { item: it.id, kleur: e.kleur }; }
+    const gezet = new Set();   // één item per slot: bij twee accessoires uit een set (sjaal, handschoenen) telt het eerste
+    for (const e of extra || []) { const it = P.item(e.item); if (it && F().draagbaar(it, fid) && !gezet.has(it.slot)) { look[it.slot] = { item: it.id, kleur: e.kleur }; gezet.add(it.slot); } }
     return look;
   }
   const vol = () => { const c = document.createElement('canvas'); return c; };
