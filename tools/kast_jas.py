@@ -1,190 +1,138 @@
-"""Jassen als overlay - NIEUW GETEKEND, vorm afgeleid van de zonekaart.
+"""Jassen - NIEUW GETEKEND met een eigen silhouet (kast_vorm.Kleed).
 
-Een jas verandert de lichaamsvorm niet: hij ligt over romp en armen. De vorm komt uit
-de goedgekeurde figuur (shirtzone + onderarmen + heupen tot de zoom), 1 px opgevuld naar
-de achtergrond. De arcering volgt de luminantie van de pixels eronder, zodat de plooien
-van het originele shirt blijven. Rits, kraag, zakken en stiksels zijn met de hand gezet.
+Elke jas is langer dan het shirt (heup tot bovenbeen), ruimer dan de bovenkleding
+(kast_boven) en heeft mouwen tot de pols. Het originele T-shirt en de onderarmen worden
+gewist, zodat de korte wijde T-shirtmouw niet meer onder de jas uitsteekt.
+Hidde's rug is links, die van Tessie rechts; haar krullen vallen over de schouders.
 """
 import numpy as np
-from scipy import ndimage as ndi
 
-import kleding as K
-from kast_teken import Laag, toon_stop, TOON_CODE, lichaam, kleur_rgb
+from kast_vorm import Kleed, wis_zones, lijnmasker
+from kast_boven import GEO, romp, mouwen, manchet
 
-Z = K.Z
-VIER = np.array([[0, 1, 0], [1, 1, 1], [0, 1, 0]], bool)
-
-# Per figuur: armvakken (mouw tot de pols), voorkant-midden (x) en de halslijn (y).
-MAAT = {
-    'hidde': {'armen': [(14, 58, 25, 67), (38, 58, 47, 67)], 'midden': 32, 'hals': 50,
-              'heup_x': (20, 44)},
-    'tessie': {'armen': [(15, 62, 23, 69), (33, 62, 42, 69)], 'midden': 28, 'hals': 57,
-               'heup_x': (18, 40)},
-}
+ZONDER_OLIJF = {'a': 'b', 'b': 'c', 'c': 'h'}
 
 
-def vorm(fid, zoom_y, opvullen=1):
-    """Masker van de jas en de bronzone per pixel."""
-    sp, z = lichaam(fid)
-    m = MAAT[fid]
-    shirt = z == Z['shirt']
-    arm = np.zeros_like(shirt)
-    for x0, y0, x1, y1 in m['armen']:
-        arm[y0:y1, x0:x1] |= z[y0:y1, x0:x1] == Z['huid']
-    romp_onder = shirt.nonzero()[0].max()
-    heup = np.zeros_like(shirt)
-    if zoom_y > romp_onder:
-        hx0, hx1 = m['heup_x']
-        heup[romp_onder:zoom_y + 1, hx0:hx1] = z[romp_onder:zoom_y + 1, hx0:hx1] == Z['broek']
-    kern = shirt | arm | heup
-    # hangertje, gesp en ogen-detail binnen de romp horen onder de jas (anders gaten)
-    ys, xs = np.nonzero(kern)
-    binnen = np.zeros_like(kern)
-    binnen[ys.min():ys.max() + 1, xs.min():xs.max() + 1] = True
-    kern |= binnen & np.isin(z, [Z['accessoire'], Z['detail']]) & ndi.binary_dilation(kern, VIER, iterations=2)
-    lijn = (z == Z['lijn']) & ndi.binary_dilation(kern, VIER)
-    lijn[:m['hals'] - 1] = False          # geen gezichts- of haarlijnen
-    r = kern | lijn
-    leeg = sp[..., 3] == 0
-    for _ in range(opvullen):            # jas is iets dikker dan het shirt
-        r |= ndi.binary_dilation(r, VIER) & leeg & (np.arange(112)[:, None] >= m['hals'])
-    return r, sp, z
+def jas(fid, kleur, lang, breder, vast=None, uitwaaier=0):
+    kl = Kleed(fid, kleur, vast, slot='jas')
+    kl.wis = wis_zones(fid, ['shirt'], armen=True)
+    m = romp(fid, lang, breder)
+    if uitwaaier:                                        # A-lijn: onderste rijen breder
+        g = GEO[fid]
+        y0 = g['taille'] + lang - 8
+        for y in range(y0, g['taille'] + lang):
+            xs = np.nonzero(m[y])[0]
+            if len(xs):
+                d = (y - y0) * uitwaaier // 8
+                m[y, max(xs.min() - d, 0):xs.max() + d + 1] = True
+    kl.stuk(m)
+    ml, mr = mouwen(fid, breder=breder)
+    kl.stuk(ml)
+    kl.stuk(mr)
+    kl.mouw = ml | mr
+    kl.zoom = GEO[fid]['taille'] + lang - 1
+    return kl
 
 
-def arceer(fid, r, sp, z, pct=(14, 84)):
-    """Toonkaart: rand = o, binnen a/b/c op luminantie per bronzone, interne lijnen o."""
-    L = ndi.median_filter(K.U.luminantie(sp[..., :3].astype(float)), size=3)
-    t = np.full(r.shape, '', object)
-    rand = r & ~ndi.binary_erosion(r, VIER)
-    for zone in ('shirt', 'huid', 'broek'):
-        m = r & (z == Z[zone]) & ~rand
-        if not m.any():
-            continue
-        lo, hi = np.percentile(L[m], list(pct))
-        t[m & (L < lo)] = 'a'
-        t[m & (L >= lo) & (L <= hi)] = 'b'
-        t[m & (L > hi)] = 'c'
-    t[r & (t == '')] = 'b'
-    t[r & (z == Z['lijn'])] = 'o'
-    t[rand] = 'o'
-    # licht van linksboven: eerste binnenpixel na de linkerrand iets lichter
-    for y in range(t.shape[0]):
-        xs = np.nonzero(r[y])[0]
-        if len(xs) > 3 and t[y, xs[1]] == 'b':
-            t[y, xs[1]] = 'c'
-    return t
+def staande_kraag(kl, fid, hoog=2, toon='c'):
+    pts = GEO[fid]['halslijn']
+    for k in range(hoog):
+        m = lijnmasker([(x, y - k) for x, y in pts]) & ~kl.stukken
+        kl.stukken |= m
+        kl.t[m] = toon if k else 'b'
+    kl.lijn(pts, 'a', alleen_op=False)
 
 
-def naar_laag(t, basis, vast=None):
-    lg = Laag()
-    ramp = K.RAMPEN[basis]
-    for y, x in zip(*np.nonzero(t != '')):
-        c = t[y, x]
-        if c in TOON_CODE:
-            lg.zet(x, y, K.hex2rgb(ramp['stops'][toon_stop(ramp, c)]), TOON_CODE[c])
-        else:
-            lg.zet(x, y, kleur_rgb(vast[c]), 0)
-    lg.slot = 'jas'
-    return lg
+def sluiting(kl, fid, van, tot, c='a', knoop=None, stap=4, dubbel=False):
+    mx = GEO[fid]['midden']
+    for y in range(van, tot + 1):
+        kl.zet(mx, y, c)
+        kl.zet(mx + 1, y, 'c')
+        if knoop and (y - van) % stap == 1:
+            kl.zet(mx - 2 if dubbel else mx + 1, y, knoop)
+            if dubbel:
+                kl.zet(mx + 3, y, knoop)
 
 
-def zet(t, r, x, y, c):
-    if 0 <= y < t.shape[0] and 0 <= x < t.shape[1] and r[y, x]:
-        t[y, x] = c
-
-
-def rits(t, r, fid, y0, y1, knoop=None, stap=3):
-    mx = MAAT[fid]['midden']
-    for y in range(y0, y1 + 1):
-        zet(t, r, mx, y, 'a')
-        zet(t, r, mx + 1, y, 'c')
-        if knoop and (y - y0) % stap == 1:
-            zet(t, r, mx, y, knoop)
-
-
-def kraag(t, r, fid, rijen=2, extra_boven=0):
-    """Kraag/capuchon rond de hals: lichte rijen met een donkere schaduwrij eronder."""
-    h = MAAT[fid]['hals']
-    for y in range(h - extra_boven, h + rijen):
-        for x in np.nonzero(r[y])[0]:
-            if t[y, x] != 'o':
-                t[y, x] = 'c' if y < h + rijen - 1 else 'b'
-    for x in np.nonzero(r[h + rijen])[0]:
-        if t[h + rijen, x] != 'o':
-            t[h + rijen, x] = 'a'
-
-
-def zakken(t, r, fid, y, breed=5, knoop=None):
-    mx = MAAT[fid]['midden']
-    for x0 in (mx - 3 - breed, mx + 3):
-        for x in range(x0, x0 + breed):
-            zet(t, r, x, y, 'o')
-            zet(t, r, x, y + 1, 'a')
-        if knoop:
-            zet(t, r, x0 + breed // 2, y + 1, knoop)
-
-
-def zoomrij(t, r, y):
-    for x in np.nonzero(r[y])[0]:
-        if t[y, x] != 'o':
-            t[y, x] = 'a'
-
-
-def regenjas(fid):
-    zoom = {'hidde': 80, 'tessie': 81}[fid]
-    r, sp, z = vorm(fid, zoom)
-    t = arceer(fid, r, sp, z, pct=(5, 80))     # glanzend: weinig schaduw, meer licht
-    kraag(t, r, fid, rijen=2)
-    rits(t, r, fid, MAAT[fid]['hals'] + 2, zoom - 1, knoop='h', stap=4)
-    zakken(t, r, fid, zoom - 7)
-    zoomrij(t, r, zoom - 1)
-    return naar_laag(t, 'goud')
-
-
-def puffer(fid):
-    zoom = {'hidde': 74, 'tessie': 75}[fid]
-    r, sp, z = vorm(fid, zoom, opvullen=1)
-    t = arceer(fid, r, sp, z)
-    h = MAAT[fid]['hals']
-    for y in range(h + 4, zoom, 4):         # doorgestikte banen
-        for x in np.nonzero(r[y])[0]:
-            if t[y, x] != 'o':
-                t[y, x] = 'a'
-                if r[y + 1, x] and t[y + 1, x] != 'o':
-                    t[y + 1, x] = 'c'
-    kraag(t, r, fid, rijen=2)
-    rits(t, r, fid, h + 2, zoom - 1)
-    return naar_laag(t, 'petrol')
+def zakklep(kl, x, y, b=5, knoop=None):
+    kl.pixels(['a' * b, 'c' + 'b' * (b - 2) + 'a', '.' + 'a' * (b - 2) + '.'], x, y)
+    if knoop:
+        kl.zet(x + b // 2, y + 1, knoop)
 
 
 def spijkerjas(fid):
-    zoom = {'hidde': 73, 'tessie': 74}[fid]
-    r, sp, z = vorm(fid, zoom, opvullen=0)
-    t = arceer(fid, r, sp, z)
-    h, mx = MAAT[fid]['hals'], MAAT[fid]['midden']
-    for i in range(5):                       # revers
-        zet(t, r, mx - 1 - i, h + i, 'c')
-        zet(t, r, mx - 2 - i, h + i, 'c')
-        zet(t, r, mx + 2 + i, h + i, 'c')
-        zet(t, r, mx + 3 + i, h + i, 'c')
-    zakken(t, r, fid, h + 7, breed=5, knoop='k')
-    rits(t, r, fid, h + 5, zoom - 2, knoop='k', stap=4)
-    zoomrij(t, r, zoom - 1)
-    zoomrij(t, r, zoom - 2)
-    return naar_laag(t, 'petrol', {'k': 'goud'})
+    """Spijkerjas tot de heup: puntkraag, pas met stiksels, borstzakken, tailleband."""
+    kl = jas(fid, 'petrol', lang=6, breder=2, vast={'k': 'goud'})
+    g = GEO[fid]
+    mx, h = g['midden'], g['hals']
+    manchet(kl, fid, 2)
+    sluiting(kl, fid, h + 2, kl.zoom - 2, knoop='k', stap=4)
+    kl.lijn([(g['romp_x'][0] - 1, h + 5), (g['romp_x'][1] + 1, h + 5)], 'c')    # pas (yoke)
+    kl.rij(kl.zoom - 1, 'a')
+    kl.rij(kl.zoom - 2, 'c')
+    zakklep(kl, mx - 7, h + 7, 5, 'k')
+    zakklep(kl, mx + 3, h + 7, 5 if fid == 'hidde' else 4, 'k')
+    kl.pixels(['hhc.....chh', '.hhc...chh.', '..hc...ch..'], mx - 5, h - 1, alleen_op=False)
+    return kl.laag()
+
+
+def puffer(fid):
+    """Pufferjas tot het bovenbeen: bolle doorgestikte banen, hoge kraag, rits."""
+    kl = jas(fid, 'petrol', lang=9, breder=3)
+    g = GEO[fid]
+    h = g['hals']
+    for y in range(h + 3, kl.zoom, 4):                   # banen: naad, dan licht, dan schaduw
+        for x in range(64):
+            if kl.stukken[y, x] and kl.t[y, x] not in ('L', 'o'):
+                kl.t[y, x] = 'a'
+                if kl.stukken[y + 1, x]:
+                    kl.t[y + 1, x] = 'h' if (x + y) % 5 == 0 else 'c'
+    manchet(kl, fid, 2, rib=True)
+    staande_kraag(kl, fid, hoog=3)
+    sluiting(kl, fid, h + 1, kl.zoom - 1, c='a')
+    kl.rib(kl.zoom - 1, kl.zoom)
+    return kl.laag()
+
+
+def regenjas(fid):
+    """Regenjas tot halverwege het bovenbeen, A-lijn, drukknopen; glanzend zonder olijfschaduw."""
+    kl = jas(fid, 'goud', lang=13, breder=2, uitwaaier=3, vast={'k': 'creme'})
+    g = GEO[fid]
+    mx, h = g['midden'], g['hals']
+    staande_kraag(kl, fid, hoog=2)
+    sluiting(kl, fid, h + 2, kl.zoom - 1, knoop='k', stap=6, dubbel=True)
+    kl.lijn([(mx - 8, kl.zoom - 7), (mx - 4, kl.zoom - 7)], 'a')    # zakken met klep
+    kl.lijn([(mx + 4, kl.zoom - 7), (mx + 8, kl.zoom - 7)], 'a')
+    manchet(kl, fid, 1)
+    sel = np.isin(kl.t, list(ZONDER_OLIJF))
+    kl.t[sel] = np.vectorize(ZONDER_OLIJF.get)(kl.t[sel])
+    for y in range(h + 4, kl.zoom - 2, 5):               # glansstreepjes
+        kl.zet(g['romp_x'][0] + 1, y, 'h')
+    return kl.laag()
 
 
 def teddyjas(fid):
-    zoom = {'hidde': 76, 'tessie': 77}[fid]
-    r, sp, z = vorm(fid, zoom, opvullen=1)
-    t = arceer(fid, r, sp, z)
-    for y, x in zip(*np.nonzero(r)):        # pluizige textuur
-        if t[y, x] in ('b', 'c'):
-            k = (x * 7 + y * 3) % 6
-            t[y, x] = 'c' if k == 0 else ('a' if k == 3 else t[y, x])
-    kraag(t, r, fid, rijen=3)
-    rits(t, r, fid, MAAT[fid]['hals'] + 3, zoom - 1, knoop='k', stap=5)
-    return naar_laag(t, 'creme', {'k': 'koffie'})
+    """Teddyjas: bolle teddy-lusjes (licht linksboven per bolletje), grote kraag, golvende rand."""
+    if fid != 'tessie':
+        raise KeyError(fid)
+    kl = jas(fid, 'creme', lang=8, breder=3, vast={'k': 'koffie'})
+    rand = kl.stukken.copy()
+    for y, x in zip(*np.nonzero(rand)):                  # golvende teddyrand
+        if (x + y) % 3 == 0:
+            for dx, dy in ((-1, 0), (1, 0), (0, 1)):
+                if 0 <= x + dx < 64 and not rand[y + dy, x + dx] and y + dy > GEO[fid]['hals'] + 3:
+                    kl.stukken[y + dy, x + dx] = True
+                    kl.t[y + dy, x + dx] = 'b'
+                    break
+    tegel = ['hcb', 'cba', 'baa']
+    for y, x in zip(*np.nonzero(kl.stukken)):
+        tx, ty = (x + (y // 3) % 2) % 3, y % 3
+        if kl.t[y, x] in ('b', 'c', 'a', 'h'):
+            kl.t[y, x] = tegel[ty][tx]
+    staande_kraag(kl, fid, hoog=2, toon='h')
+    manchet(kl, fid, 2)
+    sluiting(kl, fid, GEO[fid]['hals'] + 2, kl.zoom - 2, c='a', knoop='k', stap=5)
+    return kl.laag()
 
 
 JAS = {'regenjas': regenjas, 'puffer': puffer, 'spijkerjas': spijkerjas, 'teddyjas': teddyjas}

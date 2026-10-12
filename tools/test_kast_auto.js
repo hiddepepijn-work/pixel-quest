@@ -67,8 +67,15 @@ t('lichaam telt: teddyjas alleen voor Tessie', () => {
   assert.strictEqual(kiesAutoLook({}, st, alleenTeddy, { catalogus: cat, nu: dag, fid: 'tessie' }).jas.item, 'teddyjas');
   assert.strictEqual(kiesAutoLook({}, st, alleenTeddy, { catalogus: cat, nu: dag, fid: 'hidde' }).jas, undefined);
 });
-t('met de echte catalogus: wat op art wacht, wordt nooit gekozen', () => {
+t('met de echte catalogus: pyjama, sloffen en korte broek zijn getekend', () => {
   const l = kiesAutoLook(eigen, { licht: { fase: 'nacht' }, weer: { type: 'helder', temp_c: 30 } }, alles, { catalogus: echt, nu: dag });
+  assert.strictEqual(l.heel_lichaam.item, 'pyjama');
+  assert.strictEqual(l.schoenen.item, 'sloffen');
+  assert.strictEqual(l.onder.item, 'korte_broek');
+});
+t('wat op art wacht, wordt nooit gekozen', () => {
+  const wacht = echt.map(i => (['pyjama', 'onesie', 'korte_broek'].includes(i.id) ? Object.assign({}, i, { status: 'wacht_op_art' }) : i));
+  const l = kiesAutoLook(eigen, { licht: { fase: 'nacht' }, weer: { type: 'helder', temp_c: 30 } }, alles, { catalogus: wacht, nu: dag });
   assert.strictEqual(l.heel_lichaam, undefined);
   assert.strictEqual(l.onder.item, 'broek_basis');
 });

@@ -177,7 +177,7 @@ window.PQ_FIGUUR = (function (D) {
     if (!KAST) return;
     const paden = new Set();
     for (const it of KAST.items) {
-      for (const k of ['sprites', 'maskers', 'knip']) Object.values(it[k] || {}).forEach(p => paden.add(p));
+      for (const k of ['sprites', 'maskers', 'knip', 'wis', 'huid']) Object.values(it[k] || {}).forEach(p => paden.add(p));
       Object.values(it.bron || {}).forEach(b => { paden.add(b.sprite); paden.add(b.masker); });
     }
     await Promise.all([...paden].map(async p => { BLD[p] = await laadBeeld(KAST.beelden[p]); }));
@@ -286,12 +286,38 @@ window.PQ_FIGUUR = (function (D) {
   }
 
   const laagCache = new Map();
-  function tekenItem(ctx, it, fid, v, kleur) {
+  // Wis-masker: lichaamspixels die wegvallen onder een item met een eigen silhouet (rok, korte broek,
+  // slanke mouw). Uitgesneden items zijn een kopie van het lichaam en vallen daar ook weg.
+  function wisMasker(fid, v, items) {
+    const lijst = items.filter(it => it.wis && it.wis[fid]);
+    if (!lijst.length) return null;
+    const sleutel = 'wis|' + fid + v + lijst.map(i => i.id).join(',');
+    if (!maskerCache.has(sleutel)) {
+      const ms = lijst.map(it => BLD[it.wis[fid]]);
+      maskerCache.set(sleutel, nativeNaarVariant(fid, v, (x, y) => (x >= 0 && y >= 0 && x < 64 && y < 112 &&
+        ms.some(m => m.data[(y * m.width + x) * 4] > 0)) ? 1 : 0));
+    }
+    return maskerCache.get(sleutel);
+  }
+  // Huid-onderlaag van een item (blote benen, buik, enkels): vaste kleuren, direct boven het lichaam.
+  function tekenHuid(ctx, it, fid, v) {
+    tekenItem(ctx, { id: it.id + '~huid', sprites: { [fid]: it.huid[fid] } }, fid, v, '');
+  }
+  function tekenItem(ctx, it, fid, v, kleur, wis) {
     if (it.soort === 'pixels') { tekenAcc(ctx, it, fid, v); return; }
+    if (wis && it.modus === 'luminantie') {
+      const img = verkleurItem(it, fid, v, kleur);
+      if (img.width * img.height === wis.length) {
+        const kop = new ImageData(new Uint8ClampedArray(img.data), img.width, img.height);
+        for (let i = 0; i < wis.length; i++) if (wis[i]) kop.data[i * 4 + 3] = 0;
+        legBeeld(ctx, kop);
+        return;
+      }
+    }
     const sleutel = [it.id, fid, v, kleur || ''].join('|');
     let c = laagCache.get(sleutel);
     if (!c) {
-      const img = verkleurItem(it, fid, v, kleur), s = SPR[fid][v];
+      const img = it.maskers ? verkleurItem(it, fid, v, kleur) : BLD[it.sprites[fid]], s = SPR[fid][v];
       c = document.createElement('canvas');
       c.width = s.w; c.height = s.h;
       const cx = c.getContext('2d');
@@ -319,7 +345,8 @@ window.PQ_FIGUUR = (function (D) {
       const k = look && look[slot], it = k && itemVan(k.item);
       if (draagbaar(it, fid)) lagen[slot] = { it, kleur: k.kleur };
     }
-    if (lagen.heel_lichaam) { delete lagen.boven; delete lagen.onder; }   // heel lichaam vervangt boven en onder
+    // heel lichaam vervangt boven en onder, behalve een item dat óver de kleding gaat (schort)
+    if (lagen.heel_lichaam && !lagen.heel_lichaam.it.over_kleding) { delete lagen.boven; delete lagen.onder; }
     return lagen;
   }
   const LAAGVOLGORDE = KAST ? KAST.laagvolgorde : ['lichaam', 'schoenen', 'onder', 'heel_lichaam', 'boven', 'jas', 'haar', 'accessoire', 'hoofd'];
@@ -341,18 +368,26 @@ window.PQ_FIGUUR = (function (D) {
     const basis = new ImageData(new Uint8ClampedArray(verkleur(fid, v, opties.keuze).data), s.w, s.h);
     const weg = knipMasker(fid, v, Object.values(lagen).map(l => l.it));
     if (weg) for (let i = 0; i < weg.length; i++) if (weg[i]) basis.data[i * 4 + 3] = 0;
+    const wis = wisMasker(fid, v, Object.values(lagen).map(l => l.it));
+    if (wis) for (let i = 0; i < wis.length; i++) if (wis[i]) basis.data[i * 4 + 3] = 0;
     const hm = haarMasker(fid, v), haar = new ImageData(s.w, s.h);
     for (let i = 0; i < hm.length; i++) if (hm[i] && !(weg && weg[i])) for (let k = 0; k < 4; k++) haar.data[i * 4 + k] = basis.data[i * 4 + k];
     const accs = opties.accs || [];
     for (const a of accs) if (a.laag === 'achter') tekenAcc(ctx, a, fid, v);
     legBeeld(ctx, basis);
-    const leg = sl => { if (lagen[sl]) tekenItem(ctx, lagen[sl].it, fid, v, lagen[sl].kleur); };
+    for (const laag of LAAGVOLGORDE) {
+      const l = lagen[laag];
+      if (l && l.it.huid && l.it.huid[fid]) tekenHuid(ctx, l.it, fid, v);
+    }
+    const leg = sl => { if (lagen[sl]) tekenItem(ctx, lagen[sl].it, fid, v, lagen[sl].kleur, wis); };
+    const over = !!(lagen.heel_lichaam && lagen.heel_lichaam.it.over_kleding);
     const acc = lagen.accessoire && lagen.accessoire.it;
     for (const laag of LAAGVOLGORDE.slice(1)) {
       if (laag === 'haar') { if (acc && acc.onder_haar) leg('accessoire'); legBeeld(ctx, haar); }
       else if (laag === 'jas') { if (acc && acc.onder_jas) leg('accessoire'); leg('jas'); }
       else if (laag === 'accessoire') { if (acc && !acc.onder_haar && !acc.onder_jas) leg('accessoire'); }
-      else leg(laag);
+      else if (laag === 'heel_lichaam') { if (!over) leg(laag); }
+      else { leg(laag); if (laag === 'boven' && over) leg('heel_lichaam'); }
     }
     for (const a of accs) if (a.laag !== 'achter') tekenAcc(ctx, a, fid, v);
     if (opties.metAnkers) {
