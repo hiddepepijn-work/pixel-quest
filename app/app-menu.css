@@ -1,6 +1,9 @@
 /* Huis-eerst: het huis vult het scherm, een dunne HUD erboven, onderin de menuknop. Het menu is een paneel óver het
    huis (telefoon: bottom sheet met tabs; breed scherm: zijpaneel). */
 
+/* De verte achter de scène (huis-verte.js): lucht, erf en grond rondom, scherp. */
+.verte { position: absolute; pointer-events: none; image-rendering: pixelated; image-rendering: crisp-edges; }
+
 /* ---------- HUD ---------- */
 .hud {
   position: absolute; top: calc(var(--veilig-boven) + 6px); left: 8px; right: 8px; z-index: 12; max-width: 620px;

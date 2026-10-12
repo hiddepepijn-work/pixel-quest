@@ -11,6 +11,8 @@ const { start, server, check, telling, wacht, DIST } = require('./hulp');
   const dag = n => R((b, n) => localStorage.setItem('qa-klok', String(b + n * 864e5)), basis, n);
   const naar = async n => { await dag(n); await p.reload({ waitUntil: 'load' }); await wacht(1300); };
   await naar(0);
+  // De startdata (voorbeeldtaken met hun klokstand) opnieuw maken op de verzette klok, anders hangt de test af van de echte datum.
+  await R(() => window.PQStore.reset()); await p.reload({ waitUntil: 'load' }); await wacht(1300);
   await h.tik('.wiekaart[aria-label="Ik ben Hidde"]'); await wacht(800);
   check('klok staat op zo 11 okt', await R(() => new Date().toDateString()), null);
   console.log('   ', await R(() => new Date().toString()));

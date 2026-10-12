@@ -59,5 +59,9 @@ check('de ander keurt goed: in bezit', S.doe('voorstel.akkoord', { id: v.id }, {
   const wz = R.weken(zo, t0 + 8 * DAG).lijst[0];
   check('aanloopweek: geen rustweek gebruikt, oktober nog vrij', !wz.rustweek && wz.aanloop && R.rustweekVrij(zo, R.weekVan(t0 + 8 * DAG), t0 + 8 * DAG), wz);
 }
+// Klok van het toestel vóór de start van de app (tijdzone, handmatig verzet): de week bestaat gewoon.
+{ const st = JSON.parse(JSON.stringify(S.staat())), terug = st.start - 3 * 864e5, w = R.weken(st, terug);
+  check('klok vóór de start: lopende week bestaat (geen crash)', !!w.nu && Number.isFinite(w.nu.totaal), w.nu);
+  check('klok vóór de start: pot is een getal', Number.isFinite(R.pot(st, terug).saldo)); }
 console.log(mis ? `${mis} fout` : 'alles goed');
 process.exit(mis ? 1 : 0);

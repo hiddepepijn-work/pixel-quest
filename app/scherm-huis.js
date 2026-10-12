@@ -10,6 +10,8 @@
 
   function maak(r) {
     root = r;
+    // Migratie: de zoomstand van v0.1.x (huisZoom) kon "alles in beeld" zijn en werd dan de start. Die vervalt.
+    if (S.apparaat().huisZoom !== undefined) S.zetApparaat('huisZoom', undefined);
     const vak = el('div.huis-vol');
     hud = el('header.hud', { 'aria-label': 'Jullie stand' });
     voorbeeldBalk = el('div.huis-balk.voorbeeld', { hidden: true });
@@ -30,7 +32,8 @@
     huis = wortel.PQHuis.mount(vak, {
       store: S, meld: t => U.meld(t), opTaak: id => T.detail(id),
       taken: wortel.PQVandaag.huisTaken, pets: wortel.PQVandaag.uitgekomen, petNaam: id => S.staat().pets.namen[id],
-      zoomStand: () => S.apparaat().huisZoom, opZoom: st => S.zetApparaat('huisZoom', st),
+      zoomStand: () => S.apparaat().huisZoom2,
+      opZoom: st => S.zetApparaat('huisZoom2', st && st.eff >= 2 ? { eff: st.eff, cx: Math.round(st.cx), cy: Math.round(st.cy) } : null),
       opKies: k => { gekozenTekst.textContent = k ? 'Gekozen: ' + k.naam : 'Tik op een meubel om het te kiezen'; naarDoosKnop.disabled = !k || k.soort !== 'meubel'; },
       opScene: scene, instellingen: { markeer: !!S.apparaat().markeer },
     });

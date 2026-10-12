@@ -72,7 +72,10 @@
     const decor = el('canvas', 'decor'), laag = el('div', 'laag'), tint = el('div', 'tint');
     const licht = el('canvas', 'licht'), weer = el('canvas', 'weer'), signalen = el('div', 'signalen');
     for (const x of [decor, tint, licht, weer]) x.setAttribute('aria-hidden', 'true');
-    dio.append(decor, laag, tint, licht, weer, signalen);
+    // De verte (huis-verte.js): lucht, erf en grond rondom de scène, alleen het zichtbare stuk plus 25% marge.
+    const verte = el('canvas', 'verte');
+    verte.setAttribute('aria-hidden', 'true');
+    dio.append(verte, decor, laag, tint, licht, weer, signalen);
     podium.appendChild(dio); venster.appendChild(podium); root.appendChild(venster);
 
     // ---------- staat ----------
@@ -533,14 +536,41 @@
       tekenPets(geo);
       if (animatie()) G.draai();
       OH.zetExtra(laag, extra, Z);
-      OH.deeltjes(weer, geo, Z);
+      verteBij(null, true);
       tekenSignalen();
       if (zoom && begonnen) zoom.herbereken();
       if (opties.opScene) opties.opScene(sceneInfo());
       testInfo();
     }
     // Alleen lucht, decor, tint en lampen (elke minuut bij het vloeiende verloop); de lopers lopen door.
-    function tekenLicht() { if (scene && actief === api) tekenOmgeving(scene.geo, OH.dagdeel()); }
+    function tekenLicht() { if (scene && actief === api) { tekenOmgeving(scene.geo, OH.dagdeel()); verteBij(null, true, true); } }
+
+    // ---------- de verte: wereld rondom de scène ----------
+    // De wereld loopt opzij, boven (lucht) en onder (aardlagen) door; de pan-grenzen van de zoom zijn de wereldranden.
+    const RAND = { opzij: 360, boven: 900, onder: 360 };
+    const wereld = g => ({ x0: -RAND.opzij, y0: -RAND.boven, x1: g.W + RAND.opzij, y1: g.H + RAND.onder });
+    let regio = null;
+    function zetRegio(e, r) { e.style.left = px(r.x0 * Z); e.style.top = px(r.y0 * Z); e.style.width = px(r.b * Z); e.style.height = px(r.h * Z); }
+    // Deeltjes (regen, sneeuw, blad) over de hele getekende lucht: omgeving-huis.js krijgt een geo voor dit stuk.
+    function regioGeo(g, r) {
+      return { W: r.b, H: r.h, grondY: g.grondY - r.y0, huis: g.huis,
+        kamers: g.kamers.map(k => ({ buiten: k.buiten, y: k.y - r.y0, h: k.h, box: { x: k.box.x - r.x0, b: k.box.b } })),
+        _bomen: (g._bomen || []).map(b => Object.assign({}, b, { x: b.x - r.x0, y: b.y - r.y0 })) };
+    }
+    function verteBij(st, forceer, zonderDeeltjes) {
+      if (!scene || weg || actief !== api || !zoom) return;
+      st = st || zoom.stand();
+      const vw = venster.clientWidth || 1, vh = venster.clientHeight || 1, w = wereld(scene.geo);
+      const z = { x0: -st.tx / st.eff, y0: -st.ty / st.eff, x1: (vw - st.tx) / st.eff, y1: (vh - st.ty) / st.eff };
+      if (!forceer && regio && regio.Z === Z && z.x0 >= regio.x0 && z.y0 >= regio.y0 && z.x1 <= regio.x0 + regio.b && z.y1 <= regio.y0 + regio.h) return;
+      const mx = (z.x1 - z.x0) * 0.25, my = (z.y1 - z.y0) * 0.25;
+      const x0 = Math.floor(Math.max(w.x0, z.x0 - mx) / 8) * 8, y0 = Math.floor(Math.max(w.y0, z.y0 - my) / 8) * 8;
+      const x1 = Math.ceil(Math.min(w.x1, z.x1 + mx) / 8) * 8, y1 = Math.ceil(Math.min(w.y1, z.y1 + my) / 8) * 8;
+      regio = { x0, y0, b: Math.max(8, x1 - x0), h: Math.max(8, y1 - y0), Z };
+      window.PQ_HUISVERTE.teken(verte, scene.geo, OH.dagdeel(), regio.x0, regio.y0, regio.b, regio.h);
+      zetRegio(verte, regio); zetRegio(tint, regio);
+      if (!zonderDeeltjes) { OH.deeltjes(weer, regioGeo(scene.geo, regio), Z); zetRegio(weer, regio); }
+    }
     function testInfo() {
       const t = window.PQ_TEST;
       if (!t || compact) return;
@@ -554,30 +584,52 @@
     // ---------- zoom en pannen ----------
     let begonnen = false;
     const zoom = window.PQZoom.maak(venster, podium, {
-      inhoud: () => (scene ? { w: scene.geo.W, h: scene.geo.H, g: scene.geo.grondY } : { w: 664, h: 272, g: 232 }),
+      inhoud: () => { const g = scene ? scene.geo : { W: 664, H: 272, grondY: 232 }; return { w: g.W, h: g.H, g: g.grondY, wereld: wereld(g) }; },
       zr: () => Z,
       herteken: z => { Z = z; teken(); },
       actief: () => !compact && actief === api,
       magPannen: ev => !(bewerken && ev.target.closest && ev.target.closest('.sleepbaar')),
-      opWijzig: st => { if (opties.opZoom) opties.opZoom(st); },
-      opToon: st => achtergrond(st),
+      opWijzig: st => { aangeraakt = true; if (opties.opZoom) opties.opZoom(st); },
+      opToon: st => { achtergrond(st); verteBij(st); },
     });
     // Waar Hidde en Tessie staan (scene-artpx): daar begint het beeld.
     function focusPunt(vh, eff) {
       const geo = scene.geo, ps = H.bewoners.map(b => bewonerPlek(b, geo));
       const cx = ps.reduce((s, p) => s + p.k.x + p.x, 0) / ps.length, k = ps[0].k;
       // Volledig scherm: het midden van hun kamer (vloer tot plafond), zodat Hidde, Tessie en de kamer in beeld zijn.
-      return compact ? { cx, cy: k.vloerY + 14 - vh / 2 / eff } : { cx, cy: k.y + k.h * 0.55 };
+      // De vloer komt op ~2/3 van de hoogte: de kamer met lucht en dak erboven, een strook grond eronder.
+      return compact ? { cx, cy: k.vloerY + 14 - vh / 2 / eff } : { cx, cy: k.vloerY - (venster.clientHeight || 800) * 0.16 / 2 };
     }
+    // Een bewaarde stand telt alleen als hij zinnig is: een hele stap van 2× tot 4× met een midden in de scène.
+    // "Alles in beeld" of een halve meting van een eerdere versie wordt dus nooit de standaard bij het openen.
+    function geldigeStand(st) {
+      if (!st || !scene || ![st.eff, st.cx, st.cy].every(Number.isFinite)) return null;
+      if (st.eff < 2 || st.eff > 4 || Math.abs(st.eff - Math.round(st.eff)) > 1e-6) return null;
+      if (st.cx < 0 || st.cx > scene.geo.W || st.cy < 0 || st.cy > scene.geo.H) return null;
+      return st;
+    }
+    // Startzoom: 2× op de kamer van Hidde en Tessie (of een geldige bewaarde stand). Tot iemand het huis aanraakt,
+    // wordt dat opnieuw bepaald zodra het venster zijn echte maat heeft (na load, na een resize van de visualViewport,
+    // na de eerste frames): op een iPhone kloppen de maten en safe-areas vlak na het mounten nog niet altijd.
+    let aangeraakt = false, gemeten = '';
     function begin() {
       begonnen = true;
+      gemeten = venster.clientWidth + 'x' + venster.clientHeight;
       if (compact) { zoom.begin({ eff: 1, ...focusPunt(venster.clientHeight, 1) }); return; }
-      const st = opties.zoomStand && opties.zoomStand();
-      zoom.begin(st && st.eff ? st : null, focusPunt());
+      zoom.begin(geldigeStand(opties.zoomStand && opties.zoomStand()), focusPunt());
     }
+    function herstart() {
+      if (weg || actief !== api || !begonnen || !venster.clientWidth || !venster.clientHeight) return;
+      if (!aangeraakt && gemeten !== venster.clientWidth + 'x' + venster.clientHeight) begin(); else zoom.herbereken();
+    }
+    for (const t of ['pointerdown', 'wheel']) venster.addEventListener(t, () => { aangeraakt = true; }, { passive: true, capture: true });
+    window.addEventListener('load', herstart);
+    if (window.visualViewport) window.visualViewport.addEventListener('resize', herstart);
+    requestAnimationFrame(() => requestAnimationFrame(herstart));
+    setTimeout(herstart, 600);
     let ro = null;
     if (window.ResizeObserver) {
-      ro = new ResizeObserver(() => { if (actief === api && begonnen && venster.clientWidth) { if (compact) begin(); else zoom.herbereken(); } });
+      ro = new ResizeObserver(herstart);
       ro.observe(venster);
     }
     const afmelden = store.abonneer(op => {

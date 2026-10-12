@@ -17,22 +17,25 @@
     let pan = null, knijp = null, onderdruk = false, laatsteTik = null, gebaar = false;
 
     const maat = () => ({ vw: venster.clientWidth || 1, vh: venster.clientHeight || 1 });
-    const inhoud = () => o.inhoud();                     // { w, h } in artpx
-    // Alles in beeld; vanaf 1× afgerond naar beneden op een hele stap (dan is de scène iets kleiner dan het venster).
-    function pasEff() { const { vw, vh } = maat(), { w, h } = inhoud(); return Math.min(vw / w, vh / h); }
-    function minEff() { const p = pasEff(); return p >= 1 ? Math.floor(p) : p; }
+    const inhoud = () => o.inhoud();                     // { w, h, g, wereld: { x0, y0, x1, y1 } } in artpx
+    // Uitzoomen kan tot het huis (met zijn erf) de breedte of de hoogte vult, maar nooit zo ver dat de wereld (lucht,
+    // erf, grond) het scherm niet meer vult: het huis hangt dus nooit in een leeg vlak. Vanaf 1× een hele stap.
+    function dekEff() {
+      const { vw, vh } = maat(), c = inhoud(), wr = c.wereld;
+      return wr ? Math.max(vw / (wr.x1 - wr.x0), vh / (wr.y1 - wr.y0)) : 0;
+    }
+    function pasEff() { const { vw, vh } = maat(), { w, h } = inhoud(); return Math.max(Math.min(vw / w, vh / h), dekEff()); }
+    function minEff() { const p = pasEff(); return p >= 1 ? Math.max(Math.floor(p), dekEff()) : p; }
     const maxEff = () => Math.max(MAX, Math.ceil(minEff()));
-    // Grenzen voor tx, ty bij deze zoom. Kleiner dan het venster: horizontaal in het midden, en verticaal met de
-    // grondlijn op ~76% van de hoogte (lucht erboven, een strook grond eronder), binnen het venster.
-    // Met een open menu is alleen het stuk tussen boven en onder zichtbaar (zetVeld); dan mag je verticaal meer pannen.
+    // Grenzen voor tx, ty bij deze zoom: het zichtbare stuk blijft binnen de wereld (de scène plus lucht erboven, erf
+    // opzij en grond eronder; huis.js tekent die als achtergrondlaag). Zo hangt het huis nooit in een leeg kleurvlak.
+    // Met een open menu is alleen het stuk tussen boven/onder/links/rechts zichtbaar (zetVeld).
     let veld = null;
+    const zicht = () => { const { vw, vh } = maat(); return Object.assign({ boven: 0, onder: vh, links: 0, rechts: vw }, veld || {}); };
     function grenzen(e) {
-      const { vw, vh } = maat(), { w, h, g } = inhoud(), sw = w * e, sh = h * e;
-      const v = Object.assign({ boven: 0, onder: vh, links: 0, rechts: vw }, veld || {}), hv = v.onder - v.boven, bw = v.rechts - v.links;
-      const gx = sw <= bw ? [v.links + (bw - sw) / 2, v.links + (bw - sw) / 2] : [v.rechts - sw, v.links];
-      const y = klem(v.boven + hv * (veld ? 0.7 : 0.76) - (g || h) * e, v.boven, v.onder - sh);
-      const gy = sh <= hv ? [y, y] : [v.onder - sh, v.boven];
-      return { gx, gy };
+      const c = inhoud(), wr = c.wereld || { x0: 0, y0: 0, x1: c.w, y1: c.h }, v = zicht();
+      const as = (lo, hi, vlo, vhi) => { const a = vhi - hi * e, b = vlo - lo * e; return a <= b ? [a, b] : [(a + b) / 2, (a + b) / 2]; };
+      return { gx: as(wr.x0, wr.x1, v.links, v.rechts), gy: as(wr.y0, wr.y1, v.boven, v.onder) };
     }
     const elastisch = (v, [a, b]) => (v < a ? a - (a - v) * 0.35 : v > b ? b + (v - b) * 0.35 : v);
     function toon() {
@@ -78,6 +81,27 @@
         if (p < 1) anim = requestAnimationFrame(stap); else klaar && klaar();
       };
       anim = requestAnimationFrame(stap);
+    }
+    // Naar een vaste eindstand (zoom en plek), bv. "alles in beeld": de scène in het midden van het zichtbare stuk.
+    function animeerNaar(e2, tx2, ty2, klaar) {
+      cancelAnimationFrame(anim);
+      const van = { e: eff, x: tx, y: ty };
+      eff = e2; tx = tx2; ty = ty2; klemT(true);
+      const naar = { e: eff, x: tx, y: ty };
+      if (rustig()) { toon(); return klaar && klaar(); }
+      eff = van.e; tx = van.x; ty = van.y;
+      const t0 = performance.now();
+      const stap = t => {
+        const p = Math.min(1, (t - t0) / 220), k = 1 - Math.pow(1 - p, 3);
+        eff = van.e + (naar.e - van.e) * k; tx = van.x + (naar.x - van.x) * k; ty = van.y + (naar.y - van.y) * k;
+        toon();
+        if (p < 1) anim = requestAnimationFrame(stap); else klaar && klaar();
+      };
+      anim = requestAnimationFrame(stap);
+    }
+    function pasStand() {
+      const m = minEff(), c = inhoud(), v = zicht();
+      return [m, (v.links + v.rechts) / 2 - c.w / 2 * m, (v.boven + v.onder) / 2 - c.h / 2 * m];
     }
     // In rust staat de laag op hele schermpixels: een halve pixel verschuiving laat WebKit de laag uitsmeren.
     function heelPixel() { const d = wortel.devicePixelRatio || 1; tx = Math.round(tx * d) / d; ty = Math.round(ty * d) / d; }
@@ -172,7 +196,10 @@
         } else laatsteTik = { t: nu, x: p.x, y: p.y };
       }
     }
-    function dubbel(x, y) { animeer(eff < 2.5 ? Math.min(3, maxEff()) : doelEff(minEff()), x, y, () => zetVast(x, y)); }
+    function dubbel(x, y) {
+      if (eff < 2.5) return animeer(Math.min(3, maxEff()), x, y, () => zetVast(x, y));
+      const [m, px, py] = pasStand(); animeerNaar(doelEff(m), px, py, () => zetVast());
+    }
     // Klikken na een veeg of knijp tegenhouden (anders opent een signaal of aait je een pet per ongeluk).
     function vangKlik(e) { if (onderdruk) { e.stopPropagation(); e.preventDefault(); } onderdruk = false; gebaar = false; }
     function wiel(ev) {
@@ -216,7 +243,7 @@
       schaal: () => eff / zr,
       in: () => { const { vw, vh } = maat(); animeer(eff < 1 ? 1 : Math.min(maxEff(), Math.round(eff) + 1), vw / 2, vh / 2, () => zetVast()); },
       uit: () => { const { vw, vh } = maat(); animeer(eff > 1 ? Math.max(minEff(), Math.round(eff) - 1) : minEff(), vw / 2, vh / 2, () => zetVast()); },
-      pas: () => { const { vw, vh } = maat(); animeer(minEff(), vw / 2, vh / 2, () => zetVast()); },
+      pas: () => { const [m, x, y] = pasStand(); animeerNaar(m, x, y, () => zetVast()); },
       zetVeld(v) { veld = v || null; },
       // Terug naar een eerdere stand (zelfde zoom), bv. na het sluiten van het menu.
       terugNaar(st) { if (!st || Math.abs(st.eff - eff) > 1e-6) return; const { vw, vh } = maat(); this.glijNaar((vw / 2 - st.tx) / eff, (vh / 2 - st.ty) / eff, vh / 2); },

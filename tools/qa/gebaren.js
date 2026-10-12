@@ -40,7 +40,7 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
   const z0 = await zoom();
   await knijp(W / 2, HH / 2, 120, 300);
   const z1 = await zoom();
-  const eff1 = await R(() => window.PQStore.apparaat().huisZoom);
+  const eff1 = await R(() => window.PQStore.apparaat().huisZoom2);
   console.log('    voor', JSON.stringify(z0), 'na', JSON.stringify(z1), JSON.stringify(eff1));
   check('knijpen zoomt in en klikt vast op hele stap (scale 1 na hertekenen)', z1.s === 1 && eff1 && Math.abs(eff1.eff - Math.round(eff1.eff)) < 1e-6 && eff1.eff > (z0.s || 0), { z1, eff1 });
   check('geen paginazoom op Huis', z1.vv === 1);
@@ -53,21 +53,21 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
   check('pannen met één vinger verschuift', Math.abs(z2.tx - z1.tx) > 30, { z1, z2 });
   // dubbeltik op een lege plek (lucht)
   await R(() => document.querySelector('.zoomknoppen .pas').click()); await wacht(900);
-  const zp = await R(() => window.PQStore.apparaat().huisZoom);
+  const zp = await R(() => window.PQStore.apparaat().huisZoom2);
   const leeg = await R(() => { const v = document.querySelector('#view-huis .huisvenster').getBoundingClientRect(); return [v.left + v.width / 2, v.top + 140]; });
   for (let i = 0; i < 2; i++) { await touch('touchStart', [leeg]); await touch('touchEnd', []); await wacht(120); }
   await wacht(900);
-  const zd = await R(() => window.PQStore.apparaat().huisZoom);
+  const zd = await R(() => window.PQStore.apparaat().huisZoom2);
   console.log('    pas', JSON.stringify(zp), 'dubbeltik', JSON.stringify(zd));
   check('dubbeltik zoomt in naar 3×', zd.eff === 3, zd);
   await R(() => document.querySelector('.zoomknoppen [aria-label="Uitzoomen"]').click()); await wacht(900);
-  check('knop − : 2×', (await R(() => window.PQStore.apparaat().huisZoom.eff)) === 2);
+  check('knop − : 2×', (await R(() => window.PQStore.apparaat().huisZoom2.eff)) === 2);
   await R(() => document.querySelector('.zoomknoppen [aria-label="Inzoomen"]').click()); await wacht(900);
-  check('knop + : 3×', (await R(() => window.PQStore.apparaat().huisZoom.eff)) === 3);
+  check('knop + : 3×', (await R(() => window.PQStore.apparaat().huisZoom2.eff)) === 3);
   await R(() => document.querySelector('.zoomknoppen .pas').click()); await wacht(900);
   await h.foto(PF + 'g02-alles-in-beeld');
   const pasZ = await zoom();
-  check('alles in beeld: scène past in het venster', await R(() => { const v = document.querySelector('#view-huis .huisvenster').getBoundingClientRect(), d = document.querySelector('#view-huis .podium').getBoundingClientRect(); return d.width <= v.width + 2; }), pasZ);
+  check('alles in beeld: scène past in het venster', await R(() => { const v = document.querySelector('#view-huis .huisvenster').getBoundingClientRect(), d = document.querySelector('#view-huis .diorama').getBoundingClientRect(); return d.width <= v.width + 2; }), pasZ);
 
   console.log('3. Bewerkmodus: slepen vs pannen');
   await h.tik('.hud-tools'); await h.tikTekst('.sheet button', 'Bewerken'); await wacht(600);

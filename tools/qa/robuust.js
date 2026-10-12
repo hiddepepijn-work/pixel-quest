@@ -12,7 +12,7 @@ const ROMMEL = [
   ['pq-apparaat', '5'],
   ['pq-apparaat', '"hidde"'],
   ['pq-apparaat', '{"ik":"bob","tab":"nergens","huisZoom":{"eff":"x","cx":null}}'],
-  ['pq-apparaat', '{"ik":"hidde","huisZoom":{"eff":1e9,"cx":1e9,"cy":-1e9},"questFilter":"raar"}'],
+  ['pq-apparaat', '{"ik":"hidde","huisZoom2":{"eff":1e9,"cx":1e9,"cy":-1e9},"questFilter":"raar"}'],
   ['pq-kk-look', '{"hidde":5,"tessie":"x"}'],
   ['pq-kk-bezit', '[1,2'],
   ['pq-huis-staat', '{"niveau":"zeven","inrichting":5}'],

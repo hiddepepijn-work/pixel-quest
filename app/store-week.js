@@ -30,7 +30,7 @@
   // Een gesloten week die niet gehaald is, gebruikt automatisch de rustweek van die maand (1 per kalendermaand).
   function weken(st, nu) {
     const nuW = R.weekVan(nu), lijst = [];
-    const eerste = Math.min(st.start || nu, ...(st.afrondingen || []).map(a => a.op));
+    const eerste = Math.min(st.start || nu, nu, ...(st.afrondingen || []).map(a => a.op));
     let w = R.weekVan(eerste), streak = 0, record = 0, gehaaldTotaal = 0;
     const rustGebruikt = {};
     for (const r of st.rustweken || []) rustGebruikt[R.maandVan(r)] = true;

@@ -176,8 +176,10 @@ function check(naam, waar, extra) {
   await tik('.zoomknoppen [aria-label="Inzoomen"]');
   await wacht(600);
   check('knop + zoomt in', (await zs()).eff > z3.eff);
-  const zbewaard = await R(() => window.PQStore.apparaat().huisZoom);
-  check('zoom wordt bewaard', zbewaard && zbewaard.eff > 0, zbewaard);
+  check('"alles in beeld" wordt niet de bewaarde start', !(await R(() => window.PQStore.apparaat().huisZoom2)));
+  while ((await zs()).eff < 2) { await tik('.zoomknoppen [aria-label="Inzoomen"]'); await wacht(600); }
+  const zbewaard = await R(() => window.PQStore.apparaat().huisZoom2);
+  check('zoom van 2× of meer wordt bewaard', zbewaard && zbewaard.eff >= 2, zbewaard);
 
   console.log('6b. Bewerken: meubel slepen, lege plek pant');
   await tik('.hud-tools'); await wacht(400);
