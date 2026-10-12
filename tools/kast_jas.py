@@ -8,12 +8,12 @@ Hidde's rug is links, die van Tessie rechts; haar krullen vallen over de schoude
 import numpy as np
 
 from kast_vorm import Kleed, wis_zones, lijnmasker
-from kast_boven import GEO, romp, mouwen, manchet
+from kast_boven import GEO, romp, mouwen, manchet, capuchon
 
 ZONDER_OLIJF = {'a': 'b', 'b': 'c', 'c': 'h'}
 
 
-def jas(fid, kleur, lang, breder, vast=None, uitwaaier=0):
+def jas(fid, kleur, lang, breder, vast=None, uitwaaier=0, mouw_breder=None):
     kl = Kleed(fid, kleur, vast, slot='jas')
     kl.wis = wis_zones(fid, ['shirt'], armen=True)
     m = romp(fid, lang, breder)
@@ -26,12 +26,21 @@ def jas(fid, kleur, lang, breder, vast=None, uitwaaier=0):
                 d = (y - y0) * uitwaaier // 8
                 m[y, max(xs.min() - d, 0):xs.max() + d + 1] = True
     kl.stuk(m)
-    ml, mr = mouwen(fid, breder=breder)
+    ml, mr = mouwen(fid, breder=breder if mouw_breder is None else mouw_breder)
     kl.stuk(ml)
     kl.stuk(mr)
     kl.mouw = ml | mr
     kl.zoom = GEO[fid]['taille'] + lang - 1
     return kl
+
+
+def afronden(kl, y, n=1):
+    """Ronde zoomhoeken: de buitenste pixel(s) van rij y en de rij erboven weg."""
+    for yy, k in ((y, n), (y - 1, max(n - 1, 0))):
+        xs = np.nonzero(kl.stukken[yy])[0]
+        for x in list(xs[:k]) + list(xs[len(xs) - k:] if k else []):
+            kl.stukken[yy, x] = False
+            kl.t[yy, x] = ''
 
 
 def staande_kraag(kl, fid, hoog=2, toon='c'):
@@ -78,7 +87,7 @@ def spijkerjas(fid):
 
 def puffer(fid):
     """Pufferjas tot het bovenbeen: bolle doorgestikte banen, hoge kraag, rits."""
-    kl = jas(fid, 'petrol', lang=9, breder=3)
+    kl = jas(fid, 'petrol', lang=9, breder=3, mouw_breder=2)
     g = GEO[fid]
     h = g['hals']
     for y in range(h + 3, kl.zoom, 4):                   # banen: naad, dan licht, dan schaduw
@@ -91,6 +100,7 @@ def puffer(fid):
     staande_kraag(kl, fid, hoog=3)
     sluiting(kl, fid, h + 1, kl.zoom - 1, c='a')
     kl.rib(kl.zoom - 1, kl.zoom)
+    afronden(kl, kl.zoom, 2)
     return kl.laag()
 
 
@@ -99,10 +109,10 @@ def regenjas(fid):
     kl = jas(fid, 'goud', lang=13, breder=2, uitwaaier=3, vast={'k': 'creme'})
     g = GEO[fid]
     mx, h = g['midden'], g['hals']
-    staande_kraag(kl, fid, hoog=2)
-    sluiting(kl, fid, h + 2, kl.zoom - 1, knoop='k', stap=5)
-    kl.lijn([(mx - 8, kl.zoom - 7), (mx - 4, kl.zoom - 7)], 'a')    # zakken met klep
-    kl.lijn([(mx + 4, kl.zoom - 7), (mx + 8, kl.zoom - 7)], 'a')
+    capuchon(kl, fid)                                    # regenkap plat in de nek
+    sluiting(kl, fid, h + 3, kl.zoom - 1, knoop='k', stap=5)
+    for x0 in (mx - 8, mx + 4):                          # zakken met klep
+        kl.pixels(['aaaaa', 'cbbbb'], x0, kl.zoom - 8)
     manchet(kl, fid, 1)
     sel = np.isin(kl.t, list(ZONDER_OLIJF))
     kl.t[sel] = np.vectorize(ZONDER_OLIJF.get)(kl.t[sel])

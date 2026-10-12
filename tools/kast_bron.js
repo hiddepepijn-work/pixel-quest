@@ -79,5 +79,6 @@ const looks = JSON.parse(fs.readFileSync(path.join(REPO, 'test-uitvoer', 'kast_l
   for (const r of fout) console.log(`  AFWIJKING ${r.naam} ${r.fid}: ${r.n} px, max ${r.max}`);
   console.log('JS-fouten:', fouten.length ? fouten : 0);
   await browser.close();
+  try { fs.rmSync(profiel, { recursive: true, force: true }); } catch (e) { /* Edge houdt soms nog iets vast */ }
   process.exit(fout.length || fouten.length || !/hidde OK.*tessie OK/.test(controle) ? 1 : 0);
 })().catch(e => { console.error(e); process.exit(2); });

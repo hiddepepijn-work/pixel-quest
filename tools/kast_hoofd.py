@@ -210,8 +210,8 @@ def baret(fid):
     if fid == 'hidde':
         teken(lg, BARET, 22, 20, 'bordeaux')
         return knip_boven(lg, 22, 47, 30, zijmarge=3, y_zij=27)
-    teken(lg, BARET_T, 15, 27, 'bordeaux')
-    return knip_boven(lg, 18, 40, 40, zijmarge=6, y_zij=36)
+    teken(lg, BARET_T, 16, 28, 'bordeaux')
+    return knip_boven(lg, 19, 41, 41, zijmarge=6, y_zij=37)
 
 
 def haarclip(fid):

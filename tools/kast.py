@@ -68,14 +68,14 @@ CATALOGUS = [
          ['kantoor']),
     item('crop_top', 'Crop top', 'boven', TESSIE, 35, ['creme', 'koraal', 'lavendel', 'nacht'], NH, 'zomerdag',
          ['zomer']),
-    item('blouse', 'Blouse', 'boven', TESSIE, 45, ['creme', 'lavendel', 'abrikoos', 'petrol'], N, 'parijs'),
+    item('blouse', 'Blouse', 'boven', TESSIE, 45, ['creme', 'lavendel', 'blad', 'petrol'], N, 'parijs'),
     item('cardigan', 'Cardigan', 'boven', TESSIE, 50, ['creme', 'mos', 'bordeaux', 'lavendel'], N, tags=['warm']),
     # --- jas (overlay over romp en armen) ---
     item('spijkerjas', 'Spijkerjas', 'jas', BEIDE, 70, ['petrol', 'nacht', 'creme', 'koffie'], N, 'kantoor', ['lente']),
     item('puffer', 'Puffer', 'jas', BEIDE, 90, ['petrol', 'nacht', 'koraal', 'lavendel', 'creme'], N,
          'winterwandeling', ['warm', 'sneeuw']),
     item('regenjas', 'Regenjas', 'jas', BEIDE, 75, ['goud', 'koraal', 'petrol', 'mos'], N, 'regendag', ['regen']),
-    item('teddyjas', 'Teddyjas', 'jas', TESSIE, 85, ['creme', 'hazelnoot', 'abrikoos', 'lavendel'], N, 'herfstdag',
+    item('teddyjas', 'Teddyjas', 'jas', TESSIE, 85, ['creme', 'hazelnoot', 'mos', 'lavendel'], N, 'herfstdag',
          ['warm']),
     # --- onder ---
     item('broek_basis', 'Broek', 'onder', BEIDE, 30, ['origineel', 'nacht', 'koffie', 'petrol', 'mos'], U, 'basis',

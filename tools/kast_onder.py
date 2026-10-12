@@ -70,9 +70,11 @@ def gulp(kl, fid, tot=None):
 def broek_basis(fid, kleur, pijpen, vast=None):
     kl = Kleed(fid, kleur, vast, slot='onder')
     kl.wis = wis_broek(fid)
-    kl.stuk(veelhoek(GEO[fid]['heup']), schaduw=1)
     for pts in pijpen:
-        kl.stuk(veelhoek(pts), naad='a', schaduw=1)
+        kl.stuk(veelhoek(pts), schaduw=1, kolom=False)
+    kl.stuk(veelhoek(GEO[fid]['heup']), naad=None, schaduw=1, kolom=False)
+    g = GEO[fid]
+    kl.lijn([(g['midden'], g['kruis'] - 3), (g['midden'], g['kruis'] + 1)], 'a')   # kruisnaad
     return kl
 
 
@@ -88,7 +90,7 @@ def jeans(fid):
     kl.zet(zl + 4, zy + 4, 'k')
     kl.zet(zr - 4, zy + 4, 'k')
     for kx, ky in g['knie']:                              # verwassen knieën
-        kl.pixels(['cc', '.c'], kx + 1, ky - 1)
+        kl.pixels(['c', 'c', 'c'], kx + 1, ky - 2)
     mx, kr = g['midden'], g['kruis']
     kl.lijn([(mx - 3, kr - 2), (mx - 1, kr - 3)], 'c')       # snorren bij het kruis
     kl.lijn([(mx + 3, kr - 2), (mx + 2, kr - 3)], 'c')
@@ -170,18 +172,15 @@ def legging(fid):
     g = GEO[fid]
     kl = Kleed(fid, 'titel', slot='onder')
     kl.wis = wis_broek(fid)
-    for pts in g['been']:                                 # benen 1 px voller dan het blote been
-        c = sum(p[0] for p in pts) / len(pts)
-        vol = [(p[0] - 1 if p[0] < c else p[0], p[1]) for p in pts]
-        kl.stuk(veelhoek(vol + [(vol[1][0], 78), (vol[0][0], 78)]), schaduw=1)
-    kl.stuk(veelhoek([(22, 71), (37, 71), (38, 77), (37, 81), (30, 82), (29, 81), (28, 82), (21, 81), (20, 77)]),
-            naad=None, schaduw=1)
+    for pts in g['been']:                                 # precies de omtrek van het blote been
+        kl.stuk(veelhoek(pts + [(pts[1][0], 78), (pts[0][0], 78)]), schaduw=1, kolom=False)
+    kl.stuk(veelhoek([(22, 71), (37, 71), (38, 77), (38, 82), (30, 83), (29, 82), (28, 83), (20, 82), (20, 77)]),
+            naad=None, schaduw=1, kolom=False)
     kl.lijn([(29, 79), (29, 83)], 'a')
     kl.rib(71, 72)
     for kx in (22, 33):                                   # glans op dij en knie
         kl.lijn([(kx, 84), (kx, 88)], 'c')
-        kl.zet(kx, 91, 'h')
-        kl.zet(kx, 92, 'c')
+        kl.zet(kx, 91, 'c')
     return kl.laag()
 
 
