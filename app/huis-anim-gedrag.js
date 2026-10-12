@@ -27,12 +27,18 @@ window.PQ_HUISGEDRAG = (function (H, HM, BW) {
   function draai() {
     if (!raf && acteurs.length) raf = requestAnimationFrame(tik);
   }
+  // Zuinig: een maximum aantal stappen per seconde (uitgezoomd of met het menu open: 15) en Hidde en Tessie buiten
+  // beeld staan stil (zicht(a) = false). instellen({ fps, zicht }) komt uit huis.js.
+  let fpsMax = 0, zicht = null;
+  function instellen(o) { if ('fps' in o) fpsMax = o.fps || 0; if ('zicht' in o) zicht = o.zicht; }
   function tik(t) {
     raf = requestAnimationFrame(tik);
     if (document.hidden) { vorige = 0; return; }
+    if (fpsMax && vorige && t - vorige < 1000 / fpsMax - 2) return;
     const dt = vorige ? Math.min(0.1, (t - vorige) / 1000) * TEMPO : 0;
     vorige = t;
     for (const a of acteurs) {
+      if (zicht && a.soort === 'mens' && !zicht(a)) continue;
       try { a.stap(a, dt, t / 1000 * TEMPO); } catch (e) { a.stap = () => {}; if (window.PQ_TEST) window.PQ_TEST.fouten.push('gedrag: ' + e.message); }
     }
   }
@@ -323,5 +329,5 @@ window.PQ_HUISGEDRAG = (function (H, HM, BW) {
     toon(a, fr, a.x, a.y + dy);
   }
 
-  return { begin, stop, draai, vergeet, mens, pet, segmenten, acteurs: () => acteurs };
+  return { begin, stop, draai, vergeet, mens, pet, segmenten, instellen, acteurs: () => acteurs };
 })(window.PQ_HUIS, window.PQ_HUISMODEL, window.PQ_BEWEGING);

@@ -1,4 +1,6 @@
-// QA performance: frametijd met CPU-throttling 4×, lange taken, pauzeert het huis buiten beeld? En offline fonts.
+// QA performance: frametijd met CPU-throttling 4×, lange taken, offline fonts, en (deel 3) knijpen en uitgezoomd
+// stilstaan op een telefoon met CPU 6× (perfmeting.js) met drempels, zodat het haperen niet ongemerkt terugkomt.
+// Getallen en achtergrond: docs/perf.md.
 'use strict';
 const { start, server, check, telling, wacht, DIST } = require('./hulp');
 
@@ -65,5 +67,28 @@ const TELLER = `(() => {
   const fo = await o.jsFouten();
   check('offline: 0 JS-fouten', fo.length === 0, fo);
   await o.browser.close(); s.close();
+
+  console.log('3. Knijpen en uitgezoomd stilstaan (390×844, DPR 3, CPU 6×)');
+  const r = await require('./perfmeting').meet({ cpu: 6 });
+  for (const [k, naam] of [['snel', 'snel knijpen'], ['langzaam', 'langzaam knijpen'], ['inzoom', 'snel inknijpen']]) {
+    const g = r[k], t = g.tekenen || {};
+    // De harde controles zijn de tellers (niets opnieuw getekend tijdens een gebaar); de tijden hebben ruimte voor een
+    // drukke pc (de meting draait met CPU 6× bovenop wat de pc al doet). Vóór de fix: tientallen taken van 100–600 ms.
+    check(`${naam}: hoogstens één long task, < 150 ms, tijdens het gebaar`, g.lang.every(x => x < 150) && g.lang.length <= 1, g.lang);
+    check(`${naam}: script per frame p95 ≤ 10 ms, max ≤ 60 ms`, g.scriptPerFrameP95 <= 10 && g.scriptPerFrameMax <= 60, [g.scriptPerFrameP95, g.scriptPerFrameMax]);
+    check(`${naam}: niets opnieuw getekend tijdens het gebaar`, !t.verte && !t.decor && !t.licht && !t.deeltjes && !t.scene, t);
+  }
+  for (const k of ['snelLos', 'inzoomLos']) {
+    const g = r[k];
+    check(`${k}: verte en decor niet opnieuw bij alleen een zoomstap`, !(g.tekenen || {}).verte && !(g.tekenen || {}).decor, g.tekenen);
+    check(`${k}: hoogstens één long task (< 500 ms) bij het vastklikken`, g.lang.length <= 1 && g.lang.every(x => x < 500), g.lang);
+  }
+  check('snel uitknijpen: klikt vast op de grens', Math.abs(r.naSnel.eff - r.naDubbel.grens.min) < 1e-6, r.naSnel);
+  check('knijpen tijdens het vastklikken: eindigt op de grens', Math.abs(r.naDubbel.st.eff - r.naDubbel.grens.min) < 1e-6, r.naDubbel);
+  check('snel inknijpen: klikt vast op 4×', r.naInzoom.eff === 4, r.naInzoom);
+  check('stil uitgezoomd: < 4 ms script per frame gemiddeld', r.stil.scriptPerFrameGem < 4, r.stil.scriptPerFrameGem);
+  check('stil uitgezoomd: weinig stijlwerk (< 1500 ms in 10 s; vóór de fix 956–2738)', r.stil.stijlMs < 1500, r.stil.stijlMs);
+  check('canvassen samen < 8 Mpx, grootste < 5 Mpx (iOS-geheugen)', r.stil.canvasPx < 8e6 && r.stil.grootsteCanvas < 5e6, [r.stil.canvasPx, r.stil.grootsteCanvas]);
+  check('perfmeting: 0 JS-fouten', !r.fouten.length, r.fouten);
   console.log(JSON.stringify(telling()));
 })().catch(e => { console.error('CRASH', e); process.exit(1); });

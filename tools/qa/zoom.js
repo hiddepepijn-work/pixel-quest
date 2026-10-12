@@ -64,6 +64,56 @@ const OUD = `try { if (!localStorage.getItem('qa-oud')) { localStorage.setItem('
   check('één vinger slepen pant omhoog de lucht in', (await zs()).ty > voor.ty + 100);
   check('na het slepen: geen gat', (await magenta('07-gesleept-lucht')) === 0);
 
+  console.log('Harde grens: snelle gebaren, per frame gecontroleerd');
+  // Per frame in de pagina: dekt de getekende wereld (de verte-canvas) het hele venster, en is de zoom ≥ het minimum?
+  await R(() => {
+    const m = window.__grens = { frames: 0, gaten: 0, onderMin: 0, ergste: 0 };
+    const v = document.querySelector('#view-huis .huisvenster'), z = window.PQHuis.actief().zoom;
+    const lus = () => {
+      if (!window.__grens) return;
+      const a = v.getBoundingClientRect(), w = document.querySelector('#view-huis .verte').getBoundingClientRect();
+      const gat = Math.max(w.left - a.left, w.top - a.top, a.right - w.right, a.bottom - w.bottom);
+      m.frames++; if (gat > 0.5) { m.gaten++; m.ergste = Math.max(m.ergste, gat); }
+      if (z.stand().eff < z.grens().min - 1e-6) m.onderMin++;
+      requestAnimationFrame(lus);
+    };
+    requestAnimationFrame(lus);
+  });
+  const veeg2 = async (x0, y0, x1, y1, ms, foto) => {
+    const n = Math.max(4, Math.round(ms / 8));
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x0, y: y0, id: 0 }] });
+    for (let i = 1; i <= n; i++) {
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: x0 + (x1 - x0) * i / n, y: y0 + (y1 - y0) * i / n, id: 0 }] });
+      if (foto && i === Math.round(n * 0.75)) { await wacht(40); check(foto + ': midden in het gebaar geen gat (magenta)', (await magenta(foto)) === 0); }
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  };
+  const knijp2 = async (van, naar, ms, foto) => {
+    const n = Math.max(4, Math.round(ms / 8)), pts = d => [{ x: W / 2 - d / 2, y: HH / 2, id: 0 }, { x: W / 2 + d / 2, y: HH / 2, id: 1 }];
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pts(van) });
+    for (let i = 1; i <= n; i++) {
+      await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pts(van + (naar - van) * i / n) });
+      if (foto && i === n) { await wacht(40); check(foto + ': aan het eind van het knijpen geen gat (magenta)', (await magenta(foto)) === 0); }
+    }
+    await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  };
+  await R(() => window.PQHuis.actief().zoom.naar(330, 150, 2)); await wacht(300);
+  await knijp2(320, 20, 150, '09-knijp-hard');                 // snel en hard uitknijpen tot ver voorbij het minimum
+  await wacht(700);
+  const zk = await zs(), gk = await R(() => window.PQHuis.actief().zoom.grens());
+  check('na hard uitknijpen: precies op het minimum, niet eronder', Math.abs(zk.eff - gk.min) < 1e-6, { zk, gk });
+  for (const [naam, dx, dy] of [['10-swipe-links', 1, 0], ['11-swipe-rechts', -1, 0], ['12-swipe-omhoog', 0, 1], ['13-swipe-omlaag', 0, -1]]) {
+    await R(() => window.PQHuis.actief().zoom.naar(330, 150, 2)); await wacht(250);
+    await veeg2(W / 2 - dx * 150, HH / 2 - dy * 300, W / 2 + dx * 150, HH / 2 + dy * 300, 90, naam);   // snelle swipe
+    await wacht(250);
+    for (let k = 0; k < 4; k++) await veeg2(W / 2 - dx * 150, HH / 2 - dy * 300, W / 2 + dx * 150, HH / 2 + dy * 300, 70);   // blijven doorswipen
+    await wacht(900);
+    check(naam + ': na doorswipen nog steeds geen gat', (await magenta(naam + '-na')) === 0);
+  }
+  const g2 = await R(() => { const m = window.__grens; window.__grens = null; return m; });
+  check(`elke frame (${g2.frames}) tijdens de gebaren: de wereld dekt het scherm`, g2.gaten === 0, g2);
+  check('elke frame: de zoom kwam nooit onder het minimum', g2.onderMin === 0, g2);
+
   console.log('Villa (niveau 10 als voorbeeld), uitgezoomd');
   await R(() => window.PQHuisScherm.bekijk(10)); await wacht(1400);
   await R(() => window.PQHuis.actief().zoom.pas()); await wacht(900);

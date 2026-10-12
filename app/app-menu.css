@@ -2,6 +2,16 @@
    huis (telefoon: bottom sheet met tabs; breed scherm: zijpaneel). */
 
 /* De verte achter de scène (huis-verte.js): lucht, erf en grond rondom, scherp. */
+/* Tijdens een gebaar wordt alleen de laag geschoven en geschaald: eigen compositorlaag. In rust weer zonder, zodat
+   de pixels na het vastklikken scherp opnieuw gerasterd worden. */
+.podium.beweegt { will-change: transform; }
+/* Taaksignalen dobberen samen: één animatie op de laag met signalen in plaats van één per signaal (elke lopende
+   CSS-animatie kostte per frame een stijlberekening). Uitgezoomd (< 1×) dobberen ze niet. */
+#view-huis .signaal { animation: none; }
+#view-huis .signalen { animation: dobber-c 1.6s steps(2) infinite; }
+#view-huis .podium.verkleind .signalen { animation: none; }
+@keyframes dobber-c { 50% { transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { #view-huis .signalen { animation: none; } }
 .verte { position: absolute; pointer-events: none; image-rendering: pixelated; image-rendering: crisp-edges; }
 
 /* ---------- HUD ---------- */

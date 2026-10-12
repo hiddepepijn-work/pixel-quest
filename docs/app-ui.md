@@ -79,7 +79,7 @@ Alles wat gedeeld is, verandert alleen via een **opdracht** `{ id (uuid), soort,
 
 ## Zoom (Huis)
 
-`huis-zoom.js` houdt `eff` (schermpx per artpx) en `tx, ty` bij en zet één CSS-transform op de laag met het diorama. Twee vingers knijpen (punt tussen de vingers blijft staan), één vinger pant, dubbeltik zoomt naar 3× of terug naar alles in beeld, Ctrl + scrollwiel of knijpen op een trackpad zoomt op desktop, gewoon scrollen pant. Na een veeg glijdt het beeld uit (traagheid); over de rand van de wereld is het elastisch en daarna veert het terug.
+`huis-zoom.js` houdt `eff` (schermpx per artpx) en `tx, ty` bij en zet één CSS-transform op de laag met het diorama. Twee vingers knijpen (punt tussen de vingers blijft staan), één vinger pant, dubbeltik zoomt naar 3× of terug naar alles in beeld, Ctrl + scrollwiel of knijpen op een trackpad zoomt op desktop, gewoon scrollen pant. Na een veeg glijdt het beeld uit (traagheid). De rand van de getekende wereld is een harde grens: pannen, knijpen en de traagheid stoppen daar, zonder rubberband (zie [perf.md](perf.md)).
 
 **Scherpte:** tijdens het gebaar schaalt de transform de laag (alles met `image-rendering: pixelated`). Na het gebaar klikt de zoom vast op een **hele stap** (1×–4×) en tekent het huis zichzelf op die schaal opnieuw (`herteken(Z)`), zodat de transform weer precies 1 is en elke artpixel een heel aantal schermpixels. Onder 1× ("alles in beeld" op de telefoon) is de zoom vrij en schakelt de laag naar zacht verkleinen. "Alles in beeld" zet de scène in het midden van het zichtbare stuk. De stand (zoom en midden) wordt per apparaat bewaard.
 

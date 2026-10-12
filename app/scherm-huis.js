@@ -48,6 +48,7 @@
     // Menu open op de telefoon: het huis schuift zodat Hidde en Tessie boven het menu staan; bij sluiten terug.
     let voorMenu = null;
     document.addEventListener('pq-menu', e => {
+      huis.zuinig(e.detail.open);
       if (huis.bewerkt()) return;
       if (e.detail.open) {
         const z = zichtbaar();

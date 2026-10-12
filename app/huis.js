@@ -488,24 +488,30 @@
       bewaar(); teken();
     }
     // ---------- alles tekenen ----------
-    let lucht = '#9fd3e6';
-    function achtergrond(st) {
-      // Rand naast de scène in lucht- en grondkleur, meebewegend met de zoom.
-      st = st || (zoom ? zoom.stand() : { eff: Z, ty: 0 });
-      const grens = scene ? st.ty + scene.geo.grondY * st.eff : 9999;
-      venster.style.background = `linear-gradient(${lucht} ${px(grens)}, ${HM.kleur('koffie.1')} 0)`;
-    }
+    let lucht = '#9fd3e6', alleenSchaal = false;
+    // Achter alles: één effen luchtkleur (alleen zichtbaar bij het elastisch over de wereldrand trekken).
+    function achtergrond() { venster.style.background = lucht; }
     function sceneInfo() {
       if (!scene) return null;
       return { niveau: staat.niveau, getoond: scene.geo.huis.niveau, voorbeeld: scene.voorbeeld, bewerken, Z,
         doos: scene.doos.map(d => ({ id: d.id, naam: H.meubels[d.soort].naam })), echt: scene.echt || null };
     }
-    function tekenOmgeving(geo, dd) {
-      HT.tekenDecor(decor, geo, dd, scene.inrichting);
+    // Decor en lichtlaag zijn in artpx getekend en hangen niet af van de zoom: bij alleen een andere zoomstap
+    // (herteken na het vastklikken) worden ze hergebruikt en alleen opnieuw geschaald.
+    let decorCache = null;
+    const decorSleutel = () => [scene.geo.huis.niveau, scene.voorbeeld ? 'v' : '', scene.geo.W, scene.geo.H, JSON.stringify(scene.inrichting)].join('#');
+    function tekenOmgeving(geo, dd, hergebruik) {
+      let extra;
+      if (hergebruik && decorCache && decorCache.sleutel === decorSleutel()) {
+        geo._bomen = decorCache.bomen; geo._lichten = decorCache.lichten; extra = decorCache.extra;
+      } else {
+        HT.tekenDecor(decor, geo, dd, scene.inrichting);
+        const mijden = H.bewoners.map(b => { const p = bewonerPlek(b, geo); return { kamer: p.k.id, x: p.x }; });
+        extra = OH.plaatsExtra(geo, scene.inrichting, mijden);     // event-decor en nachtdoek (lichtpunten vóór tekenLicht)
+        HT.tekenLicht(licht, geo, dd, scene.inrichting);
+        decorCache = { sleutel: decorSleutel(), bomen: geo._bomen, lichten: geo._lichten, extra };
+      }
       decor.style.width = px(geo.W * Z); decor.style.height = px(geo.H * Z);
-      const mijden = H.bewoners.map(b => { const p = bewonerPlek(b, geo); return { kamer: p.k.id, x: p.x }; });
-      const extra = OH.plaatsExtra(geo, scene.inrichting, mijden);     // event-decor en nachtdoek (lichtpunten vóór tekenLicht)
-      HT.tekenLicht(licht, geo, dd, scene.inrichting);
       licht.style.opacity = dd.lampSterkte != null ? dd.lampSterkte : 1;
       licht.style.width = px(geo.W * Z); licht.style.height = px(geo.H * Z);
       lucht = HM.kleur(dd.lucht);
@@ -525,7 +531,8 @@
       dio.style.width = px(geo.W * Z); dio.style.height = px(geo.H * Z);
       dio.classList.toggle('bewerken', bewerken && !scene.voorbeeld);
       dio.classList.toggle('markeer', !!inst.markeer);
-      const extra = tekenOmgeving(geo, dd);
+      const extra = tekenOmgeving(geo, dd, alleenSchaal);
+      alleenSchaal = false;
       OH.toonStatus();
       stopPets();
       if (G) G.begin({ Z, geo, inrichting: scene.inrichting, bubbels: signalen, sleutel: geo.huis.niveau + (scene.voorbeeld ? 'v' : '') });
@@ -536,40 +543,66 @@
       tekenPets(geo);
       if (animatie()) G.draai();
       OH.zetExtra(laag, extra, Z);
-      verteBij(null, true);
+      verteBij(false); deeltjesBij(true);
       tekenSignalen();
       if (zoom && begonnen) zoom.herbereken();
       if (opties.opScene) opties.opScene(sceneInfo());
       testInfo();
     }
     // Alleen lucht, decor, tint en lampen (elke minuut bij het vloeiende verloop); de lopers lopen door.
-    function tekenLicht() { if (scene && actief === api) { tekenOmgeving(scene.geo, OH.dagdeel()); verteBij(null, true, true); } }
+    function tekenLicht() { if (scene && actief === api) { tekenOmgeving(scene.geo, OH.dagdeel()); verteBij(false); } }
 
     // ---------- de verte: wereld rondom de scène ----------
     // De wereld loopt opzij, boven (lucht) en onder (aardlagen) door; de pan-grenzen van de zoom zijn de wereldranden.
     const RAND = { opzij: 360, boven: 900, onder: 360 };
     const wereld = g => ({ x0: -RAND.opzij, y0: -RAND.boven, x1: g.W + RAND.opzij, y1: g.H + RAND.onder });
-    let regio = null;
     function zetRegio(e, r) { e.style.left = px(r.x0 * Z); e.style.top = px(r.y0 * Z); e.style.width = px(r.b * Z); e.style.height = px(r.h * Z); }
-    // Deeltjes (regen, sneeuw, blad) over de hele getekende lucht: omgeving-huis.js krijgt een geo voor dit stuk.
+    // Deeltjes (regen, sneeuw, blad) voor een stuk van de wereld: omgeving-huis.js krijgt een geo voor dat stuk.
     function regioGeo(g, r) {
       return { W: r.b, H: r.h, grondY: g.grondY - r.y0, huis: g.huis,
         kamers: g.kamers.map(k => ({ buiten: k.buiten, y: k.y - r.y0, h: k.h, box: { x: k.box.x - r.x0, b: k.box.b } })),
         _bomen: (g._bomen || []).map(b => Object.assign({}, b, { x: b.x - r.x0, y: b.y - r.y0 })) };
     }
-    function verteBij(st, forceer, zonderDeeltjes) {
+    // De verte is één bitmap van de hele wereld (1 canvaspixel per artpx; niveau 1 ≈ 2,1 Mpx, de villa ≈ 4,6 Mpx).
+    // Getekend bij een nieuwe scène of als de lucht echt verandert (dagdeel, weer, sterren), nooit tijdens een gebaar:
+    // pannen en zoomen schuiven en schalen alleen de laag.
+    let verteSleutel = '';
+    function luchtSleutel(dd) {
+      const r = v => (v == null ? '' : Math.round(v * 8));
+      return [dd.id, (dd.banden || []).map(b => b[0]).join(','), r(dd.sterNiveau), dd.wolken || 1, dd.sterren ? 1 : 0, dd.ver, dd.dicht].join('|');
+    }
+    function verteBij(nieuweScene) {
+      if (!scene || weg || actief !== api) return;
+      const g = scene.geo, w = wereld(g), dd = OH.dagdeel();
+      const sl = [g.huis.niveau, scene.voorbeeld ? 'v' : '', g.W, g.H, luchtSleutel(dd)].join('#');
+      const r = { x0: w.x0, y0: w.y0, b: w.x1 - w.x0, h: w.y1 - w.y0 };
+      if (nieuweScene || sl !== verteSleutel) { verteSleutel = sl; window.PQ_HUISVERTE.teken(verte, g, dd, r.x0, r.y0, r.b, r.h); }
+      zetRegio(verte, r); zetRegio(tint, r);
+    }
+    // Deeltjes alleen over het zichtbare stuk (+15%), opnieuw opgezet als het beeld na een gebaar tot rust komt en
+    // buiten dat stuk valt. Uitgezoomd (zoom < 1) minder deeltjes en 15 beelden per seconde.
+    let weerRegio = null;
+    function zichtbaarStuk(st) {
+      const m = zoom.maten ? zoom.maten() : { vw: venster.clientWidth || 1, vh: venster.clientHeight || 1 };
+      return { x0: -st.tx / st.eff, y0: -st.ty / st.eff, x1: (m.vw - st.tx) / st.eff, y1: (m.vh - st.ty) / st.eff };
+    }
+    function deeltjesBij(forceer) {
       if (!scene || weg || actief !== api || !zoom) return;
-      st = st || zoom.stand();
-      const vw = venster.clientWidth || 1, vh = venster.clientHeight || 1, w = wereld(scene.geo);
-      const z = { x0: -st.tx / st.eff, y0: -st.ty / st.eff, x1: (vw - st.tx) / st.eff, y1: (vh - st.ty) / st.eff };
-      if (!forceer && regio && regio.Z === Z && z.x0 >= regio.x0 && z.y0 >= regio.y0 && z.x1 <= regio.x0 + regio.b && z.y1 <= regio.y0 + regio.h) return;
-      const mx = (z.x1 - z.x0) * 0.25, my = (z.y1 - z.y0) * 0.25;
-      const x0 = Math.floor(Math.max(w.x0, z.x0 - mx) / 8) * 8, y0 = Math.floor(Math.max(w.y0, z.y0 - my) / 8) * 8;
-      const x1 = Math.ceil(Math.min(w.x1, z.x1 + mx) / 8) * 8, y1 = Math.ceil(Math.min(w.y1, z.y1 + my) / 8) * 8;
-      regio = { x0, y0, b: Math.max(8, x1 - x0), h: Math.max(8, y1 - y0), Z };
-      window.PQ_HUISVERTE.teken(verte, scene.geo, OH.dagdeel(), regio.x0, regio.y0, regio.b, regio.h);
-      zetRegio(verte, regio); zetRegio(tint, regio);
-      if (!zonderDeeltjes) { OH.deeltjes(weer, regioGeo(scene.geo, regio), Z); zetRegio(weer, regio); }
+      const st = zoom.stand(), z = zichtbaarStuk(st), w = wereld(scene.geo), laag = st.eff < 1;
+      if (!forceer && weerRegio && weerRegio.laag === laag && weerRegio.Z === Z && z.x0 >= weerRegio.x0 && z.y0 >= weerRegio.y0 && z.x1 <= weerRegio.x0 + weerRegio.b && z.y1 <= weerRegio.y0 + weerRegio.h) return;
+      const mx = (z.x1 - z.x0) * 0.15, my = (z.y1 - z.y0) * 0.15;
+      const x0 = Math.floor(Math.max(w.x0, z.x0 - mx)), y0 = Math.floor(Math.max(w.y0, z.y0 - my));
+      const x1 = Math.ceil(Math.min(w.x1, z.x1 + mx)), y1 = Math.ceil(Math.min(Math.min(w.y1, scene.geo.grondY + 4), z.y1 + my));
+      weerRegio = { x0, y0, b: Math.max(8, x1 - x0), h: Math.max(8, y1 - y0), Z, laag };
+      OH.deeltjes(weer, regioGeo(scene.geo, weerRegio), Z, laag ? { max: 50, interval: 66 } : null);
+      zetRegio(weer, weerRegio);
+    }
+    // Per frame (tijdens gebaren) alleen goedkope dingen: wat zichtbaar is voor het gedrag, en de beeldsnelheid.
+    let lageFps = false, zichtStuk = null, fpsNu = -1;
+    function bijFrame(st) {
+      zichtStuk = zichtbaarStuk(st);
+      const fps = lageFps || st.eff < 1 ? 15 : 0;
+      if (fps !== fpsNu && G && G.instellen) { fpsNu = fps; G.instellen({ fps, zicht: a => !zichtStuk || (a.x > zichtStuk.x0 - 40 && a.x < zichtStuk.x1 + 40) }); }
     }
     function testInfo() {
       const t = window.PQ_TEST;
@@ -584,13 +617,15 @@
     // ---------- zoom en pannen ----------
     let begonnen = false;
     const zoom = window.PQZoom.maak(venster, podium, {
-      inhoud: () => { const g = scene ? scene.geo : { W: 664, H: 272, grondY: 232 }; return { w: g.W, h: g.H, g: g.grondY, wereld: wereld(g) }; },
+      // De grens is de getekende wereld, 1 artpx naar binnen: zo valt ook een afgeronde pixel nooit buiten de rand.
+      inhoud: () => { const g = scene ? scene.geo : { W: 664, H: 272, grondY: 232 }, w = wereld(g); return { w: g.W, h: g.H, g: g.grondY, wereld: { x0: w.x0 + 1, y0: w.y0 + 1, x1: w.x1 - 1, y1: w.y1 - 1 } }; },
       zr: () => Z,
-      herteken: z => { Z = z; teken(); },
+      herteken: z => { Z = z; alleenSchaal = true; teken(); },
       actief: () => !compact && actief === api,
       magPannen: ev => !(bewerken && ev.target.closest && ev.target.closest('.sleepbaar')),
       opWijzig: st => { aangeraakt = true; if (opties.opZoom) opties.opZoom(st); },
-      opToon: st => { achtergrond(st); verteBij(st); },
+      opToon: bijFrame,
+      opRust: () => deeltjesBij(false),
     });
     // Waar Hidde en Tessie staan (scene-artpx): daar begint het beeld.
     function focusPunt(vh, eff) {
@@ -614,6 +649,7 @@
     let aangeraakt = false, gemeten = '';
     function begin() {
       begonnen = true;
+      zoom.meet();
       gemeten = venster.clientWidth + 'x' + venster.clientHeight;
       if (compact) { zoom.begin({ eff: 1, ...focusPunt(venster.clientHeight, 1) }); return; }
       zoom.begin(geldigeStand(opties.zoomStand && opties.zoomStand()), focusPunt());
@@ -659,6 +695,8 @@
       bekijk(n) { bekijk = n && n !== staat.niveau ? n : null; teken(); },
       bekijkt: () => bekijk,
       markeer(aan) { inst.markeer = !!aan; teken(); },
+      // Menu open over het huis: het huis mag zuiniger (15 beelden per seconde).
+      zuinig(aan) { lageFps = !!aan; fpsNu = -1; if (zoom) bijFrame(zoom.stand()); },
       unmount() { api.pauze(); afmelden(); if (ro) ro.disconnect(); weg = true; root.textContent = ''; },
     };
     return api;

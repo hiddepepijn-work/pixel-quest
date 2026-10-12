@@ -263,7 +263,9 @@ window.PQ_OMGEVINGHUIS = (function (OG, OT, H, HM) {
   // bloesemblaadjes. Niet in de kamers (binnen regent het niet). Minder beweging: geen deeltjes, alleen het
   // stilstaande weerbeeld (dat staat al op het decor: lucht, druppels op het glas, plassen, sneeuwlaag).
   let anim = null;
-  function deeltjes(canvas, geo, Z) {
+  // o: { max (hooguit zoveel deeltjes), interval (ms per beeld; standaard 33 = ~30 per seconde) }
+  function deeltjes(canvas, geo, Z, o) {
+    o = o || {};
     if (anim) { cancelAnimationFrame(anim); anim = null; }
     if (!canvas || !status) return;
     canvas.width = geo.W; canvas.height = geo.H;
@@ -279,7 +281,7 @@ window.PQ_OMGEVINGHUIS = (function (OG, OT, H, HM) {
     if (!soort || rustig) return;
     const binnen = geo.kamers.filter(k => !k.buiten).map(k => [k.box.x, k.y - M.vloerplaat, k.box.x + k.box.b + M.muur, k.y + k.h]);
     const isBinnen = (x, y) => binnen.some(([a, b, c, d]) => x >= a && x < c && y >= b && y < d);
-    const max = soort === 'regen' ? Math.min(150, Math.round(geo.W / 6)) : soort === 'sneeuw' ? Math.min(150, Math.round(geo.W / 8)) : 14;
+    const max = Math.min(o.max || 150, soort === 'regen' ? Math.min(150, Math.round(geo.W / 6)) : soort === 'sneeuw' ? Math.min(150, Math.round(geo.W / 8)) : 14);
     const wind = Math.min(60, status.weer.wind_kmh || 8), nacht = status.licht.fase === 'nacht';
     const KL = { regen: [nacht ? 'nacht.3' : 'petrol.4'], sneeuw: ['creme.4'], blad: ['koraal.2', 'abrikoos.2', 'goud.3'], bloesem: ['koraal.4', 'creme.4'] }[soort];
     const kleur = KL.map(k => HM.kleur(k));
@@ -294,7 +296,7 @@ window.PQ_OMGEVINGHUIS = (function (OG, OT, H, HM) {
     let vorige = 0;
     const stap = t => {
       anim = requestAnimationFrame(stap);
-      if (document.hidden || t - vorige < 33) return;      // ~30 beelden per seconde
+      if (document.hidden || t - vorige < (o.interval || 33)) return;      // standaard ~30 beelden per seconde
       vorige = t;
       ctx.clearRect(0, 0, geo.W, geo.H);
       ctx.globalAlpha = soort === 'regen' ? 0.75 : 1;

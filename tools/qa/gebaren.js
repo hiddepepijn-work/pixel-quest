@@ -71,7 +71,8 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = W === 
 
   console.log('3. Bewerkmodus: slepen vs pannen');
   await h.tik('.hud-tools'); await h.tikTekst('.sheet button', 'Bewerken'); await wacht(600);
-  await R(() => document.querySelector('.zoomknoppen [aria-label="Inzoomen"]').click()); await wacht(900);
+  // Op 2× midden op de woonkamer (vanuit het minimum ligt het huis door de harde grens laag in beeld).
+  await R(() => window.PQHuis.actief().zoom.naar(330, 160, 2)); await wacht(900);
   const m = await R(() => { const e = [...document.querySelectorAll('#view-huis .sleepbaar')].find(e => { const r = e.getBoundingClientRect(); return r.width > 20 && r.top > 120 && r.bottom < innerHeight - 160 && r.left > 0 && r.right < innerWidth; }); if (!e) return null; const r = e.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, id: e.dataset.id }; });
   const logVoor = await R(() => window.PQStore.log().length), zb = await zoom();
   if (m) {

@@ -4,7 +4,7 @@ const path = require('path'), fs = require('fs'), os = require('os'), http = req
 const puppeteer = require(process.env.PQ_PUPPETEER || 'puppeteer-core');
 const EDGE = process.env.PQ_EDGE || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe';
 const REPO = path.resolve(__dirname, '..', '..');
-const DIST = path.join(REPO, 'dist');
+const DIST = process.env.PQ_DIST ? path.resolve(process.env.PQ_DIST) : path.join(REPO, 'dist');   // PQ_DIST: een andere build meten (bv. de baseline)
 const FOTO = path.join(REPO, 'test-uitvoer', 'qa');
 fs.mkdirSync(FOTO, { recursive: true });
 const wacht = ms => new Promise(r => setTimeout(r, ms));
