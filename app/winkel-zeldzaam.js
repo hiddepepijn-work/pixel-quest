@@ -42,8 +42,8 @@
       return el('li.volgende', null, el('span', null, el('b', { tekst: wat }), el('small', { tekst: ` bij ${v.tekst} (nu ${v.stand})` })), balk(v.stand - v.vanaf, v.doel - v.vanaf));
     });
     return [
-      el('p.noot', { tekst: 'Niet te koop. Zeldzame kleuren komen als drop als jullie samen een mijlpaal halen; stel-sets komen vrij bij een gezamenlijke mijlpaal. Geen munten, geen haast: het komt altijd terug.' }),
-      sectie('Zeldzame kleuren', 'alleen als drop', el('div.swatches.zeldzaam-rij', null, Object.keys(Z).map(k => WU.staal(k, { label: `${Z[k].naam}: niet te koop`, heb: ['hidde', 'tessie'].some(f => Object.values(ctx.st.kleding.bezit[f] || {}).some(l => (l || []).includes(k))) }))),
+      el('p.noot', { tekst: 'Niet te koop: dit verdienen jullie samen. Zeldzame kleuren komen als drop bij een mijlpaal of streak, stel-sets bij een gezamenlijke mijlpaal.' }),
+      sectie('Zeldzame kleuren', 'alleen als drop', el('div.swatches.zeldzaam-rij', null, Object.keys(Z).map(k => el('figure.zstaal', null, WU.staal(k, { label: `${Z[k].naam}: niet te koop`, heb: ['hidde', 'tessie'].some(f => Object.values(ctx.st.kleding.bezit[f] || {}).some(l => (l || []).includes(k))) }), el('figcaption', { tekst: Z[k].naam.replace('tint', '') })))),
         el('ul.volgendelijst', null, volgende)),
       sectie('Jullie drops', null, dropsLijst(ctx.st)),
       sectie('Stel-sets', 'voor allebei', el('div.setlijst-kaarten', null, P.stelsets(ctx.st, nu).map(stelKaart))),

@@ -15,7 +15,7 @@
     const duo = el('div.duo', null, wie.map(f => WU.figuur(f, WU.metItems(f, P.setDelen(set, f).getekend.map(it => ({ item: it.id, kleur: it.kleuren[0] }))), 56, `${U.naam(f)} in de set ${set.naam}`)));
     const status = i.start ? el('span.label', { tekst: 'startkast' }) : !i.compleet ? el('span.label', { tekst: i.wacht ? `${i.getekend.length} van ${i.alle.length} getekend` : `niet voor ${U.naam(ctx.fid)}` })
       : !i.mist.length ? el('span.label.blad', { tekst: 'in bezit' }) : el('span.setprijs', null, el('s', { tekst: U.getal(i.som) }), WU.prijsLabel(i.prijs));
-    return el('button.setkaart' + (i.teKoop && i.prijs > ctx.saldo ? '.uit' : ''), { type: 'button', 'data-set': set.id, onclick: () => WS().set(ctx.fid, set.id), 'aria-label': `Set ${set.naam}` },
+    return el('button.setkaart' + ((i.teKoop && i.prijs > ctx.saldo) || !i.compleet ? '.uit' : ''), { type: 'button', 'data-set': set.id, onclick: () => WS().set(ctx.fid, set.id), 'aria-label': `Set ${set.naam}` },
       duo, el('span.setinfo', null, el('b', { tekst: set.naam }), el('small', { tekst: i.alle.map(it => it.naam).join(' · ') }),
         i.teKoop && i.inBezit ? el('small.korting', { tekst: `Je hebt er al ${i.inBezit}: korting naar rato` }) : null, status));
   }
@@ -54,7 +54,7 @@
     if (ctx.vk.betaalbaar) sets = sets.filter(s => { const i = P.setInfo(ctx.st, ctx.fid, s); return i.teKoop && i.prijs <= ctx.saldo; });
     const start = P.sets().filter(P.isStartSet);
     return [
-      el('p.noot', { tekst: 'Een set kost de som min 20%. Heb je al items uit de set, dan betaal je alleen voor de rest (korting naar rato). Een complete set dragen geeft een glinstering in huis.' }),
+      el('p.noot', { tekst: 'Set = som min 20%. Heb je al een deel, dan betaal je alleen de rest. Draag je hem compleet, dan glinster je in huis.' }),
       sets.length ? el('div.setlijst-kaarten', null, sets.map(s => setKaart(ctx, s))) : leeg('Geen set binnen bereik', 'Spaar nog even, of zet het filter uit.'),
       start.length ? el('p.noot', { tekst: `In de startkast: ${start.map(s => s.naam).join(', ')} (gratis voor allebei).` }) : null,
       el('p.noot', { tekst: 'Stel-sets voor jullie allebei zijn niet te koop: die komen vrij bij samen-mijlpalen (zie Zeldzaam).' }),

@@ -176,7 +176,8 @@
       const hoog = Math.round(a.figuur.bron[1] / a.bronpx_per_artpixel), B = 60, Hh = hoog + 10;
       const ster = (ctx, x, y, groot) => {
         const r = groot ? 2 : 1;
-        HT.rect(ctx, x - r, y, 2 * r + 1, 1, 'goud.3'); HT.rect(ctx, x, y - r, 1, 2 * r + 1, 'goud.3'); HT.rect(ctx, x, y, 1, 1, 'creme.4');
+        HT.rect(ctx, x - r, y, 2 * r + 1, 1, 'goud.2'); HT.rect(ctx, x, y - r, 1, 2 * r + 1, 'goud.2'); HT.rect(ctx, x, y, 1, 1, 'creme.4');
+        if (groot) { HT.rect(ctx, x - 1, y, 3, 1, 'goud.3'); HT.rect(ctx, x, y - 1, 1, 3, 'goud.3'); HT.rect(ctx, x, y, 1, 1, 'creme.4'); }
       };
       const doek = sterren => { const c = el('canvas'); c.width = B; c.height = Hh; const ctx = c.getContext('2d'); for (const s of sterren) ster(ctx, ...s); return c; };
       const vak = el('div', 'glans');

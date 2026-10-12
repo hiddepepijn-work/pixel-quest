@@ -94,7 +94,10 @@ button.setkaart:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--n
 .sw { position: relative; }
 .sheet .swatches .sw, .winkel-inhoud .sw { width: 44px; height: 44px; }
 .sw-vink { position: absolute; right: 1px; bottom: 1px; width: 14px; height: 14px; display: grid; place-items: center; background: var(--blad); color: #fff; font: 700 10px/1 var(--tekstfont); border: 1px solid var(--nacht); }
-.sw.zeldzaam::before { content: '✦'; position: absolute; top: -1px; left: 1px; z-index: 1; font: 700 11px/1 var(--tekstfont); color: #fff; text-shadow: 1px 1px 0 var(--nacht); }
+.sw.zeldzaam::before { content: '★'; position: absolute; top: 1px; left: 2px; z-index: 1; font: 700 12px/1 var(--pixelfont); color: var(--goud); text-shadow: 1px 1px 0 var(--nacht); }
+.zeldzaam-rij { gap: 8px; }
+.zstaal { margin: 0; display: grid; justify-items: center; gap: 2px; }
+.zstaal figcaption { font: 700 10px var(--pixelfont); color: var(--titel); }
 .zeldzaam-rij .sw { cursor: default; }
 
 /* ---------- zeldzaam en drops ---------- */
