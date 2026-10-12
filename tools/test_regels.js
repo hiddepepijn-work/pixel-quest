@@ -72,22 +72,24 @@ check('de ander keurt goed: in bezit', S.doe('voorstel.akkoord', { id: v.id }, {
   pyj.status = 'klaar'; S.laad();
   check('startkast: pyjama vanzelf in de kast zodra hij klaar is', (b().hidde.pyjama || []).length === 1 && (b().tessie.pyjama || []).length === 1);
   pyj.status = was; S.laad();
-  const ww = K.sets.find(s => s.id === 'winterwandeling');
-  const voor = P.setInfo(S.staat(), 'tessie', ww);
-  check('set: som min 20% (winterwandeling 165 → 132)', voor.som === 165 && voor.prijs === 132 && voor.teKoop, voor);
-  const r1 = S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'tessie', item: 'puffer', kleur: 'petrol' } });
+  // Een set uit de data (geen vaste id's): verkoopbaar voor Tessie, minstens 3 items, binnen de pot.
+  const ww = P.verkoopbareSets().find(s => { const d = P.setDelen(s, 'tessie'); return d.compleet && d.getekend.length >= 3 && d.getekend.reduce((t, i) => t + i.prijs, 0) <= 200; });
+  const delen = P.setDelen(ww, 'tessie').getekend, som = delen.reduce((t, i) => t + i.prijs, 0), eerst = delen[0];
+  const voor = P.setInfo(S.staat(), 'tessie', ww), kort = x => ({ som: x.som, somMist: x.somMist, prijs: x.prijs, teKoop: x.teKoop });
+  check(`set: som min 20% (${ww.naam} ${som} → ${Math.round(0.8 * som)})`, voor.som === som && voor.prijs === Math.round(0.8 * som) && voor.teKoop, kort(voor));
+  const r1 = S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'tessie', item: eerst.id, kleur: eerst.kleuren[0] } });
   S.doe('voorstel.akkoord', { id: r1.id }, { namens: 'tessie' });
-  const na = P.setInfo(S.staat(), 'tessie', ww);
-  check('set: korting naar rato na de puffer (75 → 60)', na.somMist === 75 && na.prijs === 60, na);
-  const r2 = S.doe('voorstel.nieuw', { soort: 'set', data: { fid: 'tessie', set: 'winterwandeling' } });
+  const na = P.setInfo(S.staat(), 'tessie', ww), rest = som - eerst.prijs, setPrijs = Math.round(0.8 * rest);
+  check(`set: korting naar rato na ${eerst.naam} (${rest} → ${setPrijs})`, na.somMist === rest && na.prijs === setPrijs, kort(na));
+  const r2 = S.doe('voorstel.nieuw', { soort: 'set', data: { fid: 'tessie', set: ww.id } });
   const potS = R.pot(S.staat(), nu2).saldo;
-  check('set kopen met akkoord: alles in bezit, pot − 60', r2.ok && S.doe('voorstel.akkoord', { id: r2.id }, { namens: 'tessie' }).ok &&
-    ['puffer', 'beanie', 'sjaal', 'handschoenen'].every(id => (b().tessie[id] || []).length) && R.pot(S.staat(), nu2).saldo === potS - 60, r2);
+  check(`set kopen met akkoord: alles in bezit, pot − ${setPrijs}`, r2.ok && S.doe('voorstel.akkoord', { id: r2.id }, { namens: 'tessie' }).ok &&
+    delen.every(it => (b().tessie[it.id] || []).length) && R.pot(S.staat(), nu2).saldo === potS - setPrijs, r2);
   const beanie = K.items.find(i => i.id === 'beanie'), w0 = R.weekVan(nu2);
   const rot = P.rotatie(w0), ditweek = rot.find(p => p.item === 'beanie'), nietDitWeek = beanie.kleuren.slice(1).find(k => !rot.some(p => p.item === 'beanie' && p.kleur === k));
-  check('extra kleur van een item dat je hebt: halve prijs (30 → 15)', P.kledingPrijs(S.staat(), 'tessie', beanie, beanie.kleuren[1]) === 15);
-  if (nietDitWeek) check('extra kleur buiten de rotatie: niet te koop', !S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'tessie', item: 'beanie', kleur: nietDitWeek } }).ok);
-  if (ditweek) check('extra kleur in de rotatie: te koop', S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'tessie', item: 'beanie', kleur: ditweek.kleur } }).ok);
+  check('extra kleur van een item dat je hebt: halve prijs (30 → 15)', P.kledingPrijs(S.staat(), 'hidde', beanie, beanie.kleuren[1]) === 15);
+  if (nietDitWeek) check('extra kleur buiten de rotatie: niet te koop', !S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'hidde', item: 'beanie', kleur: nietDitWeek } }).ok);
+  if (ditweek) check('extra kleur in de rotatie: te koop', S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'hidde', item: 'beanie', kleur: ditweek.kleur } }).ok);
   check('zeldzame kleur is nooit te koop', /drop/.test(S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'hidde', item: 'beanie', kleur: 'glitter' } }).fout || ''));
   const weken = [0, 1, 2, 3].map(i => P.uitgelicht(R.weekPlus(w0, i)));
   check('uitgelicht: zelfde week = zelfde keuze', JSON.stringify(P.uitgelicht(w0)) === JSON.stringify(weken[0]));
@@ -111,7 +113,8 @@ check('de ander keurt goed: in bezit', S.doe('voorstel.akkoord', { id: v.id }, {
     d[0].items.every(i => P.isZeldzaam(i.kleur) && st3.kleding.bezit[i.fid][i.item].includes(i.kleur)), d);
   const prijzen = P.klaar().map(i => i.prijs), gem = prijzen.reduce((s, x) => s + x, 0) / prijzen.length;
   check(`economie: gemiddeld item ${Math.round(gem)} munten = ${P.dagen(gem, S.staat(), nu2, true)} dagen sparen per persoon`, P.dagen(gem, S.staat(), nu2, true) >= 1 && P.dagen(gem, S.staat(), nu2, true) <= 4);
-  check(`economie: set winterwandeling 132 = ${P.dagen(132, S.staat(), nu2, true)} dagen per persoon (~een week)`, P.dagen(132, S.staat(), nu2, true) >= 5 && P.dagen(132, S.staat(), nu2, true) <= 8);
+  const setGem = Math.round(P.verkoopbareSets().map(x => P.setInfo({ kleding: { bezit: {} } }, 'tessie', x).vol).filter(Boolean).reduce((t, x, i, a) => t + x / a.length, 0));
+  check(`economie: gemiddelde set ${setGem} = ${P.dagen(setGem, S.staat(), nu2, true)} dagen per persoon (~een week)`, P.dagen(setGem, S.staat(), nu2, true) >= 4 && P.dagen(setGem, S.staat(), nu2, true) <= 9);
   const voorLaad = JSON.stringify(S.staat()); S.laad();
   check('winkel: naspelen geeft dezelfde staat', voorLaad === JSON.stringify(S.staat()));
 }

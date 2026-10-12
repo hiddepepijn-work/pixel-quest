@@ -33,9 +33,9 @@ Prijzen komen uit `PQ_KAST.items[].prijs` (spec: hoofd, schoenen en accessoire 2
 
 | Wat | Prijs |
 |---|---|
-| Basiskleur van een item | de itemprijs (nu gemiddeld 40) |
+| Basiskleur van een item | de itemprijs (gemiddeld 43 over de 44 items) |
 | Extra kleur van een item dat je al hebt | de helft, afgerond op 5, minstens 10 |
-| Set | som min 20%, **naar rato**: 0,8 × de som van wat je nog mist (winterwandeling 165 → 132; met de sjaal al in bezit 112) |
+| Set | som min 20%, **naar rato**: 0,8 × de som van wat je nog mist (Winterwandeling 145 → 116; met de puffer al in bezit 44). Nu 80–160, gemiddeld 113 |
 | Stel-set, zeldzame kleur | niet te koop |
 | Meubel of decor | 15–140 (gemiddeld 53) |
 | Verbouwing | 400–3.000 (in Bouwen) |
@@ -46,16 +46,15 @@ Prijzen komen uit `PQ_KAST.items[].prijs` (spec: hoofd, schoenen en accessoire 2
 |---|---|---|
 | hoofd/accessoire (20–40) | ½–1 dag | 1–2 dagen |
 | boven/onder (30–60) | 1–1½ dag | 2–3 dagen |
-| jas/heel lichaam (50–90) | 1½–2 dagen | 3–4 dagen |
-| set winterwandeling (132) | 3 dagen | ~6 dagen: ruwweg een week |
-| set studiedag (84) | 2 dagen | 4 dagen |
+| jas/heel lichaam (50–90) | 1½–2 dagen | 3–5 dagen |
+| set (80–160, gemiddeld 113) | 2–4 dagen | 4–8 dagen, gemiddeld ~6: ruwweg een week |
 | verbouwing 2 (400) | 9 dagen | – |
 
 Een normaal item kost dus een paar dagen sparen per persoon en een set ongeveer een week. "Nog N sparen (~D dagen)" rekent met de volle week (`PQWinkel.dagen`). Putten in totaal: alle basiskleuren voor allebei ≈ 2.700, alle extra kleuren ≈ 4.300, alle meubels ≈ 1.800, alle verbouwingen 11.900: samen ruim een jaar volle pot, en er komen nog items bij.
 
 ## Uitgelicht, rotatie, drops en sets
 
-- **Uitgelicht** (`PQWinkel.uitgelicht(week, fid)`): deterministisch op het weeknummer. De set is `sets[weekIndex % n]` uit de verkoopbare sets (compleet getekend, niet de startkast); de 3 items zijn een geschudde keuze met een zaad uit de week (één per slot, geen startkast, niet uit de set). Geen `Math.random`: elke telefoon en later de server ziet hetzelfde.
+- **Uitgelicht** (`PQWinkel.uitgelicht(week, fid)`): deterministisch op het weeknummer, met de sets uit `PQ_KAST.sets` (geen vaste set-id's in de code). De set is `sets[weekIndex % n]` uit de verkoopbare sets (compleet getekend, niet de startkast); de 3 items zijn een geschudde keuze met een zaad uit de week (één per slot, geen startkast, niet uit de set). Geen `Math.random`: elke telefoon en later de server ziet hetzelfde.
 - **Gewone slots / kleuren van de week** (`rotatie(week)`): alle extra kleuren (niet de basiskleur) van alle getekende items in een vaste geschudde volgorde; elke week de volgende 8. Zo komt elke kleur vanzelf terug. De basiskleur is altijd te koop. Een extra kleur kopen buiten de rotatie weigert de store ("is deze week niet te koop"). Een voorstel blijft geldig als de week ondertussen wisselt (gecontroleerd op het moment van het voorstel).
 - **Sets kopen:** alle sets zijn het hele jaar te koop in Sets; de set van de week staat bovenaan Uitgelicht. (De spec noemt het uitgelicht-slot; een set alleen in zijn week verkopen zou missen-is-weg betekenen, wat de spec elders juist vermijdt.) Een set is te koop als al zijn items voor dat lichaam getekend zijn; anders staat er "2 van 3 getekend".
 - **Drops** (opdracht `drop`, `store-winkel.js`): bij elke 3 gehaalde weken (glitter, dan regenboog, om en om) en bij een streak-record van 4, 8, 12 … (de seizoenstint van dat moment: lente-, zomer-, herfst- of wintertint). Een drop geeft Hidde én Tessie een zeldzame kleur op een item dat ze al hebben. Het apparaat dat de mijlpaal ziet, boekt de opdracht; de sleutel (`gehaald:6`, `record:4`) zorgt dat hij maar één keer wordt uitgedeeld, en de store controleert of de mijlpaal echt bereikt is. De inhoud volgt uit de sleutel en de staat (hash, geen toeval). Melding met feestje; de drop staat in Winkel → Zeldzaam, in **Pets** (kaart *Zeldzame kleuren*) en in Meer → Aankopen. In de Kast verschijnen zeldzame kleuren als extra staal met ✦.
@@ -65,7 +64,7 @@ Een normaal item kost dus een paar dagen sparen per persoon en een set ongeveer 
 
 ## Hoe de data wordt ingelezen
 
-- **Kleding:** alles uit `window.PQ_KAST` (`assets/kast.js`, gegenereerd door de kleding-agent): `items[]` met `slot`, `lichaam`, `kleuren` (de eerste = basiskleur), `prijs`, `set_id`, `zeldzaamheid`, `tags`, `status`, `startkast`, en `sets[]`. Alleen items op `status: 'klaar'` zijn te koop of te passen; de rest staat onder "Binnenkort". De winkel hard-codeert geen item: komen er 44 items bij, dan staan ze er na de volgende build vanzelf in (tegels, sets, rotatie, uitgelicht, drops). Alleen de stel-sets noemen item-id's; ontbreekt een item, dan wordt het overgeslagen.
+- **Kleding:** alles uit `window.PQ_KAST` (`assets/kast.js`, gegenereerd door de kleding-agent): `items[]` met `slot`, `lichaam`, `kleuren` (de eerste = basiskleur), `prijs`, `set_id`, `zeldzaamheid`, `tags`, `status`, `startkast`, en `sets[]`. Alleen items op `status: 'klaar'` zijn te koop of te passen; de rest staat onder "Binnenkort". De winkel hard-codeert geen item: komen er 44 items bij, dan staan ze er na de volgende build vanzelf in (tegels, sets, rotatie, uitgelicht, drops). Ook de sets komen uit `PQ_KAST.sets` (nu 9, waaronder de startkast-set Basis); de code noemt geen set-id. Alleen de stel-sets in `winkel-data.js` noemen item-id's; ontbreekt een item, dan wordt het overgeslagen. Getest met de merge van `kleding-art` (`cb0d8c2`): alle 44 items op `klaar`.
 - **Zeldzame kleuren** zijn kleurrampen (5 stops) in `winkel-data.js`; bij het laden worden ze aan `PQ_KLEDING.rampen` toegevoegd, zodat `figuur.js` ze tekent zoals elke andere kleur.
 - **Meubels:** `PQ_HUIS.meubels` + de prijzen in `winkel-data.js meubelprijs`. Het extra decor staat in `winkel-data.js decor` in exact het meubelschema van `docs/huis.md` (`op`, `hoort`, `maat`, `delen`, `licht`) en wordt bij het laden in `PQ_HUIS.meubels` gezet (`winkel: true`, `placeholder: true`). **Alle 13 decoritems zijn placeholders** in de bestaande code-tekenstijl (vloerkleed, wandlamp, hangplant, monstera, cactus, fotolijstjes, spiegel, wandklok, wandkunst zee, poster, vogelhuisje, lantaarn, moestuinbak); in de winkel en in de bewerkmodus staan ze gemarkeerd als placeholder. Een sprite vervangt ze later zonder codewijziging.
 - **Kamers en niveaus:** `meubelVraagt(soort, niveau)` zoekt of een kamer van het huidige niveau in `hoort` staat; anders de eerste verbouwing die zo'n kamer geeft ("vraagt tuin (niveau 4)"). Zo'n meubel is pas te koop als de kamer er is. Een gekocht meubel krijgt id `<soort>-w<n>` en gaat in `huis.doos`. *Indeling herstellen* zet gekochte meubels voortaan in de doos in plaats van ze te laten verdwijnen.

@@ -47,9 +47,12 @@ async function start(opties) {
   const args = ['--allow-file-access-from-files'];
   if (opties.offline) args.push('--host-resolver-rules=MAP fonts.googleapis.com 127.0.0.1:9,MAP fonts.gstatic.com 127.0.0.1:9');
   const browser = await puppeteer.launch({ executablePath: EDGE, headless: 'new', userDataDir: profiel, args });
-  // Elk profiel is ~40 MB: na afloop opruimen, anders loopt de schijf vol (honderden runs).
+  // Elk Edge-profiel is ~40–55 MB: na afloop opruimen, anders loopt de schijf vol (honderden runs). Na een normale
+  // browser.close() meteen; bij een crash of process.exit() vangt de exit-hook het op (eerst Edge hard stoppen).
+  const ruimOp = () => { try { fs.rmSync(profiel, { recursive: true, force: true, maxRetries: 3 }); } catch (e) { /* bezet: laat staan */ } };
   const sluit = browser.close.bind(browser);
-  browser.close = async () => { await sluit(); try { fs.rmSync(profiel, { recursive: true, force: true }); } catch (e) { /* bezet: laat staan */ } };
+  browser.close = async () => { try { await sluit(); } finally { ruimOp(); } };
+  process.once('exit', () => { try { const pr = browser.process(); if (pr && pr.exitCode == null) pr.kill('SIGKILL'); } catch (e) { /* */ } ruimOp(); });
   const p = await browser.newPage();
   await p.setViewport({ width: opties.w || 390, height: opties.h || 844, deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   const fouten = [];

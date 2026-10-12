@@ -63,15 +63,20 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = 'w' + 
   check('petje in bezit, pot −30, Hidde draagt het', (st.kleding.bezit.hidde.petje || []).length === 1 && (await pot()) === p0 - 30 && st.kleding.looks.hidde.hoofd.item === 'petje', st.kleding.looks.hidde);
 
   console.log('4. Set-korting naar rato');
-  const rs = await R(() => { const S = window.PQStore; const v = S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'hidde', item: 'sjaal', kleur: 'bordeaux' } }); return S.doe('voorstel.akkoord', { id: v.id }, { namens: 'tessie' }).ok; });
+  // Een set uit PQ_KAST.sets (geen vaste id's): verkoopbaar voor Hidde, minstens 3 items, nog niets van in bezit.
+  const keus = await R(() => { const P = window.PQWinkel, st = window.PQStore.staat();
+    const s = P.verkoopbareSets().find(x => { const i = P.setInfo(st, 'hidde', x); return i.compleet && i.getekend.length >= 3 && !i.inBezit && i.som <= 400; });
+    const d = P.setDelen(s, 'hidde').getekend, eerst = d[d.length - 1], som = d.reduce((t, i) => t + i.prijs, 0);
+    return { id: s.id, naam: s.naam, items: d.map(i => i.id), eerst: eerst.id, kleur: eerst.kleuren[0], vol: Math.round(0.8 * som), prijs: Math.round(0.8 * (som - eerst.prijs)) }; });
+  const rs = await R(k => { const S = window.PQStore; const v = S.doe('voorstel.nieuw', { soort: 'kleding', data: { fid: 'hidde', item: k.eerst, kleur: k.kleur } }); return S.doe('voorstel.akkoord', { id: v.id }, { namens: 'tessie' }).ok; }, keus);
   await afd('sets');
-  const setTekst = await R(() => document.querySelector('#view-winkel .setkaart[data-set="winterwandeling"]').textContent);
-  check('winterwandeling met sjaal in bezit: 112 in plaats van 132 (korting naar rato)', rs && /112/.test(setTekst) && /al 1/.test(setTekst), setTekst);
-  await R(() => document.querySelector('#view-winkel .setkaart[data-set="winterwandeling"]').click()); await wacht(500);
+  const setTekst = await R(id => document.querySelector(`#view-winkel .setkaart[data-set="${id}"]`).textContent, keus.id);
+  check(`${keus.naam} met 1 item in bezit: ${keus.prijs} in plaats van ${keus.vol} (korting naar rato)`, rs && setTekst.includes(String(keus.prijs)) && /al 1/.test(setTekst), { keus, setTekst });
+  await R(id => document.querySelector(`#view-winkel .setkaart[data-set="${id}"]`).click(), keus.id); await wacht(500);
   await h.foto(PF + '05-set-sheet');
   const p1 = await pot();
   await tikVoet('Kopen'); await wacht(300); await tikVoet('keurt goed (op dit apparaat)'); await wacht(300);
-  check('set gekocht: pot −112, alle 4 in bezit', (await pot()) === p1 - 112 && (await R(() => ['puffer', 'beanie', 'sjaal', 'handschoenen'].every(id => (window.PQStore.staat().kleding.bezit.hidde[id] || []).length))));
+  check(`set gekocht: pot −${keus.prijs}, alle ${keus.items.length} in bezit`, (await pot()) === p1 - keus.prijs && (await R(ids => ids.every(id => (window.PQStore.staat().kleding.bezit.hidde[id] || []).length), keus.items)));
   await tikVoet('Aantrekken'); await wacht(300);
 
   console.log('5. Passen en de stel-preview');
@@ -102,7 +107,7 @@ const W = +(process.argv[2] || 390), HH = +(process.argv[3] || 844), PF = 'w' + 
   check('hangplant gekozen en in beeld', await R(() => { const e = document.querySelector('.meubel[data-id="hangplant-w1"]'); if (!e) return false; const r = e.getBoundingClientRect(); return e.classList.contains('gekozen') && r.bottom > 0 && r.top < innerHeight; }));
   await h.foto(PF + '08-plaatsen');
   await h.tikTekst('#view-huis button', 'Klaar'); await wacht(500);
-  check('set-glinstering in huis (winterwandeling)', await R(() => window.PQ_TEST.info.glans_hidde === 'Winterwandeling' && !!document.querySelector('#view-huis .glans')), await R(() => window.PQ_TEST.info.glans_hidde));
+  check(`set-glinstering in huis (${keus.naam})`, await R(n => window.PQ_TEST.info.glans_hidde === n && !!document.querySelector('#view-huis .glans'), keus.naam), await R(() => window.PQ_TEST.info.glans_hidde));
   await h.foto(PF + '09-glinster');
 
   console.log('7. Uitgelicht wisselt per week (klok +7 dagen) en een drop bij 3 gehaalde weken');
